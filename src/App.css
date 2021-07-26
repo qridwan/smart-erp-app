@@ -1,38 +1,46 @@
-.App {
-  text-align: center;
+
+.icons{
+    margin-right: 10px; 
+}
+/* .icons path{
+    stroke: #ffffff;
+    /* stroke-width: 1px; */
+
+/* a:hover >.icons> g{
+    stroke: #ffffff;
+    fill: #ffffff;
+} */
+/* a:hover >.icons> path{
+    stroke: #ffffff;
+    fill: #ffffff;
+}
+a:hover >.icons>  g > path{
+    stroke: #ffffff;
+    fill: #ffffff;
+} */
+
+/* .icons> g > path{
+    fill: #ff2f2f !important;
+} */
+
+
+.MuiSvgIcon-root path {
+    background: rgba(196, 196, 196, 0.25);
+border-radius: 8px;
+fill: rgba(70, 68, 68, 0.25);
+stroke: rgba(196, 196, 196, 0.25);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.MuiDataGrid-root .MuiDataGrid-cell{
+border: none !important;
+
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.MuiDataGrid-columnSeparator {
+    display: none !important;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.MuiDataGrid-root .MuiDataGrid-columnHeaderTitleContainer {
+    
+    justify-content: center;
 }
