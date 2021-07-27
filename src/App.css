@@ -44,3 +44,14 @@ border: none !important;
     
     justify-content: center;
 }
+
+input::placeholder {
+	color: rgb(107, 106, 106);
+}
+
+#dropdown-basic::after{
+    display: none;
+}
+#dropdown-basic:focus{
+   box-shadow:none;
+}

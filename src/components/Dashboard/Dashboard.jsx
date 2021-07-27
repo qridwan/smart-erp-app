@@ -9,6 +9,7 @@ import { ReactComponent as ClientsImg } from "../../Assets/Icons/clients.svg";
 import { NavLink } from "react-router-dom";
 import Inventory from "./Inventory";
 import { BoldText, DashboardContent } from "../../styles/styles";
+import Outwards from "./Outwards";
 
 const sidebarData = [
   {
@@ -72,6 +73,7 @@ const Dashboard = () => {
           <ContentSection>
             <DashboardContent >
             {show === "inventory" && <Inventory />}
+            {show === "outwards" && <Outwards />}
             </DashboardContent>
           </ContentSection>
         </Col>
@@ -111,7 +113,8 @@ const SidebarContent = styled.div`
   }
 `;
 const ContentSection = styled.div`
-  max-height: 100vh;
+  min-height: 100vh;
+  margin: 0px auto;
 `;
 const Head = styled.div`
 margin-bottom: 70px;
