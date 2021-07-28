@@ -1,9 +1,9 @@
 import {
-  FormControl,
   InputBase,
   InputLabel,
   MenuItem,
   NativeSelect,
+  FormControl,
   Select,
 } from "@material-ui/core";
 import { IconButton, makeStyles, Paper } from "@material-ui/core";
@@ -12,8 +12,13 @@ import React, { useRef, useState } from "react";
 import { useEffect } from "react";
 import styled from "styled-components";
 import {
+  AddItemContainer,
+  ApplyFormInput,
   BoldText,
   Button,
+  Error,
+  InputDiv,
+  Label,
   SearchContainer,
   SubText,
   TableContainer,
@@ -27,7 +32,9 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import { Dropdown } from "react-bootstrap";
+import { Col, Dropdown, InputGroup, Row } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import GenerateOutwards from "./GenerateOutwards";
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
@@ -89,6 +96,7 @@ const rows = [
 ];
 const Outwards = () => {
   const [date, setDate] = useState("loading...");
+  const [show, setShow] = useState("");
   const classes = useStyles();
   const [state, setState] = useState({
     id: 1,
@@ -116,109 +124,125 @@ const Outwards = () => {
   }, []);
 
   return (
-    <div>
-      <TitleContainer>
-        <BoldText> Outwards </BoldText>
-        <SubText> Today, {date} </SubText>
-      </TitleContainer>
-      <TopBar className="py-0">
-        <SearchContainer>
-          <section className="w-100 d-flex justify-content-between">
-            <SearchIcon />
-            <Input
-              placeholder="Search by Role, Experience, etc."
-              type="text"
-            ></Input>
-            <FilterIcon className="" />
-          </section>
-        </SearchContainer>
+    <>
+      {show !== "generate" ? (
         <div>
-          <Button> Generate New </Button>
-        </div>
-      </TopBar>
-      <TableContainer className="mt-5">
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell className={classes.thead}>ORDER NO.</TableCell>
-              <TableCell className={classes.thead} align="center">
-                SHIPPING DATE
-              </TableCell>
-              <TableCell className={classes.thead} align="center">
-                ITEM NAME
-              </TableCell>
-              <TableCell className={classes.thead} align="center">
-                AGENCY NAME
-              </TableCell>
-              <TableCell className={classes.thead} align="center">
-                TOTAL Qty.
-              </TableCell>
-              <TableCell className={classes.thead} align="center">
-                SENT
-              </TableCell>
-              <TableCell className={classes.thead} align="center">
-                PENDING
-              </TableCell>
-              <TableCell className={classes.thead} align="center">
-                STATUS
-              </TableCell>
-              <TableCell className={classes.thead} align="center">
-                MORE
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => {
-              let key = row.title;
-              return (
-                <TableRow key={row.order}>
-                  <TableCell component="th" scope="row" align="center">
-                    {row.order}
+          <TitleContainer>
+            <BoldText> Outwards </BoldText>
+            <SubText> Today, {date} </SubText>
+          </TitleContainer>
+          <TopBar className="py-0">
+            <SearchContainer>
+              <section className="w-100 d-flex justify-content-between">
+                <SearchIcon />
+                <Input placeholder="Search by client..." type="text"></Input>
+                <FilterIcon className="" />
+              </section>
+            </SearchContainer>
+            <div>
+              <Button onClick={() => setShow("generate")}>Generate New</Button>
+            </div>
+          </TopBar>
+          <TableContainer className="mt-5">
+            <Table className={classes.table} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classes.thead}>ORDER NO.</TableCell>
+                  <TableCell className={classes.thead} align="center">
+                    SHIPPING DATE
                   </TableCell>
-                  <TableCell align="center">{row.shipping}</TableCell>
-                  <TableCell align="center">
-                    <FormControl className={classes.formControl}>
-                      <NativeSelect
-                        value={state.key}
-                        onChange={handleChange}
-                        name={row.item}
-                        className={classes.selectEmpty}
-                        inputProps={{ "aria-label": "age" }}
-                      >
-                        <option value={row.item}>{row.item}</option>
-                        <option value={10}>Ten</option>
-                        <option value={20}>Twenty</option>
-                        <option value={30}>Thirty</option>
-                      </NativeSelect>
-                    </FormControl>
+                  <TableCell className={classes.thead} align="center">
+                    ITEM NAME
                   </TableCell>
-                  <TableCell align="center" className="text-decoration-underline">{row.agency}</TableCell>
-                  <TableCell align="center">{row.quantity}</TableCell>
-                  <TableCell align="center">{row.sent}</TableCell>
-                  <TableCell align="center">{row.pending}</TableCell>
-                  <TableCell align="center"
-                  className={row.status === "In-Transit" ? "text-success" : "text-primary"}
-                  >{row.status}</TableCell>
-                  <TableCell align="center">
-                    <Dropdown>
-                      <Dropdown.Toggle variant="white" id="dropdown-basic">
-                        <MoreHorizIcon />
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        <Dropdown.Item href="">
-                          View More
-                        </Dropdown.Item>
-                        <Dropdown.Item href="">Edit</Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
+                  <TableCell className={classes.thead} align="center">
+                    AGENCY NAME
+                  </TableCell>
+                  <TableCell className={classes.thead} align="center">
+                    TOTAL Qty.
+                  </TableCell>
+                  <TableCell className={classes.thead} align="center">
+                    SENT
+                  </TableCell>
+                  <TableCell className={classes.thead} align="center">
+                    PENDING
+                  </TableCell>
+                  <TableCell className={classes.thead} align="center">
+                    STATUS
+                  </TableCell>
+                  <TableCell className={classes.thead} align="center">
+                    MORE
                   </TableCell>
                 </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => {
+                  let key = row.title;
+                  return (
+                    <TableRow key={row.order}>
+                      <TableCell component="th" scope="row" align="center">
+                        {row.order}
+                      </TableCell>
+                      <TableCell align="center">{row.shipping}</TableCell>
+                      <TableCell align="center">
+                        <FormControl className={classes.formControl}>
+                          <NativeSelect
+                            value={state.key}
+                            onChange={handleChange}
+                            name={row.item}
+                            className={classes.selectEmpty}
+                            inputProps={{ "aria-label": "age" }}
+                          >
+                            <option value={row.item}>{row.item}</option>
+                            <option value={10}>Ten</option>
+                            <option value={20}>Twenty</option>
+                            <option value={30}>Thirty</option>
+                          </NativeSelect>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        className="text-decoration-underline"
+                      >
+                        {row.agency}
+                      </TableCell>
+                      <TableCell align="center">{row.quantity}</TableCell>
+                      <TableCell align="center">{row.sent}</TableCell>
+                      <TableCell align="center">{row.pending}</TableCell>
+                      <TableCell
+                        align="center"
+                        className={
+                          row.status === "In-Transit"
+                            ? "text-success"
+                            : "text-primary"
+                        }
+                      >
+                        {row.status}
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.status !== "Delivered" && (
+                          <Dropdown>
+                            <Dropdown.Toggle
+                              variant="white"
+                              id="dropdown-basic"
+                            >
+                              <MoreHorizIcon />
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                              <Dropdown.Item href="">View More</Dropdown.Item>
+                              <Dropdown.Item href="">Edit</Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+      ) : <GenerateOutwards date={date} setShow={setShow}/> }
+    </>
   );
 };
 
@@ -227,6 +251,7 @@ export default Outwards;
 const TitleContainer = styled.div`
   padding: 40px 100px 0 100px;
 `;
+
 
 const Input = styled.input`
   width: 80%;

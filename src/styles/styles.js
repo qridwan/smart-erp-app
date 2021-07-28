@@ -135,7 +135,7 @@ export const UploadButton = styled.button`
 export const SubmitButton = styled.input`
   width: 250px;
   height: 60px;
-  background: #0075ff;
+
   border-radius: 9px;
   border: none;
   font-family: Poppins;
@@ -144,6 +144,15 @@ export const SubmitButton = styled.input`
   line-height: 30px;
   color: #ffffff;
   margin-top: 40px;
+  ${(props) => {
+    return props.disabled === "disabled"
+      ? css`
+          background: rgba(0, 117, 255, 0.44);
+        `
+      : css`
+          background: #0075ff;
+        `;
+  }}
   @media only screen and (max-width: 768px) {
     margin-top: 30px;
     font-size: 18px;
@@ -207,8 +216,18 @@ export const Container = styled.div`
 `;
 
 export const TableContainer = styled.div`
-width: 95%;
-height: 70vh;
-margin: 0 auto;
-text-align: center;
+  width: 95%;
+  height: 70vh;
+  margin: 0 auto;
+  text-align: center;
+`;
+
+export const AddItemContainer = styled.div`
+  border: 1px solid #dadbd8;
+  box-sizing: border-box;
+  width: 90%;
+  min-height: 550px;
+  margin: 0 auto;
+  padding-top: 50px;
+  margin-bottom: 50px;
 `;

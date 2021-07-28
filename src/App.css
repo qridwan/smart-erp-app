@@ -47,6 +47,7 @@ border: none !important;
 
 input::placeholder {
 	color: rgb(107, 106, 106);
+    font-family: Poppins;
 }
 
 #dropdown-basic::after{
@@ -55,3 +56,4 @@ input::placeholder {
 #dropdown-basic:focus{
    box-shadow:none;
 }
+

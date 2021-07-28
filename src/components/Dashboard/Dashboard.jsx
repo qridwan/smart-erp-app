@@ -37,10 +37,6 @@ const Dashboard = () => {
   const [show, setShow] = useState("inventory");
   const user = "Arjun.";
   const avatarText = user.slice(0, 1);
-  console.log(
-    "🚀 ~ file: Dashboard.jsx ~ line 36 ~ Dashboard ~ avatarText",
-    avatarText
-  );
   return (
     <Container>
       <Row className="w-100">

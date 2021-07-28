@@ -3,6 +3,7 @@ import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import IPcamera from "../../Assets/Images/ipCamera.png";
 import {
+  AddItemContainer,
   ApplyFormInput,
   BoldText,
   Button,
@@ -437,11 +438,4 @@ export const DeleteButton = styled(Button)`
   margin-left: 25px;
 `;
 
-const AddItemContainer = styled.div`
-  border: 1px solid #dadbd8;
-  box-sizing: border-box;
-  width: 90%;
-  height: 550px;
-  margin: 0 auto;
-  padding-top: 50px;
-`;
+;
