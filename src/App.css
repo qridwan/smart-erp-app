@@ -1,6 +1,5 @@
-
-.icons{
-    margin-right: 10px; 
+.icons {
+  margin-right: 10px;
 }
 /* .icons path{
     stroke: #ffffff;
@@ -23,37 +22,34 @@ a:hover >.icons>  g > path{
     fill: #ff2f2f !important;
 } */
 
-
 .MuiSvgIcon-root path {
-    background: rgba(196, 196, 196, 0.25);
-border-radius: 8px;
-fill: rgba(70, 68, 68, 0.25);
-stroke: rgba(196, 196, 196, 0.25);
+  background: rgba(196, 196, 196, 0.25);
+  border-radius: 8px;
+  fill: rgba(70, 68, 68, 0.25);
+  stroke: rgba(196, 196, 196, 0.25);
 }
 
-.MuiDataGrid-root .MuiDataGrid-cell{
-border: none !important;
-
+.MuiDataGrid-root .MuiDataGrid-cell {
+  border: none !important;
 }
 
 .MuiDataGrid-columnSeparator {
-    display: none !important;
+  display: none !important;
 }
 
 .MuiDataGrid-root .MuiDataGrid-columnHeaderTitleContainer {
-    
-    justify-content: center;
+  justify-content: center;
 }
+
 
 input::placeholder {
-	color: rgb(107, 106, 106);
-    font-family: Poppins;
+  color: rgb(107, 106, 106);
+  font-family: Poppins;
 }
 
-#dropdown-basic::after{
-    display: none;
+#dropdown-basic::after {
+  display: none;
 }
-#dropdown-basic:focus{
-   box-shadow:none;
+#dropdown-basic:focus {
+  box-shadow: none;
 }
-

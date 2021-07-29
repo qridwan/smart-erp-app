@@ -1,25 +1,12 @@
-import {
-  InputBase,
-  InputLabel,
-  MenuItem,
-  NativeSelect,
-  FormControl,
-  Select,
-} from "@material-ui/core";
-import { IconButton, makeStyles, Paper } from "@material-ui/core";
-import dateFormat from "dateformat";
-import React, { useRef, useState } from "react";
-import { useEffect } from "react";
+import { NativeSelect, FormControl } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
+import React, { useState } from "react";
 import styled from "styled-components";
 import {
-  AddItemContainer,
-  ApplyFormInput,
   BoldText,
   Button,
-  Error,
-  InputDiv,
-  Label,
   SearchContainer,
+  SearchInput,
   SubText,
   TableContainer,
   TopBar,
@@ -32,9 +19,9 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import { Col, Dropdown, InputGroup, Row } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { Dropdown } from "react-bootstrap";
 import GenerateOutwards from "./GenerateOutwards";
+
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
@@ -94,8 +81,8 @@ const rows = [
     "Delivered"
   ),
 ];
-const Outwards = () => {
-  const [date, setDate] = useState("loading...");
+
+const Outwards = ({ date }) => {
   const [show, setShow] = useState("");
   const classes = useStyles();
   const [state, setState] = useState({
@@ -117,12 +104,6 @@ const Outwards = () => {
     console.log(state);
   };
 
-  useEffect(() => {
-    const now = new Date();
-    const today = dateFormat(now, "dS mmmm yyyy");
-    setDate(today);
-  }, []);
-
   return (
     <>
       {show !== "generate" ? (
@@ -135,7 +116,10 @@ const Outwards = () => {
             <SearchContainer>
               <section className="w-100 d-flex justify-content-between">
                 <SearchIcon />
-                <Input placeholder="Search by client..." type="text"></Input>
+                <SearchInput
+                  placeholder="Search by client..."
+                  type="text"
+                ></SearchInput>
                 <FilterIcon className="" />
               </section>
             </SearchContainer>
@@ -241,7 +225,9 @@ const Outwards = () => {
             </Table>
           </TableContainer>
         </div>
-      ) : <GenerateOutwards date={date} setShow={setShow}/> }
+      ) : (
+        <GenerateOutwards date={date} setShow={setShow} />
+      )}
     </>
   );
 };
@@ -250,28 +236,4 @@ export default Outwards;
 
 const TitleContainer = styled.div`
   padding: 40px 100px 0 100px;
-`;
-
-
-const Input = styled.input`
-  width: 80%;
-  height: 25px;
-  margin-left: 30px;
-  font-family: Lexend;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 16px;
-  line-height: 20px;
-  color: #848484;
-  background: transparent;
-  border: none;
-  :focus {
-    outline: none;
-  }
-  @media only screen and (max-width: 768px) {
-    width: 150px;
-    height: 15px;
-    font-size: 12px;
-    margin: 0px 5px;
-  }
 `;

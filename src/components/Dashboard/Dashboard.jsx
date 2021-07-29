@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
 import { Container } from "../Login";
@@ -8,8 +8,11 @@ import { ReactComponent as EmployeeImg } from "../../Assets/Icons/employee.svg";
 import { ReactComponent as ClientsImg } from "../../Assets/Icons/clients.svg";
 import { NavLink } from "react-router-dom";
 import Inventory from "./Inventory";
-import { BoldText, DashboardContent } from "../../styles/styles";
+import { Avatar, BoldText, DashboardContent } from "../../styles/styles";
 import Outwards from "./Outwards";
+import Inwards from "./Inwards";
+import Employees from "./Employees";
+import dateFormat from "dateformat";
 
 const sidebarData = [
   {
@@ -26,7 +29,7 @@ const sidebarData = [
   },
   {
     icon: <EmployeeImg className="icons" />,
-    title: "Employee",
+    title: "Employees",
   },
   {
     icon: <ClientsImg className="icons" />,
@@ -34,17 +37,24 @@ const sidebarData = [
   },
 ];
 const Dashboard = () => {
+  const [date, setDate] = useState("");
+  useEffect(() => {
+    const now = new Date();
+    const today = dateFormat(now, "dS mmmm yyyy");
+    setDate(today);
+  }, []);
+
   const [show, setShow] = useState("inventory");
   const user = "Arjun.";
   const avatarText = user.slice(0, 1);
   return (
     <Container>
-      <Row className="w-100">
-        <Col md={3} sm={12}>
+      <Row className="p-0 w-100">
+        <Col md={2} sm={12} className="p-0">
           <Sidebar>
             <Head>
               <Content>
-                <Avatar>{avatarText}</Avatar>
+                <Avatar >{avatarText}</Avatar>
                 <BoldText> {user} </BoldText>
               </Content>
             </Head>
@@ -65,11 +75,13 @@ const Dashboard = () => {
             })}
           </Sidebar>
         </Col>
-        <Col md={9} sm={12} className="">
+        <Col md={9} sm={12} className="offset-1 p-0">
           <ContentSection>
-            <DashboardContent >
-            {show === "inventory" && <Inventory />}
-            {show === "outwards" && <Outwards />}
+            <DashboardContent>
+              {show === "inventory" && <Inventory />}
+              {show === "outwards" && <Outwards date={date}/>}
+              {show === "inwards" && <Inwards />}
+              {show === "employees" && <Employees date={date}/>}
             </DashboardContent>
           </ContentSection>
         </Col>
@@ -81,7 +93,7 @@ const Dashboard = () => {
 export default Dashboard;
 
 const Sidebar = styled.div`
-padding-left: 50px;
+  padding-left: 50px;
 `;
 const Section = styled.div``;
 const Title = styled.p`
@@ -113,30 +125,14 @@ const ContentSection = styled.div`
   margin: 0px auto;
 `;
 const Head = styled.div`
-margin-bottom: 70px;
-margin-top: 40px;
+  margin-bottom: 70px;
+  margin-top: 40px;
 `;
 const Content = styled.div`
   display: flex;
   align-items: center;
 `;
-const Avatar = styled.span`
-  height: 65px;
-  width: 65px;
-  border-radius: 50%;
-  background: #79e4b7;
-  box-shadow: 4px 4px 17px rgba(189, 202, 228, 0.55);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Poppins;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 30px;
-  line-height: 45px;
-  color: #ffffff;
-  margin-right: 20px;
-`;
+
 
 const Icon = styled.img`
   fill: red;

@@ -7,11 +7,15 @@ import {
   ApplyFormInput,
   BoldText,
   Button,
+  ButtonContainer,
+  DeleteButton,
+  EditButton,
   Error,
   ImageInput,
   ImageInputArea,
   InputDiv,
   Label,
+  style,
   SubmitButton,
   TableContainer,
   TableImage,
@@ -22,6 +26,7 @@ import {
 import tablePhoto from "../../Assets/Images/photoCamera.png";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+
 const columns = [
   {
     field: "photos",
@@ -35,7 +40,7 @@ const columns = [
           <img
             src={params.row.photos}
             alt={params.id}
-            height="66px"
+            height="56px"
             width="55px"
           />
         </TableImage>
@@ -54,7 +59,7 @@ const columns = [
     headerName: "SKU",
     align: "center",
     type: "number",
-    width: 200,
+    width: 120,
     sortable: false,
   },
   {
@@ -68,13 +73,13 @@ const columns = [
     field: "location",
     headerName: "Location",
     align: "center",
-    width: 150,
+    width: 120,
     sortable: false,
   },
   {
     field: "available",
     headerName: "Available",
-    width: 120,
+    width: 110,
     type: "number",
     align: "center",
     sortable: false,
@@ -82,7 +87,7 @@ const columns = [
   {
     field: "reserved",
     headerName: "Reserved",
-    width: 150,
+    width: 130,
     type: "number",
     align: "center",
     sortable: false,
@@ -91,7 +96,7 @@ const columns = [
     field: "onHand",
     headerName: "On Hand",
     type: "number",
-    width: 120,
+    width: 110,
     align: "center",
     sortable: false,
   },
@@ -232,13 +237,15 @@ const Inventory = () => {
         <DeleteButton> Delete </DeleteButton>
       </ButtonContainer>
       {goto === "table" ? (
-        <TableContainer>
+        <TableContainer className="">
           <DataGrid
             rows={rows}
             style={style.table}
             columns={columns}
             pageSize={10}
             rowHeight={65}
+            autoPageSize
+            autoHeight
             hideFooterSelectedRowCount
             disableColumnMenu
             checkboxSelection
@@ -405,37 +412,3 @@ const Inventory = () => {
 };
 
 export default Inventory;
-const style = {
-  table: {
-    border: "none",
-    fontFamily: "Poppins",
-    fontWeight: "500",
-    fontSize: "15px",
-    lineHeight: "22px",
-  },
-};
-
-
-const ButtonContainer = styled.div`
-  margin: 0 100px;
-`;
-export const EditButton = styled(Button)`
-  background: #eff3fb;
-  border-radius: 9px;
-  font-family: Poppins;
-  font-weight: 500;
-  font-size: 15px;
-  line-height: 22px;
-  color: rgba(45, 56, 80, 0.91);
-`;
-export const DeleteButton = styled(Button)`
-  background: #ff0000;
-  border-radius: 9px;
-  font-family: Poppins;
-  font-weight: 500;
-  font-size: 15px;
-  line-height: 22px;
-  margin-left: 25px;
-`;
-
-;

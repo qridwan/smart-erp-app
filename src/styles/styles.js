@@ -1,5 +1,34 @@
 import styled, { css } from "styled-components";
 
+export const style = {
+  table: {
+    border: "none",
+    fontFamily: "Poppins",
+    fontWeight: "500",
+    fontSize: "12px",
+    lineHeight: "16px",
+    color: "black",
+  },
+};
+
+export const Avatar = styled.span`
+  height: 65px;
+  width: 65px;
+  border-radius: 50%;
+  background: #79e4b7;
+  box-shadow: 4px 4px 17px rgba(189, 202, 228, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 45px;
+  color: #ffffff;
+  margin-right: 20px;
+`;
+
 export const BoldText = styled.p`
   font-family: Poppins;
   padding-top: 18px;
@@ -49,8 +78,9 @@ export const DashboardContent = styled.div`
   background: white;
   border-radius: 30px;
   min-height: 95vh;
-  margin: 30px 10px 0 10px;
+  margin: 30px 8px 20px 8px;
   box-shadow: 4px 4px 17px rgba(189, 202, 228, 0.55);
+  padding-bottom: 30px;
 `;
 
 export const TableImage = styled.div`
@@ -217,9 +247,8 @@ export const Container = styled.div`
 
 export const TableContainer = styled.div`
   width: 95%;
-  height: 70vh;
+  min-height: 600px;
   margin: 0 auto;
-  text-align: center;
 `;
 
 export const AddItemContainer = styled.div`
@@ -230,4 +259,96 @@ export const AddItemContainer = styled.div`
   margin: 0 auto;
   padding-top: 50px;
   margin-bottom: 50px;
+`;
+
+export const SearchInput = styled.input`
+  width: 80%;
+  height: 25px;
+  margin-left: 30px;
+  font-family: Lexend;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 20px;
+  color: #848484;
+  background: transparent;
+  border: none;
+  :focus {
+    outline: none;
+  }
+  @media only screen and (max-width: 768px) {
+    width: 150px;
+    height: 15px;
+    font-size: 12px;
+    margin: 0px 5px;
+  }
+`;
+
+export const MainTitle = styled.p`
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 27px;
+  padding: 0 12px;
+  padding-bottom: 15px;
+  margin: 0;
+  color: #2d3850;
+`;
+
+export const Select = styled.select`
+  border: 1px solid #8e8e8e;
+  border-radius: 5px;
+  height: 45px;
+  width: 100%;
+  padding: 0 15px;
+  color: black;
+  :focus {
+    outline: none;
+  }
+`;
+
+export const TableInput = styled.input`
+  width: 100px;
+  height: 34px;
+  border: 0.5px solid #2d3850;
+  box-sizing: border-box;
+  border-radius: 5px;
+  text-align: center;
+  text-decoration-line: underline;
+  color: #000000;
+`;
+
+export const TableSelect = styled.select`
+  width: 182px;
+  height: 40px;
+  border: 0.5px solid #2d3850;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 10px;
+  :focus {
+    outline: none;
+  }
+`;
+
+
+export const ButtonContainer = styled.div`
+  margin: 0 100px;
+`;
+export const EditButton = styled(Button)`
+  background: #eff3fb;
+  border-radius: 9px;
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 22px;
+  color: rgba(45, 56, 80, 0.91);
+`;
+export const DeleteButton = styled(Button)`
+  background: #ff0000;
+  border-radius: 9px;
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 22px;
+  margin-left: 25px;
 `;

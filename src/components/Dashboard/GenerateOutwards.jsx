@@ -10,8 +10,11 @@ import {
   Error,
   InputDiv,
   Label,
+  MainTitle,
+  Select,
   SubmitButton,
   SubText,
+  TableInput,
   TopBar,
 } from "../../styles/styles";
 import { ReactComponent as IndiaIcon } from "../../Assets/Icons/india.svg";
@@ -82,7 +85,7 @@ const GenerateOutwards = ({ date, setShow }) => {
   };
   return (
     <div>
-      <TopBar>
+      <TopBar className="mb-4">
         <BoldText>Generate Outward</BoldText>
         <div>
           <SubText> Today, {date} </SubText>
@@ -389,10 +392,10 @@ const GenerateOutwards = ({ date, setShow }) => {
                         </select>
                       </TableCell>
                       <TableCell align="center">
-                        <input
+                        <TableInput
                           type="number"
                           {...register(`total_qty`, { required: true })}
-                        ></input>
+                        ></TableInput>
                       </TableCell>
                       <TableCell align="center">
                         <IconButton
@@ -414,7 +417,7 @@ const GenerateOutwards = ({ date, setShow }) => {
             + Add Item
           </Button>
         </div>
-        <div className="text-center mt-lg-5">
+        <div className="text-center my-lg-5">
           <SubmitButton
             type="submit"
             value="Generate Order"
@@ -423,6 +426,7 @@ const GenerateOutwards = ({ date, setShow }) => {
         </div>
       </AddItemContainer>
     </div>
+  
   );
 };
 
@@ -430,26 +434,4 @@ export default GenerateOutwards;
 const AddItemsContainer = styled.div``;
 const Container = styled.div`
   padding: 0 50px;
-`;
-
-const MainTitle = styled.p`
-  font-family: Poppins;
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 27px;
-  padding: 0 12px;
-  margin: 0;
-  color: #2d3850;
-`;
-
-const Select = styled.select`
-  border: 1px solid #8e8e8e;
-  border-radius: 5px;
-  height: 45px;
-  width: 100%;
-  padding: 0 15px;
-  color: black;
-  :focus {
-    outline: none;
-  }
 `;
