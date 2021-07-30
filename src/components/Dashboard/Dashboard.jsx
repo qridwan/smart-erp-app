@@ -6,7 +6,6 @@ import { ReactComponent as InventoryImg } from "../../Assets/Icons/inventory.svg
 import { ReactComponent as InOutWardImg } from "../../Assets/Icons/in-outwards.svg";
 import { ReactComponent as EmployeeImg } from "../../Assets/Icons/employee.svg";
 import { ReactComponent as ClientsImg } from "../../Assets/Icons/clients.svg";
-import { NavLink } from "react-router-dom";
 import Inventory from "./Inventory";
 import { Avatar, BoldText, DashboardContent } from "../../styles/styles";
 import Outwards from "./Outwards";
@@ -46,7 +45,6 @@ const Dashboard = () => {
   }, []);
 
   const [show, setShow] = useState("inventory");
-  const [active, setActive] = useState(false);
   const user = "Arjun.";
   const avatarText = user.slice(0, 1);
 
@@ -62,16 +60,17 @@ const Dashboard = () => {
               </Content>
             </Head>
             {sidebarData.map((obj, i) => {
-              const handleOnCLick = (event) => {
-              console.log("🚀 ~", event)
+              const handleOnCLick = () => {
                 setShow(obj.title.toLowerCase());
-                setActive(true);
               };
               return (
                 <Section key={i}>
                   <SidebarContent
-                    className={show === obj.title.toLowerCase() ?"active side_nav":"side_nav"}
-                    useRef={obj.title}
+                    className={
+                      show === obj.title.toLowerCase()
+                        ? "active side_nav"
+                        : "side_nav"
+                    }
                     onClick={(event) => handleOnCLick(event)}
                   >
                     {obj.icon}
@@ -121,13 +120,6 @@ const SidebarContent = styled.div`
   align-items: center;
   margin-bottom: 50px;
   padding: 15px 40px;
-  // &:hover {
-  //   background: #0075ff;
-  //   border-radius: 12px;
-  //   ${Title} {
-  //     color: white;
-  //   }
-  // }
 `;
 const ContentSection = styled.div`
   min-height: 100vh;
@@ -140,8 +132,4 @@ const Head = styled.div`
 const Content = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const Icon = styled.img`
-  fill: red;
 `;

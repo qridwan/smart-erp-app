@@ -2,7 +2,7 @@ import { makeStyles, TableBody } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import { Table, TableCell, TableHead, TableRow } from "@material-ui/core";
 import React, { useState } from "react";
-import { Col, FormControl, InputGroup, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { ReactComponent as DeleteIcon } from "../../Assets/Icons/delete.svg";
@@ -19,7 +19,6 @@ import {
   SubmitButton,
   TableInput,
   TableSelect,
-  TopBar,
 } from "../../styles/styles";
 const useStyles = makeStyles({
   table: {
@@ -65,7 +64,7 @@ const ReceiveOrder = () => {
     setItem([...item, count]);
   };
   const handleDelete = (id) => {
-    const remainItem = item.filter((i) => i != id);
+    const remainItem = item.filter((i) => i !== id);
     if (remainItem.length) {
       setItem(remainItem);
       setCountItem(remainItem);

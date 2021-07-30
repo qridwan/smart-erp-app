@@ -160,7 +160,6 @@ const Outwards = ({ date }) => {
               </TableHead>
               <TableBody>
                 {rows.map((row) => {
-                  let key = row.title;
                   return (
                     <TableRow key={row.order}>
                       <TableCell component="th" scope="row" align="center">

@@ -1,7 +1,7 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./components/Login";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Dashboard from "./components/Dashboard/Dashboard";
 
 function App() {
@@ -10,9 +10,6 @@ function App() {
       <Router>
         <div>
           <Switch>
-            {/* <Route path="/about">
-            <About />
-          </Route> */}
           <Route path="/dashboard">
             <Dashboard />
           </Route>

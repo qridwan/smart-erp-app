@@ -1,6 +1,5 @@
 import { DataGrid } from "@material-ui/data-grid";
 import React, { useRef, useState } from "react";
-import styled from "styled-components";
 import IPcamera from "../../Assets/Images/ipCamera.png";
 import {
   AddItemContainer,
@@ -195,7 +194,12 @@ const Inventory = () => {
     formState: { errors },
     handleSubmit,
   } = useForm();
-  console.log("🚀~selectedItems", selectedItems);
+  console.log(
+    "🚀~selectedItems",
+    { imgFileError },
+    { docFileError },
+    { selectedItems }
+  );
   const onSubmit = (data) => {
     console.log(data, { imgFile }, { docFile });
   };

@@ -74,7 +74,7 @@ const GenerateOutwards = ({ date, setShow }) => {
     setItem([...item, count]);
   };
   const handleDelete = (id) => {
-    const remainItem = item.filter((i) => i != id);
+    const remainItem = item.filter((i) => i !== id);
     if (remainItem.length) {
       setItem(remainItem);
       setCountItem(remainItem);

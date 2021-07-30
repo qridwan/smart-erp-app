@@ -120,7 +120,6 @@ const rows = [
 ];
 
 const Employees = ({ date }) => {
-  const [show, setShow] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   function openModal() {
@@ -249,7 +248,7 @@ const HistoryText = styled.p`
   line-height: 2px;
   color: rgba(45, 56, 80, 0.91);
   padding: 0;
-  margin:10px 0 20px 0 ;
+  margin: 10px 0 20px 0;
 `;
 const TimeCreated = styled.span`
   font-weight: 500;
@@ -259,7 +258,6 @@ const TimeCreated = styled.span`
   padding-top: 20px;
   margin: 0;
 `;
-
 
 const HiddenButtons = styled.div`
   margin: 0 40px;

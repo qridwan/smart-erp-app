@@ -1,5 +1,3 @@
-
-
 /* Table styling */
 .MuiSvgIcon-root path {
   background: rgba(76, 154, 226, 0.25);
@@ -18,9 +16,6 @@
 
 .MuiDataGrid-root .MuiDataGrid-columnHeaderTitleContainer {
   justify-content: center;
-}
-.MuiSvgIcon-root {
-  fill: blue !important;
 }
 
 /* ============================= */
@@ -41,17 +36,14 @@ input::placeholder {
 .ReactModal__Overlay--after-open {
   background-color: #4e4e4e49 !important;
 }
-
 /* scroll bar styling  */
 ::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgb(255, 255, 255);
   background-color: #ffffff;
 }
-
 ::-webkit-scrollbar {
   width: 5px;
 }
-
 ::-webkit-scrollbar-thumb {
   background-color: #dad8d8;
   border: none;
@@ -101,4 +93,3 @@ input::placeholder {
   stroke: #ffffff;
   fill: #ffffff;
 }
-
