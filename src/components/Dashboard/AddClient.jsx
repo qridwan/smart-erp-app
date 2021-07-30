@@ -1,0 +1,172 @@
+import React from "react";
+import { Col, Row } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import {
+  AddItemContainer,
+  ApplyFormInput,
+  BoldText,
+  Button,
+  Error,
+  InputDiv,
+  Label,
+  MainTitle,
+  SubmitButton,
+  TopBar,
+} from "../../styles/styles";
+
+const AddClient = ({ setShow }) => {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+  return (
+    <div>
+      <TopBar className="px-5 py-4">
+        <div>
+          <BoldText> Add New Agency </BoldText>
+        </div>
+        <div className="text-center mt-lg-5">
+          <Button outline onClick={() => setShow("clients")}>
+            View Inventory
+          </Button>
+        </div>
+      </TopBar>
+
+      <AddItemContainer className="px-3">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Row className="w-100 p-0 m-0">
+            <Col md={3} xs={6}>
+              <InputDiv>
+                <Label>Agency Name</Label>
+                <ApplyFormInput
+                  placeholder=""
+                  type="text"
+                  {...register("agency", { required: true })}
+                />
+                {errors.agency && <Error>Agency name is required</Error>}
+              </InputDiv>
+            </Col>
+            <Col md={3} xs={6}>
+              <InputDiv>
+                <Label>Phone Number</Label>
+                <ApplyFormInput
+                  placeholder=""
+                  {...register("number", {
+                    required: true,
+                  })}
+                />
+                {errors.number && <Error>Phone Number is required</Error>}
+              </InputDiv>
+            </Col>
+            <Col md={3} xs={6}>
+              <InputDiv>
+                <Label>Email</Label>
+                <ApplyFormInput
+                  type="email"
+                  placeholder=""
+                  {...register("email", {
+                    required: true,
+                  })}
+                />
+                {errors.email && <Error>Email is required</Error>}
+              </InputDiv>
+            </Col>
+            <Col md={3} xs={6}>
+              <InputDiv>
+                <Label>Customer Name</Label>
+                <ApplyFormInput
+                  type="text"
+                  placeholder=""
+                  {...register("customer_name", {
+                    required: true,
+                  })}
+                />
+                {errors.customer_name && (
+                  <Error>Must include customer name</Error>
+                )}
+              </InputDiv>
+            </Col>
+          </Row>
+          <Row className="w-100 p-0 m-0">
+            <Col md={6} xs={6}>
+              <InputDiv>
+                <Label>Address</Label>
+                <ApplyFormInput
+                  placeholder=""
+                  type="text"
+                  {...register("address")}
+                />
+              </InputDiv>
+            </Col>
+            <Col md={3} xs={6}>
+              <InputDiv>
+                <Label>City</Label>
+                <ApplyFormInput
+                  type="text"
+                  placeholder=""
+                  {...register("city")}
+                />
+              </InputDiv>
+            </Col>
+            <Col md={3} xs={6}>
+              <InputDiv>
+                <Label>District</Label>
+                <ApplyFormInput
+                  type="text"
+                  placeholder=""
+                  {...register("district")}
+                />
+              </InputDiv>
+            </Col>
+          </Row>
+          <Row className="w-100 p-0 m-0">
+            <Col md={3} xs={6}>
+              <InputDiv>
+                <Label>State</Label>
+                <ApplyFormInput
+                  placeholder=""
+                  type="text"
+                  {...register("state", { required: true })}
+                />
+                {errors.state && <Error>State is required</Error>}
+              </InputDiv>
+            </Col>
+            <Col md={3} xs={6}>
+              <InputDiv>
+                <Label>Pincode</Label>
+                <ApplyFormInput
+                  type="text"
+                  placeholder=""
+                  {...register("pincode", {
+                    required: true,
+                  })}
+                />
+                {errors.pincode && <Error>Pincode is required</Error>}
+              </InputDiv>
+            </Col>
+            <Col md={6} xs={6}>
+              <InputDiv>
+                <Label>Remarks</Label>
+                <ApplyFormInput
+                  type="text"
+                  placeholder=""
+                  {...register("remarks")}
+                />
+              </InputDiv>
+            </Col>
+          </Row>
+          <div className="text-center my-lg-5">
+            <SubmitButton type="submit" value="Save" />
+          </div>
+        </form>
+      </AddItemContainer>
+    </div>
+  );
+};
+
+export default AddClient;

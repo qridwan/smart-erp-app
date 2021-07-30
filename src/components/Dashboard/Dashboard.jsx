@@ -13,6 +13,7 @@ import Outwards from "./Outwards";
 import Inwards from "./Inwards";
 import Employees from "./Employees";
 import dateFormat from "dateformat";
+import Clients from "./Clients";
 
 const sidebarData = [
   {
@@ -45,8 +46,10 @@ const Dashboard = () => {
   }, []);
 
   const [show, setShow] = useState("inventory");
+  const [active, setActive] = useState(false);
   const user = "Arjun.";
   const avatarText = user.slice(0, 1);
+
   return (
     <Container>
       <Row className="p-0 w-100">
@@ -54,21 +57,25 @@ const Dashboard = () => {
           <Sidebar>
             <Head>
               <Content>
-                <Avatar >{avatarText}</Avatar>
+                <Avatar>{avatarText}</Avatar>
                 <BoldText> {user} </BoldText>
               </Content>
             </Head>
             {sidebarData.map((obj, i) => {
+              const handleOnCLick = (event) => {
+              console.log("🚀 ~", event)
+                setShow(obj.title.toLowerCase());
+                setActive(true);
+              };
               return (
-                <Section>
-                  {/* <Icon src={obj.icon} alt={obj.title}/> */}
+                <Section key={i}>
                   <SidebarContent
-                    className="side_nav"
-                    onClick={() => setShow(obj.title.toLowerCase())}
-                    //  to={obj.title.toLocaleLowerCase()}
+                    className={show === obj.title.toLowerCase() ?"active side_nav":"side_nav"}
+                    useRef={obj.title}
+                    onClick={(event) => handleOnCLick(event)}
                   >
                     {obj.icon}
-                    <Title>{obj.title}</Title>
+                    <Title className="title">{obj.title}</Title>
                   </SidebarContent>
                 </Section>
               );
@@ -79,9 +86,10 @@ const Dashboard = () => {
           <ContentSection>
             <DashboardContent>
               {show === "inventory" && <Inventory />}
-              {show === "outwards" && <Outwards date={date}/>}
+              {show === "outwards" && <Outwards date={date} />}
               {show === "inwards" && <Inwards />}
-              {show === "employees" && <Employees date={date}/>}
+              {show === "employees" && <Employees date={date} />}
+              {show === "clients" && <Clients date={date} />}
             </DashboardContent>
           </ContentSection>
         </Col>
@@ -103,6 +111,7 @@ const Title = styled.p`
   font-size: 20px;
   line-height: 28px;
   color: #2d3850;
+  margin-bottom: 0;
 `;
 const SidebarContent = styled.div`
   width: 278px;
@@ -112,13 +121,13 @@ const SidebarContent = styled.div`
   align-items: center;
   margin-bottom: 50px;
   padding: 15px 40px;
-  &:hover {
-    background: #0075ff;
-    border-radius: 12px;
-    ${Title} {
-      color: white;
-    }
-  }
+  // &:hover {
+  //   background: #0075ff;
+  //   border-radius: 12px;
+  //   ${Title} {
+  //     color: white;
+  //   }
+  // }
 `;
 const ContentSection = styled.div`
   min-height: 100vh;
@@ -132,7 +141,6 @@ const Content = styled.div`
   display: flex;
   align-items: center;
 `;
-
 
 const Icon = styled.img`
   fill: red;

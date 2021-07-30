@@ -3,15 +3,14 @@ import {
   Avatar,
   BoldText,
   Button,
-  ButtonContainer,
   DeleteButton,
   EditButton,
+  Heading,
   SearchContainer,
   SearchInput,
   style,
   SubText,
   TableContainer,
-  TableImage,
   TopBar,
 } from "../../styles/styles";
 import { ReactComponent as SearchIcon } from "../../Assets/Icons/search.svg";
@@ -19,6 +18,7 @@ import { DataGrid } from "@material-ui/data-grid";
 import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
 import employee1 from "../../Assets/Images/emp-1.png";
+import ModalEmployee from "./ModalEmployee";
 
 const columns = [
   {
@@ -77,7 +77,7 @@ const columns = [
     type: "number",
     align: "center",
     sortable: false,
-  }
+  },
 ];
 
 const rows = [
@@ -122,6 +122,18 @@ const rows = [
 const Employees = ({ date }) => {
   const [show, setShow] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
+  const [modalIsOpen, setIsOpen] = useState(false);
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  const handlePopup = () => {
+    openModal();
+  };
 
   return (
     <div>
@@ -130,8 +142,8 @@ const Employees = ({ date }) => {
           <BoldText> Employees </BoldText>
           <SubText> Today, {date} </SubText>
         </div>
-        <div className="text-center mt-lg-5">
-          <Button onClick={() => setShow("generate")}>+ Add Employees</Button>
+        <div className="text-center mt-lg-2">
+          <Button onClick={handlePopup}>+ Add Employees</Button>
         </div>
       </TopBar>
       <div className="mb-5 mr-5 d-flex justify-content-between">
@@ -177,6 +189,7 @@ const Employees = ({ date }) => {
               autoHeight
               hideFooter
             />
+            <ModalEmployee modalIsOpen={modalIsOpen} closeModal={closeModal} />
           </TableContainer>
         </Col>
         <Col md={4} xs={12}>
@@ -236,25 +249,18 @@ const HistoryText = styled.p`
   line-height: 2px;
   color: rgba(45, 56, 80, 0.91);
   padding: 0;
-  margin: 0;
+  margin:10px 0 20px 0 ;
 `;
 const TimeCreated = styled.span`
   font-weight: 500;
   font-size: 16px;
   line-height: 20px;
   color: rgba(45, 56, 80, 0.43);
-  padding: 0;
+  padding-top: 20px;
   margin: 0;
 `;
-const Heading = styled.p`
-  font-family: Poppins;
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 25px;
-  color: rgba(45, 56, 80, 0.91);
-  padding: 15px 20px;
-`;
+
 
 const HiddenButtons = styled.div`
-margin: 0 40px;
-`
+  margin: 0 40px;
+`;

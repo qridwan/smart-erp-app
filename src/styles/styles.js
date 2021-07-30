@@ -10,7 +10,14 @@ export const style = {
     color: "black",
   },
 };
-
+export const Heading = styled.p`
+  font-family: Poppins;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 25px;
+  color: rgba(45, 56, 80, 0.91);
+  padding: 15px 20px;
+`;
 export const Avatar = styled.span`
   height: 65px;
   width: 65px;

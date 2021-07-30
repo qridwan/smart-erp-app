@@ -1,29 +1,8 @@
-.icons {
-  margin-right: 10px;
-}
-/* .icons path{
-    stroke: #ffffff;
-    /* stroke-width: 1px; */
 
-/* a:hover >.icons> g{
-    stroke: #ffffff;
-    fill: #ffffff;
-} */
-/* a:hover >.icons> path{
-    stroke: #ffffff;
-    fill: #ffffff;
-}
-a:hover >.icons>  g > path{
-    stroke: #ffffff;
-    fill: #ffffff;
-} */
 
-/* .icons> g > path{
-    fill: #ff2f2f !important;
-} */
-
+/* Table styling */
 .MuiSvgIcon-root path {
-  background: rgba(196, 196, 196, 0.25);
+  background: rgba(76, 154, 226, 0.25);
   border-radius: 8px;
   fill: rgba(70, 68, 68, 0.25);
   stroke: rgba(196, 196, 196, 0.25);
@@ -40,7 +19,11 @@ a:hover >.icons>  g > path{
 .MuiDataGrid-root .MuiDataGrid-columnHeaderTitleContainer {
   justify-content: center;
 }
+.MuiSvgIcon-root {
+  fill: blue !important;
+}
 
+/* ============================= */
 
 input::placeholder {
   color: rgb(107, 106, 106);
@@ -53,3 +36,69 @@ input::placeholder {
 #dropdown-basic:focus {
   box-shadow: none;
 }
+
+/* React Modal dependencies styling */
+.ReactModal__Overlay--after-open {
+  background-color: #4e4e4e49 !important;
+}
+
+/* scroll bar styling  */
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgb(255, 255, 255);
+  background-color: #ffffff;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #dad8d8;
+  border: none;
+  width: 5px;
+}
+
+/* Sidebar styling */
+.icons {
+  margin-right: 10px;
+}
+
+.side_nav:hover {
+  background: #0075ff;
+  border-radius: 12px;
+}
+.side_nav:hover .title {
+  color: rgb(255, 255, 255);
+}
+.side_nav:hover .icons > g > path {
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+.side_nav:hover .icons > g > g > path {
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+.side_nav:hover .icons > path {
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+.active {
+  background: #0075ff;
+  border-radius: 12px;
+}
+.active .title {
+  color: rgb(255, 255, 255);
+}
+.active .icons > g > path {
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+.active .icons > g > g > path {
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+.active .icons > path {
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+
