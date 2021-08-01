@@ -145,23 +145,23 @@ const Employees = ({ date }) => {
           <Button onClick={handlePopup}>+ Add Employees</Button>
         </div>
       </TopBar>
-      <div className="mb-5 mr-5 d-flex justify-content-between">
+      <TopBar className="py-0">
         <HiddenButtons
           className={selectedItems.length ? "visible" : "invisible"}
         >
           <EditButton> Edit </EditButton>
           <DeleteButton> Delete </DeleteButton>
         </HiddenButtons>
-        <SearchContainer style={{ maxWidth: "300px", margin: "0 40px 0 0" }}>
-          <section className="w-100 d-flex justify-content-between">
+        <EmployeeSearchContainer>
+          <section className="w-100 d-flex justify-content-between align-items-center">
             <SearchIcon />
             <SearchInput
               placeholder="Search by client..."
               type="text"
             ></SearchInput>
           </section>
-        </SearchContainer>
-      </div>
+        </EmployeeSearchContainer>
+      </TopBar>
       <Row className="w-100 p-0 m-0">
         <Col md={8} xs={12} className="pl-4">
           <TableContainer className="w-100 m-0">
@@ -191,7 +191,7 @@ const Employees = ({ date }) => {
             <ModalEmployee modalIsOpen={modalIsOpen} closeModal={closeModal} />
           </TableContainer>
         </Col>
-        <Col md={4} xs={12}>
+        <Col md={4} xs={12} className="justify-content-center">
           <RecentActivityContainer>
             <Heading>Recent Activity</Heading>
             <RecentEmployee>
@@ -236,6 +236,9 @@ const RecentActivityContainer = styled.div`
   box-sizing: border-box;
   border-radius: 19px;
   margin-right: 20px;
+  @media only screen and (max-width: 800px) {
+    margin: 0;
+  }
 `;
 const RecentEmployee = styled.div`
   padding: 15px 20px;
@@ -245,10 +248,16 @@ const Content = styled.div``;
 const HistoryText = styled.p`
   font-weight: 500;
   font-size: 18px;
-  line-height: 2px;
+  line-height: 22px;
   color: rgba(45, 56, 80, 0.91);
   padding: 0;
   margin: 10px 0 20px 0;
+  @media only screen and (max-width: 800px) {
+    font-size: 14px;
+    line-height: 18px;
+    padding: 0;
+    margin: 2px 0 0 0;
+  }
 `;
 const TimeCreated = styled.span`
   font-weight: 500;
@@ -257,8 +266,27 @@ const TimeCreated = styled.span`
   color: rgba(45, 56, 80, 0.43);
   padding-top: 20px;
   margin: 0;
+  @media only screen and (max-width: 800px) {
+    font-size: 12px;
+    line-height: 18px;
+    padding-top: 4px;
+  }
 `;
 
 const HiddenButtons = styled.div`
   margin: 0 40px;
+  @media only screen and (max-width: 800px) {
+    order: 2;
+    margin: 0;
+  }
+`;
+
+const EmployeeSearchContainer = styled(SearchContainer)`
+  max-width: 300px;
+  margin: 0 40px 0 0;
+  @media only screen and (max-width: 800px) {
+    max-width: 100%;
+    margin: 10px 10px 0 0;
+    order: 1;
+  }
 `;

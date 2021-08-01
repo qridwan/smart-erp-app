@@ -54,6 +54,12 @@ input::placeholder {
 .icons {
   margin-right: 10px;
 }
+@media only screen and (max-width: 800px){
+ .icons {
+   width: 20px;
+   height: 20px;
+ }  
+}
 
 .side_nav:hover {
   background: #0075ff;

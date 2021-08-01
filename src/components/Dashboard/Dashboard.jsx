@@ -59,29 +59,31 @@ const Dashboard = () => {
                 <BoldText> {user} </BoldText>
               </Content>
             </Head>
-            {sidebarData.map((obj, i) => {
-              const handleOnCLick = () => {
-                setShow(obj.title.toLowerCase());
-              };
-              return (
-                <Section key={i}>
-                  <SidebarContent
-                    className={
-                      show === obj.title.toLowerCase()
-                        ? "active side_nav"
-                        : "side_nav"
-                    }
-                    onClick={(event) => handleOnCLick(event)}
-                  >
-                    {obj.icon}
-                    <Title className="title">{obj.title}</Title>
-                  </SidebarContent>
-                </Section>
-              );
-            })}
+            <NavItems>
+              {sidebarData.map((obj, i) => {
+                const handleOnCLick = () => {
+                  setShow(obj.title.toLowerCase());
+                };
+                return (
+                  <Section key={i}>
+                    <SidebarContent
+                      className={
+                        show === obj.title.toLowerCase()
+                          ? "active side_nav"
+                          : "side_nav"
+                      }
+                      onClick={(event) => handleOnCLick(event)}
+                    >
+                      {obj.icon}
+                      <Title className="title">{obj.title}</Title>
+                    </SidebarContent>
+                  </Section>
+                );
+              })}
+            </NavItems>
           </Sidebar>
         </Col>
-        <Col md={9} sm={12} className="offset-1 p-0">
+        <Col md={9} sm={12} className="offset-md-1 p-0">
           <ContentSection>
             <DashboardContent>
               {show === "inventory" && <Inventory />}
@@ -103,6 +105,15 @@ const Sidebar = styled.div`
   padding-left: 50px;
 `;
 const Section = styled.div``;
+const NavItems = styled.div`
+  @media only screen and (max-width: 800px) {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+`;
 const Title = styled.p`
   display: inline-block;
   font-family: Poppins;
@@ -111,6 +122,10 @@ const Title = styled.p`
   line-height: 28px;
   color: #2d3850;
   margin-bottom: 0;
+  @media only screen and (max-width: 800px) {
+    font-size: 14px;
+    line-height: 18px;
+  }
 `;
 const SidebarContent = styled.div`
   width: 278px;
@@ -120,6 +135,12 @@ const SidebarContent = styled.div`
   align-items: center;
   margin-bottom: 50px;
   padding: 15px 40px;
+  @media only screen and (max-width: 800px) {
+    height: 40px;
+    width: 180px;
+    margin-bottom: 10px;
+    padding: 10px 20px;
+  }
 `;
 const ContentSection = styled.div`
   min-height: 100vh;
@@ -128,6 +149,10 @@ const ContentSection = styled.div`
 const Head = styled.div`
   margin-bottom: 70px;
   margin-top: 40px;
+  @media only screen and (max-width: 800px) {
+    margin-bottom: 15px;
+    margin-top: 20px;
+  }
 `;
 const Content = styled.div`
   display: flex;

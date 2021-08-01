@@ -114,7 +114,7 @@ const Outwards = ({ date }) => {
           </TitleContainer>
           <TopBar className="py-0">
             <SearchContainer>
-              <section className="w-100 d-flex justify-content-between">
+              <section className="w-100 d-flex justify-content-between align-items-center">
                 <SearchIcon />
                 <SearchInput
                   placeholder="Search by client..."
@@ -235,4 +235,7 @@ export default Outwards;
 
 const TitleContainer = styled.div`
   padding: 40px 100px 0 100px;
+  @media only screen and (max-width: 800px){
+    padding: 20px 50px 0 50px;
+  }
 `;

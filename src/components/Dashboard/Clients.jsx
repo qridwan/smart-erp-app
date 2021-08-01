@@ -123,7 +123,7 @@ const Clients = ({ date }) => {
               </Button>
             </div>
           </TopBar>
-          <TableContainer className="mt-5">
+          <TableContainer className="mt-lg-5">
             <Table className={classes.table} aria-label="simple table">
               <TableHead className={classes.thead}>
                 <TableRow>

@@ -12,14 +12,14 @@ const Login = () => {
   const onSubmit = (data) => console.log(data);
   return (
     <Container>
-      <Row className="w-100">
-        <Col md={6} sm={12} className="">
+      <Row className="w-100 m-0">
+        <Col md={6} sm={12} className="p-0">
           <Image src={LoginImage} alt="Login Image" />
         </Col>
         <Col
           md={6}
           sm={12}
-          className="d-flex justify-content-center align-items-center"
+          className="py-3 d-flex justify-content-center align-items-center"
         >
           <LoginContainer>
             <GreetingText>Welcome Back</GreetingText>
@@ -77,7 +77,6 @@ const Login = () => {
 export default Login;
 
 export const Container = styled.div`
-  width: 100%;
   min-height: 100vh;
   background: #e5e5e5;
 `;

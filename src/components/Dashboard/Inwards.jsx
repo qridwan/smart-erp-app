@@ -109,13 +109,11 @@ const Inwards = () => {
         )}
         {show === "search_order" ? (
           <Button outline onClick={() => setShow("receive_order")}>
-            {" "}
-            Receive Order{" "}
+             Receive Order
           </Button>
         ) : (
           <Button outline onClick={() => setShow("search_order")}>
-            {" "}
-            Search Orders{" "}
+           Search Orders
           </Button>
         )}
       </TopBar>

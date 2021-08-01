@@ -9,7 +9,6 @@ import {
   Error,
   InputDiv,
   Label,
-  MainTitle,
   SubmitButton,
   TopBar,
 } from "../../styles/styles";
@@ -40,7 +39,7 @@ const AddClient = ({ setShow }) => {
       <AddItemContainer className="px-3">
         <form onSubmit={handleSubmit(onSubmit)}>
           <Row className="w-100 p-0 m-0">
-            <Col md={3} xs={6}>
+            <Col md={3} xs={12}>
               <InputDiv>
                 <Label>Agency Name</Label>
                 <ApplyFormInput
@@ -51,7 +50,7 @@ const AddClient = ({ setShow }) => {
                 {errors.agency && <Error>Agency name is required</Error>}
               </InputDiv>
             </Col>
-            <Col md={3} xs={6}>
+            <Col md={3} xs={12}>
               <InputDiv>
                 <Label>Phone Number</Label>
                 <ApplyFormInput
@@ -63,7 +62,7 @@ const AddClient = ({ setShow }) => {
                 {errors.number && <Error>Phone Number is required</Error>}
               </InputDiv>
             </Col>
-            <Col md={3} xs={6}>
+            <Col md={3} xs={12}>
               <InputDiv>
                 <Label>Email</Label>
                 <ApplyFormInput
@@ -76,7 +75,7 @@ const AddClient = ({ setShow }) => {
                 {errors.email && <Error>Email is required</Error>}
               </InputDiv>
             </Col>
-            <Col md={3} xs={6}>
+            <Col md={3} xs={12}>
               <InputDiv>
                 <Label>Customer Name</Label>
                 <ApplyFormInput
@@ -93,7 +92,7 @@ const AddClient = ({ setShow }) => {
             </Col>
           </Row>
           <Row className="w-100 p-0 m-0">
-            <Col md={6} xs={6}>
+            <Col md={6} xs={12}>
               <InputDiv>
                 <Label>Address</Label>
                 <ApplyFormInput
@@ -103,7 +102,7 @@ const AddClient = ({ setShow }) => {
                 />
               </InputDiv>
             </Col>
-            <Col md={3} xs={6}>
+            <Col md={3} xs={12}>
               <InputDiv>
                 <Label>City</Label>
                 <ApplyFormInput
@@ -113,7 +112,7 @@ const AddClient = ({ setShow }) => {
                 />
               </InputDiv>
             </Col>
-            <Col md={3} xs={6}>
+            <Col md={3} xs={12}>
               <InputDiv>
                 <Label>District</Label>
                 <ApplyFormInput
@@ -125,7 +124,7 @@ const AddClient = ({ setShow }) => {
             </Col>
           </Row>
           <Row className="w-100 p-0 m-0">
-            <Col md={3} xs={6}>
+            <Col md={3} xs={12}>
               <InputDiv>
                 <Label>State</Label>
                 <ApplyFormInput
@@ -136,7 +135,7 @@ const AddClient = ({ setShow }) => {
                 {errors.state && <Error>State is required</Error>}
               </InputDiv>
             </Col>
-            <Col md={3} xs={6}>
+            <Col md={3} xs={12}>
               <InputDiv>
                 <Label>Pincode</Label>
                 <ApplyFormInput
@@ -149,7 +148,7 @@ const AddClient = ({ setShow }) => {
                 {errors.pincode && <Error>Pincode is required</Error>}
               </InputDiv>
             </Col>
-            <Col md={6} xs={6}>
+            <Col md={6} xs={12}>
               <InputDiv>
                 <Label>Remarks</Label>
                 <ApplyFormInput

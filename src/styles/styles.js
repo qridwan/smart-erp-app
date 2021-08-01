@@ -17,6 +17,11 @@ export const Heading = styled.p`
   line-height: 25px;
   color: rgba(45, 56, 80, 0.91);
   padding: 15px 20px;
+  @media only screen and (max-width: 800px) {
+    padding: 15px 0 0 20px;
+    font-size: 18px;
+    line-height: 20px;
+  }
 `;
 export const Avatar = styled.span`
   height: 65px;
@@ -28,12 +33,18 @@ export const Avatar = styled.span`
   justify-content: center;
   align-items: center;
   font-family: Poppins;
-  font-style: normal;
   font-weight: 500;
   font-size: 30px;
   line-height: 45px;
   color: #ffffff;
   margin-right: 20px;
+  @media only screen and (max-width: 800px) {
+    height: 45px;
+    width: 45px;
+    font-size: 22px;
+    line-height: 32px;
+    margin-right: 10px;
+  }
 `;
 
 export const BoldText = styled.p`
@@ -44,6 +55,11 @@ export const BoldText = styled.p`
   line-height: 35px;
   color: #2d3850;
   margin: 0;
+  @media only screen and (max-width: 800px) {
+    padding-top: 10px;
+    font-size: 18px;
+    line-height: 25px;
+  }
 `;
 
 export const ImageInputArea = styled.div`
@@ -58,9 +74,9 @@ export const ImageInputArea = styled.div`
 `;
 export const ImageInput = styled.img``;
 export const Button = styled.button`
-  height: 50px;
+  height: 65px;
   border-radius: 9px;
-  padding: 0 25px;
+  padding: 15px 25px;
   font-family: Poppins;
   font-style: normal;
   font-weight: 500;
@@ -79,15 +95,26 @@ export const Button = styled.button`
           border: none;
           color: #ffffff;
         `}
+  @media only screen and (max-width:800px) {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 20px;
+    padding: 10px 18px;
+    height: 40px;
+  }
 `;
 
 export const DashboardContent = styled.div`
+  width: 100%;
   background: white;
   border-radius: 30px;
   min-height: 95vh;
   margin: 30px 8px 20px 8px;
   box-shadow: 4px 4px 17px rgba(189, 202, 228, 0.55);
   padding-bottom: 30px;
+  @media only screen and (max-width: 768px) {
+    min-height: auto;
+  }
 `;
 
 export const TableImage = styled.div`
@@ -110,9 +137,9 @@ export const Label = styled.label`
   color: #6c6c6c;
   padding-bottom: 8px;
   @media only screen and (max-width: 768px) {
-    font-size: 14px;
+    font-size: 12px;
     margin-top: 15px;
-    margin-bottom: 6px;
+    margin-bottom: 0;
   }
 `;
 
@@ -194,8 +221,9 @@ export const SubmitButton = styled.input`
     margin-top: 30px;
     font-size: 18px;
     line-height: 25px;
-    width: 250px;
-    height: 76px;
+    width: 200px;
+    height: 56px;
+    margin-bottom: 10px;
   }
 `;
 
@@ -215,6 +243,10 @@ export const ApplyFormInput = styled.input`
   :focus {
     outline: none;
   }
+  @media only screen and (max-width: 800px) {
+    padding: 0 8px;
+    height: 40px;
+  }
 `;
 
 export const TopBar = styled.div`
@@ -222,6 +254,10 @@ export const TopBar = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 40px 100px 0 100px;
+  flex-wrap: wrap;
+  @media only screen and (max-width: 800px) {
+    padding: 20px 50px 0 50px;
+  }
 `;
 
 export const SubText = styled.p`
@@ -229,6 +265,10 @@ export const SubText = styled.p`
   font-size: 22px;
   line-height: 33px;
   color: rgba(45, 56, 80, 0.5);
+  @media only screen and (max-width: 800px) {
+    font-size: 16px;
+    line-height: 20px;
+  }
 `;
 
 export const SearchContainer = styled.div`
@@ -242,6 +282,7 @@ export const SearchContainer = styled.div`
   justify-content: start;
   @media only screen and (max-width: 768px) {
     width: 250px;
+    height: 44px;
   }
 `;
 
@@ -256,6 +297,10 @@ export const TableContainer = styled.div`
   width: 95%;
   min-height: 600px;
   margin: 0 auto;
+  overflow-x: scroll;
+  @media only screen and (max-width: 800px) {
+    min-height: auto;
+  }
 `;
 
 export const AddItemContainer = styled.div`
@@ -266,6 +311,12 @@ export const AddItemContainer = styled.div`
   margin: 0 auto;
   padding-top: 50px;
   margin-bottom: 50px;
+  @media only screen and (max-width: 800px) {
+    width: 100%;
+    min-height: auto;
+    padding-top: 20px;
+    margin-bottom: 20px;
+  }
 `;
 
 export const SearchInput = styled.input`
@@ -337,9 +388,11 @@ export const TableSelect = styled.select`
   }
 `;
 
-
 export const ButtonContainer = styled.div`
   margin: 0 100px;
+  @media only screen and (max-width: 800px) {
+    margin: 10px 50px;
+  }
 `;
 export const EditButton = styled(Button)`
   background: #eff3fb;
@@ -349,6 +402,10 @@ export const EditButton = styled(Button)`
   font-size: 15px;
   line-height: 22px;
   color: rgba(45, 56, 80, 0.91);
+  @media only screen and (max-width: 800px) {
+    font-size: 12px;
+    line-height: 16px;
+  }
 `;
 export const DeleteButton = styled(Button)`
   background: #ff0000;
@@ -358,4 +415,8 @@ export const DeleteButton = styled(Button)`
   font-size: 15px;
   line-height: 22px;
   margin-left: 25px;
+  @media only screen and (max-width: 800px) {
+    font-size: 12px;
+    line-height: 16px;
+  }
 `;
