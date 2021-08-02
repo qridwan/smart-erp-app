@@ -114,7 +114,7 @@ export const DashboardContent = styled.div`
   background: white;
   border-radius: 30px;
   min-height: 95vh;
-  margin: 30px 8px 20px 8px;
+  margin: 30px 8px 20px 0px;
   box-shadow: 4px 4px 17px rgba(189, 202, 228, 0.55);
   padding-bottom: 30px;
   @media only screen and (max-width: 1000px) {
