@@ -26,6 +26,7 @@ const useStyles = makeStyles({
   table: {
     minWidth: 650,
     paddingTop: "30px",
+    marginTop: "20px",
   },
   thead: {
     borderBottom: "none",
@@ -127,7 +128,7 @@ const Outwards = ({ date }) => {
               <Button onClick={() => setShow("generate")}>Generate New</Button>
             </div>
           </TopBar>
-          <TableContainer className="mt-5">
+          <TableContainer className="mt-lg-5">
             <Table className={classes.table} aria-label="simple table">
               <TableHead>
                 <TableRow>
@@ -235,7 +236,7 @@ export default Outwards;
 
 const TitleContainer = styled.div`
   padding: 40px 100px 0 100px;
-  @media only screen and (max-width: 800px){
+  @media only screen and (max-width: 1000px){
     padding: 20px 50px 0 50px;
   }
 `;

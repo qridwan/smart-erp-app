@@ -145,7 +145,7 @@ const Employees = ({ date }) => {
           <Button onClick={handlePopup}>+ Add Employees</Button>
         </div>
       </TopBar>
-      <TopBar className="py-0">
+      <TopBar className="py-2">
         <HiddenButtons
           className={selectedItems.length ? "visible" : "invisible"}
         >
@@ -163,8 +163,8 @@ const Employees = ({ date }) => {
         </EmployeeSearchContainer>
       </TopBar>
       <Row className="w-100 p-0 m-0">
-        <Col md={8} xs={12} className="pl-4">
-          <TableContainer className="w-100 m-0">
+        <Col lg={8} md={12} className="pl-4">
+          <TableContainer className="w-100 m-0 overflow-hidden">
             <DataGrid
               rows={rows}
               style={style.table}
@@ -191,9 +191,9 @@ const Employees = ({ date }) => {
             <ModalEmployee modalIsOpen={modalIsOpen} closeModal={closeModal} />
           </TableContainer>
         </Col>
-        <Col md={4} xs={12} className="justify-content-center">
+        <Col lg={4} md={6} xs={12} className="offset-lg-0 offset-md-3  justify-content-center">
           <RecentActivityContainer>
-            <Heading>Recent Activity</Heading>
+            <Heading className="pt-md-3 px-md-4">Recent Activity</Heading>
             <RecentEmployee>
               <Avatar> S </Avatar>
               <Content>
@@ -236,8 +236,9 @@ const RecentActivityContainer = styled.div`
   box-sizing: border-box;
   border-radius: 19px;
   margin-right: 20px;
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 1000px) {
     margin: 0;
+    margin-top: 20px
   }
 `;
 const RecentEmployee = styled.div`
@@ -251,8 +252,8 @@ const HistoryText = styled.p`
   line-height: 22px;
   color: rgba(45, 56, 80, 0.91);
   padding: 0;
-  margin: 10px 0 20px 0;
-  @media only screen and (max-width: 800px) {
+  margin: 10px 0 10px 0;
+  @media only screen and (max-width: 1000px) {
     font-size: 14px;
     line-height: 18px;
     padding: 0;
@@ -264,9 +265,9 @@ const TimeCreated = styled.span`
   font-size: 16px;
   line-height: 20px;
   color: rgba(45, 56, 80, 0.43);
-  padding-top: 20px;
+  padding-top: 10px;
   margin: 0;
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 1000px) {
     font-size: 12px;
     line-height: 18px;
     padding-top: 4px;
@@ -274,17 +275,16 @@ const TimeCreated = styled.span`
 `;
 
 const HiddenButtons = styled.div`
-  margin: 0 40px;
-  @media only screen and (max-width: 800px) {
+  margin: 0 ;
+  @media only screen and (max-width: 1000px) {
     order: 2;
-    margin: 0;
   }
 `;
 
 const EmployeeSearchContainer = styled(SearchContainer)`
   max-width: 300px;
   margin: 0 40px 0 0;
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 1000px) {
     max-width: 100%;
     margin: 10px 10px 0 0;
     order: 1;

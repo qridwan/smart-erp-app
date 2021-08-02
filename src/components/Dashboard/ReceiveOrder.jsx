@@ -134,7 +134,7 @@ const ReceiveOrder = () => {
           </Row>
           <section>
             <MainTitle>Add Items</MainTitle>
-            <TableContainer>
+            <TableContainer className="">
               <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                   <TableRow>
@@ -318,7 +318,7 @@ const ReceiveOrder = () => {
               </InputDiv>
             </Col>
           </Row>
-          <div className="text-center my-lg-5">
+          <div className="text-center my-md-5">
             <SubmitButton
               type="submit"
               value="Save"
@@ -334,7 +334,7 @@ const ReceiveOrder = () => {
 export default ReceiveOrder;
 const Container = styled.div`
   padding: 0 50px;
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 1000px) {
     padding: 0 25px;
   }
 `;

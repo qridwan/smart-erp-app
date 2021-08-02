@@ -50,8 +50,8 @@ const Dashboard = () => {
 
   return (
     <Container>
-      <Row className="p-0 w-100">
-        <Col md={2} sm={12} className="p-0">
+      <Row className="p-0 m-0 w-100">
+        <Col lg={2} md={12} className="p-0">
           <Sidebar>
             <Head>
               <Content>
@@ -83,7 +83,7 @@ const Dashboard = () => {
             </NavItems>
           </Sidebar>
         </Col>
-        <Col md={9} sm={12} className="offset-md-1 p-0">
+        <Col lg={9} md={12} className="offset-lg-1 p-0">
           <ContentSection>
             <DashboardContent>
               {show === "inventory" && <Inventory />}
@@ -103,10 +103,13 @@ export default Dashboard;
 
 const Sidebar = styled.div`
   padding-left: 50px;
+  @media only screen and (max-width: 1000px) {
+    padding-left: 0;
+  }
 `;
 const Section = styled.div``;
 const NavItems = styled.div`
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 1000px) {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
@@ -122,22 +125,22 @@ const Title = styled.p`
   line-height: 28px;
   color: #2d3850;
   margin-bottom: 0;
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 1000px) {
     font-size: 14px;
     line-height: 18px;
   }
 `;
 const SidebarContent = styled.div`
-  width: 278px;
+  width: 250px;
   height: 63px;
   border-radius: 12px;
   display: flex;
   align-items: center;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
   padding: 15px 40px;
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 1000px) {
     height: 40px;
-    width: 180px;
+    width: 160px;
     margin-bottom: 10px;
     padding: 10px 20px;
   }
@@ -149,7 +152,7 @@ const ContentSection = styled.div`
 const Head = styled.div`
   margin-bottom: 70px;
   margin-top: 40px;
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 1000px) {
     margin-bottom: 15px;
     margin-top: 20px;
   }
@@ -157,4 +160,7 @@ const Head = styled.div`
 const Content = styled.div`
   display: flex;
   align-items: center;
+  @media only screen and (max-width: 1000px) {
+    padding-left: 15px;
+  }
 `;

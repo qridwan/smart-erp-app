@@ -5,15 +5,16 @@
   fill: rgba(70, 68, 68, 0.25);
   stroke: rgba(196, 196, 196, 0.25);
 }
-
 .MuiDataGrid-root .MuiDataGrid-cell {
   border: none !important;
+}
+.MuiDataGrid-root .MuiDataGrid-cell:focus {
+  outline: none !important;
 }
 
 .MuiDataGrid-columnSeparator {
   display: none !important;
 }
-
 .MuiDataGrid-root .MuiDataGrid-columnHeaderTitleContainer {
   justify-content: center;
 }
@@ -24,7 +25,6 @@ input::placeholder {
   color: rgb(107, 106, 106);
   font-family: Poppins;
 }
-
 #dropdown-basic::after {
   display: none;
 }
@@ -54,11 +54,11 @@ input::placeholder {
 .icons {
   margin-right: 10px;
 }
-@media only screen and (max-width: 800px){
- .icons {
-   width: 20px;
-   height: 20px;
- }  
+@media only screen and (max-width: 1000px) {
+  .icons {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .side_nav:hover {

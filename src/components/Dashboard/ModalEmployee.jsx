@@ -3,7 +3,7 @@ import { useState } from "react";
 import { FormControl, InputGroup } from "react-bootstrap";
 import CopyToClipboard from "react-copy-to-clipboard";
 import Modal from "react-modal";
-import { Heading } from "../../styles/styles";
+import { Heading, Input } from "../../styles/styles";
 import clipboard from "../../Assets/Icons/modal_clip_board.png";
 import styled from "styled-components";
 import { IconButton } from "@material-ui/core";
@@ -45,10 +45,10 @@ const ModalEmployee = ({ modalIsOpen, closeModal }) => {
         contentLabel="Add Employee"
       >
         <div>
-          <div className="d-flex justify-content-between my-2">
-            <Heading>Add Employee</Heading>
+          <div className="d-flex justify-content-between align-items-center my-lg-2">
+            <Heading className="">Add Employee</Heading>
             <IconButton onClick={handleCross}>
-              <CrossIcon/>
+              <CrossIcon />
             </IconButton>
           </div>
           <InputGroup
@@ -61,26 +61,20 @@ const ModalEmployee = ({ modalIsOpen, closeModal }) => {
             }}
           >
             <ModalFormControl
-              style={{
-                border: "none",
-                width: "530px",
-                height: "68px",
-                margin: "3px",
-              }}
               value={copyClipboard.value}
               onChange={({ target: { value } }) =>
                 setCopyClipboard({ value, copied: false })
               }
             />
             <CopyToClipboard
-              style={{ cursor: "pointer", border: "none", margin: "10px" }}
+              style={{ cursor: "pointer", border: "none", margin: "10px" , padding: "0" }}
               text={copyClipboard.value}
               onCopy={() =>
                 setCopyClipboard({ copied: true, value: copyClipboard.value })
               }
             >
               <InputGroup.Text
-                style={{ cursor: "pointer", border: "none", margin: "0px" }}
+                style={{ cursor: "pointer", border: "none", margin: "0px", padding: "0px" }}
                 id="basic-addon1"
                 className="bg-white"
               >
@@ -110,8 +104,18 @@ const Instruction = styled.span`
   color: #0075ff;
 `;
 
-const ModalFormControl = styled(FormControl)`
+const ModalFormControl = styled.input`
+  border: none;
+  width: 530px;
+  height: 68px;
+  margin: 3px;
+  padding: 0 20px;
   :focus {
     outline: none;
+  }
+  @media only screen and (max-width: 1000px) {
+    width: 280px;
+    height: auto;
+    padding: 0 10px;
   }
 `;

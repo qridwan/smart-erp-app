@@ -241,7 +241,7 @@ const Inventory = () => {
         <DeleteButton> Delete </DeleteButton>
       </ButtonContainer>
       {goto === "table" ? (
-        <TableContainer className="">
+        <TableContainer className="overflow-hidden">
           <DataGrid
             rows={rows}
             style={style.table}
@@ -252,6 +252,8 @@ const Inventory = () => {
             autoHeight
             hideFooterSelectedRowCount
             disableColumnMenu
+            disableColumnSelector
+            disableSelectionOnClick
             checkboxSelection
             scrollbarSize={5}
             classes={"MuiDataGrid-columnHeader--alignCenter"}
@@ -263,14 +265,13 @@ const Inventory = () => {
               );
               setSelectedItems(selectedItems);
             }}
-            disableSelectionOnClick
           />
         </TableContainer>
       ) : (
         <AddItemContainer>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Row>
-              <Col md={3} xs={6}>
+              <Col md={3} xs={12}>
                 <InputDiv>
                   <Label style={{ width: "70%", margin: "0 auto" }}>
                     Item Image
@@ -292,22 +293,22 @@ const Inventory = () => {
                 </InputDiv>
               </Col>
               <Col md={9} xs={12}>
-                <Row className="w-100">
-                  <Col md={4} xs={6}>
+                <Row className="w-100 justify-content-center m-0">
+                  <Col md={4} xs={12}>
                     <InputDiv>
                       <Label>Item Name</Label>
                       <ApplyFormInput
-                        placeholder="IP Camera"
+                        placeholder=""
                         {...register("item_name", { required: true })}
                       />
                       {errors.item_name && <Error>Item name is required</Error>}
                     </InputDiv>
                   </Col>
-                  <Col md={4} xs={6}>
+                  <Col md={4} xs={12}>
                     <InputDiv>
                       <Label>Item Qty.</Label>
                       <ApplyFormInput
-                        placeholder="400"
+                        placeholder=""
                         {...register("item_quantity", {
                           required: true,
                           pattern: /^\d+$/i,
@@ -318,14 +319,14 @@ const Inventory = () => {
                       )}
                     </InputDiv>
                   </Col>
-                  <Col md={4} xs={6}>
+                  <Col md={4} xs={12}>
                     <InputDiv>
                       <Label>P.O. Number</Label>
                       <ApplyFormInput
-                        placeholder="#9008208290"
+                        placeholder=""
                         {...register("po_number", {
                           required: true,
-                          pattern: /(#[1-9]\d*)/g,
+                          pattern: /([1-9]\d*)/g,
                         })}
                       />
                       {errors.po_number && (
@@ -334,23 +335,23 @@ const Inventory = () => {
                     </InputDiv>
                   </Col>
                 </Row>
-                <Row className="w-100">
-                  <Col md={4} xs={6}>
+                <Row className="w-100 justify-content-center m-0">
+                  <Col md={4} xs={12}>
                     <InputDiv>
                       <Label>Date</Label>
                       <ApplyFormInput
-                        placeholder="20-02-2021"
+                        placeholder=""
                         type="datetime"
                         {...register("date", { required: true })}
                       />
                       {errors.date && <Error>Date is required</Error>}
                     </InputDiv>
                   </Col>
-                  <Col md={4} xs={6}>
+                  <Col md={4} xs={12}>
                     <InputDiv>
                       <Label>Supplier Name</Label>
                       <ApplyFormInput
-                        placeholder="ABC Electronics"
+                        placeholder=""
                         {...register("supplier", {
                           required: true,
                         })}
@@ -360,12 +361,12 @@ const Inventory = () => {
                       )}
                     </InputDiv>
                   </Col>
-                  <Col md={4} xs={6}>
+                  <Col md={4} xs={12}>
                     <InputDiv>
                       <Label>Received Date</Label>
                       <ApplyFormInput
                         type="datetime"
-                        placeholder="18-02-2021"
+                        placeholder=""
                         {...register("received_date", {
                           required: true,
                         })}
@@ -376,7 +377,7 @@ const Inventory = () => {
                     </InputDiv>
                   </Col>
                 </Row>
-                <Row className="w-100">
+                <Row className="w-100 justify-content-center m-0">
                   <Col md={4}>
                     <InputDiv>
                       <Label>Delivery Proof</Label>
@@ -397,7 +398,7 @@ const Inventory = () => {
                       <Label>Remarks</Label>
                       <ApplyFormInput
                         type="text"
-                        placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                        placeholder=""
                         {...register("remarks")}
                       />
                     </InputDiv>
