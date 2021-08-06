@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
 import { Container } from "../Login";
@@ -6,13 +6,14 @@ import { ReactComponent as InventoryImg } from "../../Assets/Icons/inventory.svg
 import { ReactComponent as InOutWardImg } from "../../Assets/Icons/in-outwards.svg";
 import { ReactComponent as EmployeeImg } from "../../Assets/Icons/employee.svg";
 import { ReactComponent as ClientsImg } from "../../Assets/Icons/clients.svg";
+import { ReactComponent as WareHouseImg } from "../../Assets/Icons/warehouse.svg";
 import Inventory from "./Inventory";
 import { Avatar, BoldText, DashboardContent } from "../../styles/styles";
 import Outwards from "./Outwards";
 import Inwards from "./Inwards";
 import Employees from "./Employees";
-import dateFormat from "dateformat";
 import Clients from "./Clients";
+import WareHouse from "./WareHouse";
 
 const sidebarData = [
   {
@@ -35,14 +36,12 @@ const sidebarData = [
     icon: <ClientsImg className="icons" />,
     title: "Clients",
   },
+  {
+    icon: <WareHouseImg className="icons" />,
+    title: "Warehouse",
+  },
 ];
 const Dashboard = () => {
-  const [date, setDate] = useState("");
-  useEffect(() => {
-    const now = new Date();
-    const today = dateFormat(now, "dS mmmm yyyy");
-    setDate(today);
-  }, []);
 
   const [show, setShow] = useState("inventory");
   const user = "Arjun.";
@@ -51,7 +50,7 @@ const Dashboard = () => {
   return (
     <Container>
       <Row className="p-0 m-0 w-100">
-        <Col lg={2} md={12} className="p-0">
+        <Col lg={1} md={12} className="p-0">
           <Sidebar>
             <Head>
               <Content>
@@ -74,7 +73,9 @@ const Dashboard = () => {
                       }
                       onClick={(event) => handleOnCLick(event)}
                     >
-                      {obj.icon}
+                     <SidebarIconWrapper>
+                     {obj.icon}
+                       </SidebarIconWrapper> 
                       <Title className="title">{obj.title}</Title>
                     </SidebarContent>
                   </Section>
@@ -83,14 +84,15 @@ const Dashboard = () => {
             </NavItems>
           </Sidebar>
         </Col>
-        <Col lg={9} md={12} className="offset-lg-1 p-0">
+        <Col lg={10} md={12} className="offset-lg-1 p-0">
           <ContentSection>
             <DashboardContent>
               {show === "inventory" && <Inventory />}
-              {show === "outwards" && <Outwards date={date} />}
+              {show === "outwards" && <Outwards   />}
               {show === "inwards" && <Inwards />}
-              {show === "employees" && <Employees date={date} />}
-              {show === "clients" && <Clients date={date} />}
+              {show === "employees" && <Employees   />}
+              {show === "clients" && <Clients   />}
+              {show === "warehouse" && <WareHouse   />}
             </DashboardContent>
           </ContentSection>
         </Col>
@@ -102,7 +104,7 @@ const Dashboard = () => {
 export default Dashboard;
 
 const Sidebar = styled.div`
-  padding-left: 50px;
+  padding-left: 30px;
   @media only screen and (max-width: 1000px) {
     padding-left: 0;
   }
@@ -121,8 +123,8 @@ const Title = styled.p`
   display: inline-block;
   font-family: Poppins;
   font-weight: 500;
-  font-size: 20px;
-  line-height: 28px;
+  font-size: 18px;
+  line-height: 22px;
   color: #2d3850;
   margin-bottom: 0;
   @media only screen and (max-width: 1000px) {
@@ -131,18 +133,18 @@ const Title = styled.p`
   }
 `;
 const SidebarContent = styled.div`
-  width: 250px;
-  height: 63px;
+  width: 180px;
+  height: 50px;
   border-radius: 12px;
   display: flex;
   align-items: center;
-  margin-bottom: 30px;
-  padding: 15px 40px;
+  margin-bottom: 15px;
+  padding: 10px 20px;
   @media only screen and (max-width: 1000px) {
     height: 40px;
     width: 160px;
     margin-bottom: 10px;
-    padding: 10px 20px;
+    padding: 8px 16px;
   }
 `;
 const ContentSection = styled.div`
@@ -150,7 +152,7 @@ const ContentSection = styled.div`
   margin: 0px auto;
 `;
 const Head = styled.div`
-  margin-bottom: 70px;
+  margin-bottom: 40px;
   margin-top: 40px;
   @media only screen and (max-width: 1000px) {
     margin-bottom: 15px;
@@ -164,3 +166,11 @@ const Content = styled.div`
     padding-left: 15px;
   }
 `;
+
+
+const SidebarIconWrapper = styled.div`
+svg{
+  width: 25px;
+  height: 25px;
+}
+`

@@ -1,9 +1,9 @@
 import { makeStyles, TableBody } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import { Table, TableCell, TableHead, TableRow } from "@material-ui/core";
-import React, { useState } from "react";
+import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
 import { ReactComponent as DeleteIcon } from "../../Assets/Icons/delete.svg";
 
@@ -47,32 +47,20 @@ const useStyles = makeStyles({
 
 const ReceiveOrder = () => {
   const classes = useStyles();
-  const [countItem, setCountItem] = useState(0);
-  const [item, setItem] = useState([]);
   const {
     register,
     formState: { errors },
     handleSubmit,
+    control,
   } = useForm();
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "item",
+  });
 
   const onSubmit = (data) => {
     console.log(data);
-  };
-
-  const handleAddItem = () => {
-    let count = parseInt(countItem) + 1;
-    setCountItem(count);
-    setItem([...item, count]);
-  };
-  const handleDelete = (id) => {
-    const remainItem = item.filter((i) => i !== id);
-    if (remainItem.length) {
-      setItem(remainItem);
-      setCountItem(remainItem);
-    } else {
-      setItem(remainItem);
-      setCountItem(0);
-    }
   };
   return (
     <AddItemContainer className="mt-5">
@@ -134,7 +122,7 @@ const ReceiveOrder = () => {
           </Row>
           <section>
             <MainTitle>Add Items</MainTitle>
-            <TableContainer className="">
+            <TableContainer className="w-100">
               <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                   <TableRow>
@@ -142,10 +130,10 @@ const ReceiveOrder = () => {
                       #
                     </TableCell>
                     <TableCell className={classes.thead} align="center">
-                      ITEM NAME
+                      Item Name
                     </TableCell>
                     <TableCell className={classes.thead} align="center">
-                      TOTAL Qty.
+                      Total Qty.
                     </TableCell>
                     <TableCell className={classes.thead} align="center">
                       Received
@@ -166,14 +154,16 @@ const ReceiveOrder = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {item.map((number, i) => {
+                  {fields.map((item, index) => {
                     return (
-                      <TableRow key={i}>
+                      <TableRow key={item.id}>
+                        <TableCell align="center">{index + 1}</TableCell>
                         <TableCell align="center">
-                          {number < 10 ? `0${number}` : number}
-                        </TableCell>
-                        <TableCell align="center">
-                          <TableSelect {...register(`item${i}`)}>
+                          <TableSelect
+                            name={`item[${index}].name`}
+                            defaultValue={`${item.name}`}
+                            {...register(`item.${index}.name`)}
+                          >
                             <option value="IP Camera">IP Camera</option>
                             <option value="aa">A</option>
                             <option value="bb">B</option>
@@ -182,47 +172,47 @@ const ReceiveOrder = () => {
                         </TableCell>
                         <TableCell align="center">
                           <TableInput
-                            type="number"
-                            defaultValue=""
-                            {...register(`total_qty${i}`, { required: true })}
+                            name={`item[${index}].quantity`}
+                            defaultValue={`${item.quantity}`}
+                            {...register(`item.${index}.quantity`)}
                           />
                         </TableCell>
 
                         <TableCell align="center">
                           <TableInput
                             type="number"
-                            defaultValue=""
-                            {...register(`received${i}`, { required: true })}
+                            name={`item[${index}].received`}
+                            defaultValue={`${item.received}`}
+                            {...register(`item.${index}.received`)}
                           ></TableInput>
                         </TableCell>
                         <TableCell align="center">
                           <TableInput
                             type="number"
-                            defaultValue=""
-                            {...register(`good_condition${i}`, {
-                              required: true,
-                            })}
+                            name={`item[${index}].good_condition`}
+                            defaultValue={`${item.good_condition}`}
+                            {...register(`item.${index}.good_condition`)}
                           ></TableInput>
                         </TableCell>
                         <TableCell align="center">
                           <TableInput
                             type="number"
-                            defaultValue=""
-                            {...register(`bad_condition${i}`, {
-                              required: true,
-                            })}
+                            name={`item[${index}].bad_condition`}
+                            defaultValue={`${item.bad_condition}`}
+                            {...register(`item.${index}.bad_condition`)}
                           ></TableInput>
                         </TableCell>
                         <TableCell align="center">
                           <TableInput
                             type="number"
-                            defaultValue=""
-                            {...register(`not_working${i}`, { required: true })}
+                            name={`item[${index}].not_working`}
+                            defaultValue={`${item.not_working}`}
+                            {...register(`item.${index}.not_working`)}
                           ></TableInput>
                         </TableCell>
                         <TableCell align="center">
                           <IconButton
-                            onClick={() => handleDelete(number)}
+                            onClick={() => remove(index)}
                             color="secondary"
                           >
                             <DeleteIcon />
@@ -236,7 +226,19 @@ const ReceiveOrder = () => {
             </TableContainer>
           </section>
           <div className="text-center mt-lg-5">
-            <Button outline onClick={handleAddItem}>
+            <Button
+              outline
+              onClick={() => {
+                append({
+                  name: "IP Camera",
+                  quantity: "",
+                  received: "",
+                  good_condition: "",
+                  bad_condition: "",
+                  not_working: "",
+                });
+              }}
+            >
               + Add Item
             </Button>
           </div>
@@ -322,7 +324,7 @@ const ReceiveOrder = () => {
             <SubmitButton
               type="submit"
               value="Save"
-              disabled={item.length ? "" : "disabled"}
+              disabled={fields.length ? "" : "disabled"}
             />
           </div>
         </Container>

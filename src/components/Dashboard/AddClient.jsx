@@ -25,11 +25,11 @@ const AddClient = ({ setShow }) => {
   };
   return (
     <div>
-      <TopBar className="px-5 py-4">
+      <TopBar >
         <div>
           <BoldText> Add New Agency </BoldText>
         </div>
-        <div className="text-center mt-lg-5">
+        <div className="text-center">
           <Button outline onClick={() => setShow("clients")}>
             View Inventory
           </Button>
@@ -159,7 +159,7 @@ const AddClient = ({ setShow }) => {
               </InputDiv>
             </Col>
           </Row>
-          <div className="text-center my-lg-5">
+          <div className="text-center my-lg-0 mb-lg-3">
             <SubmitButton type="submit" value="Save" />
           </div>
         </form>

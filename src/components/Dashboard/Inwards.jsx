@@ -119,7 +119,7 @@ const Inwards = () => {
       </TopBar>
       {show === "search_order" ? (
         <InwardsSearchContainer>
-          <div className="d-flex justify-content-center mt-5">
+          <div className="d-flex justify-content-center mt-3">
             <SearchContainer className="w-75">
               <section className="w-100">
                 <SearchIcon className="pr-3" />
@@ -130,34 +130,34 @@ const Inwards = () => {
               </section>
             </SearchContainer>
           </div>
-          <TableContainer className="mt-5">
+          <TableContainer className="mt-3">
             <Table className={classes.table} aria-label="simple table">
               <TableHead className={classes.thead}>
                 <TableRow>
                   <TableCell className={classes.thead}>ORDER NO.</TableCell>
                   <TableCell className={classes.thead} align="center">
-                    AGENCY NAME
+                    Agency Name
                   </TableCell>
                   <TableCell className={classes.thead} align="center">
-                    ITEM NAME
+                    Item Name
                   </TableCell>
                   <TableCell className={classes.thead} align="center">
-                    TOTAL Qty.
+                    Total Qty.
                   </TableCell>
                   <TableCell className={classes.thead} align="center">
-                    RECEIVED
+                    Received
                   </TableCell>
                   <TableCell className={classes.thead} align="center">
-                    PENDING
+                    Pending
                   </TableCell>
                   <TableCell className={classes.thead} align="center">
-                    DATE
+                    Date
                   </TableCell>
                   <TableCell className={classes.thead} align="center">
-                    AUDIT
+                    Audit
                   </TableCell>
                   <TableCell className={classes.thead} align="center">
-                    MORE
+                    More
                   </TableCell>
                 </TableRow>
               </TableHead>

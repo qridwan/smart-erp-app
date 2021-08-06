@@ -12,7 +12,6 @@ import styled from "styled-components";
 import {
   BoldText,
   Button,
-  SubText,
   TableContainer,
   TopBar,
 } from "../../styles/styles";
@@ -105,30 +104,29 @@ const useStyles = makeStyles({
     minWidth: 120,
   },
 });
-const Clients = ({ date }) => {
+const Clients = () => {
   const classes = useStyles();
   const [show, setShow] = useState("clients");
   return (
     <main>
       {show === "clients" ? (
         <ClientsContainer>
-          <TopBar className="px-5 py-4">
+          <TopBar className="">
             <div>
               <BoldText> Clients </BoldText>
-              <SubText> Today, {date} </SubText>
             </div>
-            <div className="text-center mt-lg-5">
+            <div className="text-center">
               <Button onClick={() => setShow("add_client")}>
                 + Add Clients
               </Button>
             </div>
           </TopBar>
-          <TableContainer className="mt-lg-5">
+          <TableContainer className="mt-lg-2">
             <Table className={classes.table} aria-label="simple table">
               <TableHead className={classes.thead}>
                 <TableRow>
                   <TableCell className={classes.thead} align="center">
-                    AGENCY NAME
+                    Agency Name
                   </TableCell>
                   <TableCell className={classes.thead} align="center">
                     Client ID

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
 import {
   AddItemContainer,
@@ -54,41 +54,29 @@ const useStyles = makeStyles({
   },
 });
 
-const GenerateOutwards = ({ date, setShow }) => {
+const GenerateOutwards = ({ setShow }) => {
   const classes = useStyles();
-  const [countItem, setCountItem] = useState(0);
-  const [item, setItem] = useState([]);
+ 
   const {
     register,
     formState: { errors },
     handleSubmit,
+    control,
   } = useForm();
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "item",
+  });
 
   const onSubmit = (data) => {
     console.log(data);
   };
 
-  const handleAddItem = () => {
-    let count = parseInt(countItem) + 1;
-    setCountItem(count);
-    setItem([...item, count]);
-  };
-  const handleDelete = (id) => {
-    const remainItem = item.filter((i) => i !== id);
-    if (remainItem.length) {
-      setItem(remainItem);
-      setCountItem(remainItem);
-    } else {
-      setItem(remainItem);
-      setCountItem(0);
-    }
-  };
   return (
     <div>
       <TopBar className="mb-4">
         <BoldText>Generate Outward</BoldText>
         <div>
-          <SubText> Today, {date} </SubText>
           <Button outline onClick={() => setShow("outwards")}>
             View Outwards
           </Button>
@@ -97,7 +85,7 @@ const GenerateOutwards = ({ date, setShow }) => {
       <AddItemContainer>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Container>
-            <MainTitle>Agency Details</MainTitle>
+            <MainTitle style={{ paddingTop: "10px" }}>Agency Details</MainTitle>
             <Row className="w-100 p-0 m-0">
               <Col md={3} xs={12}>
                 <InputDiv>
@@ -107,7 +95,7 @@ const GenerateOutwards = ({ date, setShow }) => {
                     type="text"
                     {...register("agency", { required: true })}
                   />
-                  {errors.date && <Error>Agency name is required</Error>}
+                  {errors.agency && <Error>Agency name is required</Error>}
                 </InputDiv>
               </Col>
               <Col md={3} xs={12}>
@@ -119,9 +107,7 @@ const GenerateOutwards = ({ date, setShow }) => {
                       required: true,
                     })}
                   />
-                  {errors.supplier && (
-                    <Error>Receiver's name is required</Error>
-                  )}
+                  {errors.receive && <Error>Receiver's name is required</Error>}
                 </InputDiv>
               </Col>
               <Col md={3} xs={12}>
@@ -251,7 +237,7 @@ const GenerateOutwards = ({ date, setShow }) => {
                     type="text"
                     {...register("address", { required: true })}
                   />
-                  {errors.date && <Error>Address is required</Error>}
+                  {errors.address && <Error>Address is required</Error>}
                 </InputDiv>
               </Col>
               <Col md={3} xs={12}>
@@ -302,7 +288,7 @@ const GenerateOutwards = ({ date, setShow }) => {
                       required: true,
                     })}
                   />
-                  {errors.received_date && <Error>Pincode is required</Error>}
+                  {errors.pincode && <Error>Pincode is required</Error>}
                 </InputDiv>
               </Col>
               <Col md={3} xs={12}>
@@ -338,92 +324,106 @@ const GenerateOutwards = ({ date, setShow }) => {
                   <ApplyFormInput
                     type="text"
                     placeholder=""
-                    {...register("remarkd")}
+                    {...register("remarks")}
                   />
                 </InputDiv>
               </Col>
             </Row>
+          </Container>
+          <AddItemsContainer>
+            <Container>
+              <MainTitle>Add Items</MainTitle>
+              <Table className={classes.table} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell className={classes.thead} align="center">
+                      #
+                    </TableCell>
+                    <TableCell className={classes.thead} align="center">
+                      Item Code
+                    </TableCell>
+                    <TableCell className={classes.thead} align="center">
+                      Item
+                    </TableCell>
+                    <TableCell className={classes.thead} align="center">
+                      Total Qty.
+                    </TableCell>
+                    <TableCell
+                      className={classes.thead}
+                      align="center"
+                    ></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {fields.map((item, index) => {
+                    return (
+                      <TableRow key={item.id}>
+                        <TableCell align="center">{index + 1}</TableCell>
+                        <TableCell align="center">
+                          <TableInput
+                            style={{ border: "none" }}
+                            name={`item[${index}].code`}
+                            defaultValue={`${item.code}`}
+                            {...register(`item.${index}.code`)}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <select
+                            name={`item[${index}].name`}
+                            defaultValue={`${item.name}`}
+                            {...register(`item.${index}.name`)}
+                          >
+                            <option value="IP Camera">IP Camera</option>
+                            <option value="aa">A</option>
+                            <option value="bb">B</option>
+                            <option value="cc">C</option>
+                          </select>
+                        </TableCell>
+                        <TableCell align="center">
+                          <TableInput
+                            type="number"
+                            name={`item[${index}].quantity`}
+                            defaultValue={`${item.quantity}`}
+                            {...register(`item.${index}.quantity`)}
+                          ></TableInput>
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton
+                            type="button"
+                            onClick={() => remove(index)}
+                            Delete
+                            color="secondary"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Container>
+          </AddItemsContainer>
+          <div className="text-center mt-lg-5">
+            <Button
+              outline
+              onClick={() => {
+                let genCode = Math.floor(Math.random() + Math.random() * 10000);
+                append({ code: genCode, name: "IP Camera", quantity: 10 });
+              }}
+            >
+              + Add Item
+            </Button>
+          </div>
 
-            <div className="text-center mt-lg-5">
-              <SubmitButton type="submit" value="submit" className="d-none" />
-            </div>
-          </Container>
+          <div className="text-center my-lg-5">
+            <SubmitButton
+              type="submit"
+              value="Generate Order"
+              disabled={fields.length ? "" : "disabled"}
+            />
+          </div>
         </form>
-        <AddItemsContainer>
-          <Container>
-            <MainTitle>Add Items</MainTitle>
-            <Table className={classes.table} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell className={classes.thead} align="center">
-                    #
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    ITEM CODE
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    ITEM
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    TOTAL Qty.
-                  </TableCell>
-                  <TableCell
-                    className={classes.thead}
-                    align="center"
-                  ></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {item.map((number, i) => {
-                  return (
-                    <TableRow key={i}>
-                      <TableCell align="center">
-                        {number < 10 ? `0${number}` : number}
-                      </TableCell>
-                      <TableCell align="center">
-                        {Math.floor(Math.random() + Math.random() * 10000)}
-                      </TableCell>
-                      <TableCell align="center">
-                        <select {...register("item")}>
-                          <option value="IP Camera">IP Camera</option>
-                          <option value="aa">A</option>
-                          <option value="bb">B</option>
-                          <option value="cc">C</option>
-                        </select>
-                      </TableCell>
-                      <TableCell align="center">
-                        <TableInput
-                          type="number"
-                          {...register(`total_qty`, { required: true })}
-                        ></TableInput>
-                      </TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          onClick={() => handleDelete(number)}
-                          color="secondary"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </Container>
-        </AddItemsContainer>
-        <div className="text-center mt-lg-5">
-          <Button outline onClick={handleAddItem}>
-            + Add Item
-          </Button>
-        </div>
-        <div className="text-center my-lg-5">
-          <SubmitButton
-            type="submit"
-            value="Generate Order"
-            disabled={item.length ? "" : "disabled"}
-          />
-        </div>
       </AddItemContainer>
     </div>
   );
@@ -453,11 +453,11 @@ const InputGroup = styled.div`
   padding: 0;
 `;
 const InputIcon = styled.span`
-border-right: 1px solid #8e8e8e;
-padding: 0;
-height: 100%;
-display: flex;
-align-items: center;
-padding: .375rem 0.75rem;
-margin-left: 4px
+  border-right: 1px solid #8e8e8e;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  margin-left: 4px;
 `;

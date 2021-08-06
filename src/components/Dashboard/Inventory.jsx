@@ -227,19 +227,33 @@ const Inventory = () => {
       <TopBar>
         <BoldText> Inventory </BoldText>
         {goto === "table" ? (
-          <Button onClick={() => setGoto("addItem")}>+ Add Items</Button>
+          <div className="d-flex">
+            <ButtonContainer
+              className={selectedItems.length ? "visible" : "invisible"}
+            >
+              <DeleteButton> Delete </DeleteButton>
+              <EditButton
+                className={selectedItems.length === 1 ? "visible" : "invisible"}
+              >
+                Edit
+              </EditButton>
+            </ButtonContainer>
+            <Button
+              onClick={() => {
+                setGoto("addItem");
+                setSelectedItems([]);
+              }}
+            >
+              + Add Items
+            </Button>
+          </div>
         ) : (
           <Button outline onClick={() => setGoto("table")}>
             View Inventory
           </Button>
         )}
       </TopBar>
-      <ButtonContainer
-        className={selectedItems.length ? "visible" : "invisible"}
-      >
-        <EditButton> Edit </EditButton>
-        <DeleteButton> Delete </DeleteButton>
-      </ButtonContainer>
+
       {goto === "table" ? (
         <TableContainer className="overflow-hidden">
           <DataGrid
@@ -292,7 +306,7 @@ const Inventory = () => {
                   </div>
                 </InputDiv>
               </Col>
-              <Col md={9} xs={12}>
+              <Col md={9} xs={12} className="" style={{ paddingRight: "30px" }}>
                 <Row className="w-100 justify-content-center m-0">
                   <Col md={4} xs={12}>
                     <InputDiv>
@@ -377,7 +391,19 @@ const Inventory = () => {
                     </InputDiv>
                   </Col>
                 </Row>
-                <Row className="w-100 justify-content-center m-0">
+                <Row className="w-100  m-0">
+                  <Col md={4} xs={12}>
+                    <InputDiv>
+                      <Label>Location</Label>
+                      <ApplyFormInput
+                        placeholder=""
+                        {...register("location", {
+                          required: true,
+                        })}
+                      />
+                      {errors.location && <Error>Location is required</Error>}
+                    </InputDiv>
+                  </Col>
                   <Col md={4}>
                     <InputDiv>
                       <Label>Delivery Proof</Label>
@@ -406,7 +432,7 @@ const Inventory = () => {
                 </Row>
               </Col>
             </Row>
-            <div className="text-center mt-lg-5">
+            <div className="text-center my-lg-5">
               <SubmitButton type="submit" value="Save" />
             </div>
           </form>

@@ -1,12 +1,14 @@
 import styled, { css } from "styled-components";
+import Calender from "../Assets/Icons/Calender.png";
 
 export const style = {
   table: {
     border: "none",
     fontFamily: "Poppins",
     fontWeight: "500",
-    fontSize: "12px",
+    fontSize: "14px",
     lineHeight: "16px",
+    width: "auto",
     color: "black",
     "& .MuiDataGrid-root": {
       "& .MuiDataGrid-Cell:focus": {
@@ -29,18 +31,18 @@ export const Heading = styled.p`
   }
 `;
 export const Avatar = styled.span`
-  height: 65px;
-  width: 65px;
   border-radius: 50%;
   background: #79e4b7;
   box-shadow: 4px 4px 17px rgba(189, 202, 228, 0.55);
   display: flex;
+  height: 55px;
+  min-width: 55px;
   justify-content: center;
   align-items: center;
   font-family: Poppins;
   font-weight: 500;
-  font-size: 30px;
-  line-height: 45px;
+  font-size: 26px;
+  line-height: 35px;
   color: #ffffff;
   margin-right: 20px;
   @media only screen and (max-width: 1000px) {
@@ -54,10 +56,9 @@ export const Avatar = styled.span`
 
 export const BoldText = styled.p`
   font-family: Poppins;
-  padding-top: 18px;
   font-weight: 600;
-  font-size: 25px;
-  line-height: 35px;
+  font-size: 22px;
+  line-height: 30px;
   color: #2d3850;
   margin: 0;
   @media only screen and (max-width: 1000px) {
@@ -81,12 +82,12 @@ export const ImageInput = styled.img``;
 export const Button = styled.button`
   height: auto;
   border-radius: 9px;
-  padding: 15px 25px;
+  padding: 8px 15px;
   font-family: Poppins;
   font-style: normal;
   font-weight: 500;
-  font-size: 18px;
-  line-height: 27px;
+  font-size: 14px;
+  line-height: 22px;
   box-sizing: border-box;
   ${(props) =>
     props.outline
@@ -110,7 +111,7 @@ export const Button = styled.button`
 `;
 
 export const DashboardContent = styled.div`
-  width: 100%;
+  width: 98%;
   background: white;
   border-radius: 30px;
   min-height: 95vh;
@@ -118,6 +119,7 @@ export const DashboardContent = styled.div`
   box-shadow: 4px 4px 17px rgba(189, 202, 228, 0.55);
   padding-bottom: 30px;
   @media only screen and (max-width: 1000px) {
+    width: 100%;
     min-height: auto;
     margin: 30px 8px 20px 0px;
   }
@@ -203,15 +205,14 @@ export const UploadButton = styled.button`
 `;
 
 export const SubmitButton = styled.input`
-  width: 250px;
-  height: 60px;
-
+  width: 180px;
+  height: 50px;
   border-radius: 9px;
   border: none;
   font-family: Poppins;
   font-weight: 500;
-  font-size: 22px;
-  line-height: 30px;
+  font-size: 18px;
+  line-height: 25px;
   color: #ffffff;
   margin-top: 40px;
   ${(props) => {
@@ -249,6 +250,19 @@ export const ApplyFormInput = styled.input`
   :focus {
     outline: none;
   }
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  ::-webkit-calendar-picker-indicator {
+    color: rgba(0, 0, 0, 0);
+    opacity: 1;
+    display: block;
+    background: url(${Calender}) no-repeat;
+    width: 20px;
+    height: 20px; 
+    border-width: thin;
+}
   @media only screen and (max-width: 1000px) {
     padding: 0 8px;
     height: 40px;
@@ -259,10 +273,10 @@ export const TopBar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 40px 100px 0 100px;
+  padding: 40px 100px 15px 100px;
   flex-wrap: wrap;
   @media only screen and (max-width: 1000px) {
-    padding: 10px 20px 0 20px;
+    padding: 10px 20px 8px 20px;
   }
 `;
 
@@ -279,7 +293,7 @@ export const SubText = styled.p`
 
 export const SearchContainer = styled.div`
   width: 540px;
-  height: 64px;
+  height: 50px;
   background: #eff3fb;
   border-radius: 13px;
   padding: 20px;
@@ -314,9 +328,9 @@ export const AddItemContainer = styled.div`
   border: 1px solid #dadbd8;
   box-sizing: border-box;
   width: 90%;
-  min-height: 550px;
+  min-height: auto;
   margin: 0 auto;
-  padding-top: 50px;
+  padding-top: 30px;
   margin-bottom: 50px;
   @media only screen and (max-width: 1000px) {
     min-height: auto;
@@ -355,14 +369,15 @@ export const MainTitle = styled.p`
   line-height: 27px;
   padding: 0 12px;
   padding-bottom: 15px;
+  padding-top: 25px;
   margin: 0;
   color: #2d3850;
   @media only screen and (max-width: 1000px) {
     font-size: 16px;
-  line-height: 20px;
-  padding: 0 12px;
-  padding-top: 10px;
-  padding-bottom: 0px;
+    line-height: 20px;
+    padding: 0 12px;
+    padding-top: 10px;
+    padding-bottom: 0px;
   }
 `;
 
@@ -385,8 +400,13 @@ export const TableInput = styled.input`
   box-sizing: border-box;
   border-radius: 5px;
   text-align: center;
-  text-decoration-line: underline;
   color: #000000;
+  :focus {
+    outline: none;
+  }
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
 `;
 
 export const TableSelect = styled.select`
@@ -402,7 +422,7 @@ export const TableSelect = styled.select`
 `;
 
 export const ButtonContainer = styled.div`
-  margin: 0 100px;
+  margin: 0 50px;
   @media only screen and (max-width: 1000px) {
     margin: 0px 20px;
   }
@@ -415,6 +435,7 @@ export const EditButton = styled(Button)`
   font-size: 15px;
   line-height: 22px;
   color: rgba(45, 56, 80, 0.91);
+  margin-left: 25px;
   @media only screen and (max-width: 1000px) {
     font-size: 12px;
     line-height: 16px;
@@ -427,7 +448,6 @@ export const DeleteButton = styled(Button)`
   font-weight: 500;
   font-size: 15px;
   line-height: 22px;
-  margin-left: 25px;
   @media only screen and (max-width: 1000px) {
     font-size: 12px;
     line-height: 16px;

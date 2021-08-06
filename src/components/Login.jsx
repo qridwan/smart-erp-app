@@ -19,7 +19,7 @@ const Login = () => {
         <Col
           md={6}
           sm={12}
-          className="py-3 d-flex justify-content-center align-items-center"
+          className="py-3 m-0 d-flex justify-content-center align-items-center"
         >
           <LoginContainer>
             <GreetingText>Welcome Back</GreetingText>
@@ -51,7 +51,7 @@ const Login = () => {
                       type="checkbox"
                       {...register("toggle")}
                       className="mx-2"
-                    />{" "}
+                    />
                     <Label>Remember Me</Label>
                   </span>
                   <Label
@@ -104,6 +104,10 @@ const HeadingText = styled.p`
   font-size: 28px;
   line-height: 42px;
   color: #1a202c;
+  @media only screen and (max-width: 1000px) {
+    font-size: 22px;
+    line-height: 32px;
+  }
 `;
 const LoginForm = styled.div``;
 export const Input = styled.input`
@@ -118,6 +122,9 @@ export const Input = styled.input`
   font-size: 14px;
   :focus {
     outline: none;
+  }
+  @media only screen and (max-width: 1000px) {
+    width: 100%;
   }
 `;
 export const SubmitButton = styled(Input)`
@@ -137,6 +144,11 @@ const Label = styled.label`
   line-height: 19px;
   margin: 10px 0;
   color: #4a5568;
+  @media only screen and (max-width: 1000px) {
+    font-size: 12px;
+  line-height: 16px;
+  margin: 8px 0;
+  }
 `;
 const Error = styled.p`
   font-size: 12px;

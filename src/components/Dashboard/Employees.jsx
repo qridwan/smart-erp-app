@@ -24,7 +24,7 @@ const columns = [
   {
     field: "photos",
     headerName: "Photos",
-    width: 80,
+    width: 100,
     sortable: false,
     align: "start",
     renderCell: (params) => {
@@ -119,7 +119,7 @@ const rows = [
   },
 ];
 
-const Employees = ({ date }) => {
+const Employees = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   function openModal() {
@@ -139,7 +139,6 @@ const Employees = ({ date }) => {
       <TopBar className="px-5 py-4">
         <div>
           <BoldText> Employees </BoldText>
-          <SubText> Today, {date} </SubText>
         </div>
         <div className="text-center mt-lg-2">
           <Button onClick={handlePopup}>+ Add Employees</Button>
@@ -149,8 +148,12 @@ const Employees = ({ date }) => {
         <HiddenButtons
           className={selectedItems.length ? "visible" : "invisible"}
         >
-          <EditButton> Edit </EditButton>
           <DeleteButton> Delete </DeleteButton>
+          <EditButton
+            className={selectedItems.length === 1 ? "visible" : "invisible"}
+          >
+            Edit
+          </EditButton>
         </HiddenButtons>
         <EmployeeSearchContainer>
           <section className="w-100 d-flex justify-content-between align-items-center">
@@ -191,7 +194,12 @@ const Employees = ({ date }) => {
             <ModalEmployee modalIsOpen={modalIsOpen} closeModal={closeModal} />
           </TableContainer>
         </Col>
-        <Col lg={4} md={6} xs={12} className="offset-lg-0 offset-md-3  justify-content-center">
+        <Col
+          lg={4}
+          md={6}
+          xs={12}
+          className="offset-lg-0 offset-md-3  justify-content-center"
+        >
           <RecentActivityContainer>
             <Heading className="pt-md-3 px-md-4">Recent Activity</Heading>
             <RecentEmployee>
@@ -238,7 +246,7 @@ const RecentActivityContainer = styled.div`
   margin-right: 20px;
   @media only screen and (max-width: 1000px) {
     margin: 0;
-    margin-top: 20px
+    margin-top: 20px;
   }
 `;
 const RecentEmployee = styled.div`
@@ -275,7 +283,7 @@ const TimeCreated = styled.span`
 `;
 
 const HiddenButtons = styled.div`
-  margin: 0 ;
+  margin: 0;
   @media only screen and (max-width: 1000px) {
     order: 2;
   }
@@ -283,7 +291,7 @@ const HiddenButtons = styled.div`
 
 const EmployeeSearchContainer = styled(SearchContainer)`
   max-width: 300px;
-  margin: 0 40px 0 0;
+  margin: 0;
   @media only screen and (max-width: 1000px) {
     max-width: 100%;
     margin: 10px 10px 0 0;
