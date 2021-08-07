@@ -36,7 +36,7 @@ export const Avatar = styled.span`
   box-shadow: 4px 4px 17px rgba(189, 202, 228, 0.55);
   display: flex;
   height: 55px;
-  min-width: 55px;
+  width: 55px;
   justify-content: center;
   align-items: center;
   font-family: Poppins;

@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import LoginImage from "../Assets/Images/loginPic.png";
 const Login = () => {
+  const [show, setShow] = useState("login")
   const {
     register,
     handleSubmit,
@@ -21,7 +22,7 @@ const Login = () => {
           sm={12}
           className="py-3 m-0 d-flex justify-content-center align-items-center"
         >
-          <LoginContainer>
+         {show === "login" ? <LoginContainer>
             <GreetingText>Welcome Back</GreetingText>
             <HeadingText>Login to your account</HeadingText>
             <LoginForm>
@@ -59,6 +60,7 @@ const Login = () => {
                       color: "#2C5282",
                       cursor: "pointer",
                     }}
+                    onClick={() => setShow("forgotPassword")}
                   >
                     Forget Password?
                   </Label>
@@ -67,7 +69,34 @@ const Login = () => {
                 <SubmitButton type="submit" value="Login Now" />
               </form>
             </LoginForm>
-          </LoginContainer>
+          </LoginContainer> : <LoginContainer>
+          <HeadingText>Reset Password</HeadingText>
+          <form>
+          <Label>Your Email</Label>
+                <Input
+                  type="email"
+                  {...register("email", {
+                    required: true,
+                    pattern:
+                      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                  })}
+                />
+                {errors.email?.type === "required" && (
+                  <Error>Email is required</Error>
+                )}
+            <SubmitButton type="submit" value="Reset" />
+            <Label
+                    style={{
+                      color: "#2C5282",
+                      cursor: "pointer",
+                      textDecoration: "underline"
+                    }}
+                    onClick={() => setShow("login")}
+                  >
+                    Go to login page
+                  </Label>
+          </form>
+            </LoginContainer>}
         </Col>
       </Row>
     </Container>

@@ -392,7 +392,7 @@ const Inventory = () => {
                   </Col>
                 </Row>
                 <Row className="w-100  m-0">
-                  <Col md={4} xs={12}>
+                  <Col md={6} xs={12}>
                     <InputDiv>
                       <Label>Location</Label>
                       <ApplyFormInput
@@ -404,7 +404,7 @@ const Inventory = () => {
                       {errors.location && <Error>Location is required</Error>}
                     </InputDiv>
                   </Col>
-                  <Col md={4}>
+                  <Col md={6} xs={12}>
                     <InputDiv>
                       <Label>Delivery Proof</Label>
                       <UploadButton outline onClick={() => handleClick("doc")}>
@@ -419,7 +419,7 @@ const Inventory = () => {
                       />
                     </InputDiv>
                   </Col>
-                  <Col md={8}>
+                  <Col md={12} xs={12}>
                     <InputDiv>
                       <Label>Remarks</Label>
                       <ApplyFormInput

@@ -14,8 +14,9 @@ import Inwards from "./Inwards";
 import Employees from "./Employees";
 import Clients from "./Clients";
 import WareHouse from "./WareHouse";
+import MenuBar from "../MenuBar/MenuBar";
 
-const sidebarData = [
+export const sidebarData = [
   {
     icon: <InventoryImg className="icons" />,
     title: "Inventory",
@@ -57,6 +58,9 @@ const Dashboard = () => {
                 <Avatar>{avatarText}</Avatar>
                 <BoldText> {user} </BoldText>
               </Content>
+              <MenuContainer>
+                <MenuBar show={show} setShow={setShow}/>
+          </MenuContainer>
             </Head>
             <NavItems>
               {sidebarData.map((obj, i) => {
@@ -83,6 +87,7 @@ const Dashboard = () => {
               })}
             </NavItems>
           </Sidebar>
+          
         </Col>
         <Col lg={10} md={12} className="offset-lg-1 p-0">
           <ContentSection>
@@ -110,16 +115,21 @@ const Sidebar = styled.div`
   }
 `;
 const Section = styled.div``;
+const MenuContainer = styled.div`
+@media only screen and (min-width: 1000px) {
+display: none;
+}
+`;
 const NavItems = styled.div`
   @media only screen and (max-width: 1000px) {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+    display: none;
+    // flex-direction: column;
+    // flex-wrap: wrap;
+    // justify-content: center;
+    // align-items: center;
   }
 `;
-const Title = styled.p`
+export const Title = styled.p`
   display: inline-block;
   font-family: Poppins;
   font-weight: 500;
@@ -132,7 +142,7 @@ const Title = styled.p`
     line-height: 18px;
   }
 `;
-const SidebarContent = styled.div`
+export const SidebarContent = styled.div`
   width: 180px;
   height: 50px;
   border-radius: 12px;
@@ -154,6 +164,8 @@ const ContentSection = styled.div`
 const Head = styled.div`
   margin-bottom: 40px;
   margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
   @media only screen and (max-width: 1000px) {
     margin-bottom: 15px;
     margin-top: 20px;
@@ -168,8 +180,11 @@ const Content = styled.div`
 `;
 
 
-const SidebarIconWrapper = styled.div`
+export const SidebarIconWrapper = styled.div`
 svg{
+  // stroke: #2D3850;
+  // fill: #2D3850;
+  fill: rgb(45, 56, 80);
   width: 25px;
   height: 25px;
 }
