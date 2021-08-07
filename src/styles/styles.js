@@ -225,11 +225,11 @@ export const SubmitButton = styled.input`
         `;
   }}
   @media only screen and (max-width: 768px) {
-    margin-top: 30px;
-    font-size: 18px;
-    line-height: 25px;
-    width: 200px;
-    height: 56px;
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 20px;
+    width: 150px;
+    height: 45px;
     margin-bottom: 10px;
   }
 `;

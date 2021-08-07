@@ -9,7 +9,6 @@ import {
   SearchContainer,
   SearchInput,
   style,
-  SubText,
   TableContainer,
   TopBar,
 } from "../../styles/styles";
@@ -25,7 +24,7 @@ const columns = [
     field: "photos",
     headerName: "Photos",
     width: 100,
-    sortable: false,
+    sortable: true,
     align: "start",
     renderCell: (params) => {
       return (
@@ -42,7 +41,7 @@ const columns = [
     field: "name",
     headerName: "Name",
     width: 120,
-    sortable: false,
+    sortable: true,
     align: "center",
   },
   {
@@ -51,14 +50,14 @@ const columns = [
     align: "center",
     type: "number",
     width: 130,
-    sortable: false,
+    sortable: true,
   },
   {
     field: "joining_date",
     headerName: "Joining Date",
     width: 130,
     align: "center",
-    sortable: false,
+    sortable: true,
     renderCell: (params) => {
       return <span style={{ color: "blue" }}>{params.row.joining_date}</span>;
     },
@@ -68,7 +67,7 @@ const columns = [
     headerName: "Designation",
     align: "center",
     width: 120,
-    sortable: false,
+    sortable: true,
   },
   {
     field: "location",
@@ -76,7 +75,7 @@ const columns = [
     width: 110,
     type: "number",
     align: "center",
-    sortable: false,
+    sortable: true,
   },
 ];
 

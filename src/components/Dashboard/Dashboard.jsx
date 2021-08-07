@@ -123,10 +123,6 @@ display: none;
 const NavItems = styled.div`
   @media only screen and (max-width: 1000px) {
     display: none;
-    // flex-direction: column;
-    // flex-wrap: wrap;
-    // justify-content: center;
-    // align-items: center;
   }
 `;
 export const Title = styled.p`

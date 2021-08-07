@@ -22,16 +22,17 @@ import {
   UploadButton,
   UploadInput,
 } from "../../styles/styles";
-import tablePhoto from "../../Assets/Images/photoCamera.png";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { connect } from "react-redux";
+import { removeFromInventory } from "../../Redux/actions/InventoryActions";
 
 const columns = [
   {
     field: "photos",
     headerName: "Photos",
     width: 100,
-    sortable: false,
+    sortable: true,
     align: "center",
     renderCell: (params) => {
       return (
@@ -50,7 +51,7 @@ const columns = [
     field: "name",
     headerName: "Name",
     width: 120,
-    sortable: false,
+    sortable: true,
     align: "center",
   },
   {
@@ -59,21 +60,21 @@ const columns = [
     align: "center",
     type: "number",
     width: 120,
-    sortable: false,
+    sortable: true,
   },
   {
     field: "condition",
     headerName: "Condition",
     width: 120,
     align: "center",
-    sortable: false,
+    sortable: true,
   },
   {
     field: "location",
     headerName: "Location",
     align: "center",
     width: 120,
-    sortable: false,
+    sortable: true,
   },
   {
     field: "available",
@@ -81,7 +82,7 @@ const columns = [
     width: 110,
     type: "number",
     align: "center",
-    sortable: false,
+    sortable: true,
   },
   {
     field: "reserved",
@@ -89,7 +90,7 @@ const columns = [
     width: 130,
     type: "number",
     align: "center",
-    sortable: false,
+    sortable: true,
   },
   {
     field: "onHand",
@@ -97,109 +98,24 @@ const columns = [
     type: "number",
     width: 110,
     align: "center",
-    sortable: false,
+    sortable: true,
   },
 ];
 
-const rows = [
-  {
-    id: "1",
-    photos: tablePhoto,
-    name: "Snow",
-    sku: "23888998231",
-    condition: "New",
-    location: "Warehouse1",
-    available: 13456,
-    reserved: 1300,
-    onHand: 453,
-  },
-  {
-    id: "2",
-    photos: tablePhoto,
-    name: "Snow",
-    sku: "23888998231",
-    condition: "New",
-    location: "Warehouse1",
-    available: 13456,
-    reserved: 1300,
-    onHand: 453,
-  },
-  {
-    id: "3",
-    photos: tablePhoto,
-    name: "Snow",
-    sku: "23888998231",
-    condition: "New",
-    location: "Warehouse1",
-    available: 13456,
-    reserved: 1300,
-    onHand: 453,
-  },
-  {
-    id: "4",
-    photos: tablePhoto,
-    name: "Snow",
-    sku: "23888998231",
-    condition: "New",
-    location: "Warehouse1",
-    available: 13456,
-    reserved: 1300,
-    onHand: 453,
-  },
-  {
-    id: "5",
-    photos: tablePhoto,
-    name: "Snow",
-    sku: "23888998231",
-    condition: "New",
-    location: "Warehouse1",
-    available: 13456,
-    reserved: 1300,
-    onHand: 453,
-  },
-  {
-    id: "6",
-    photos: tablePhoto,
-    name: "Snow",
-    sku: "23888998231",
-    condition: "New",
-    location: "Warehouse1",
-    available: 13456,
-    reserved: 1300,
-    onHand: 453,
-  },
-  {
-    id: "7",
-    photos: tablePhoto,
-    name: "Snow",
-    sku: "23888998231",
-    condition: "New",
-    location: "Warehouse1",
-    available: 13456,
-    reserved: 1300,
-    onHand: 453,
-  },
-];
-
-const Inventory = () => {
+const Inventory = ({ inventories, removeFromInventory }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [goto, setGoto] = useState("table");
   const [imgFile, setImgFile] = useState("");
   const [docFile, setDocFile] = useState("");
-  const [imgFileError, setImgFileError] = useState("");
-  const [docFileError, setDocFileError] = useState("");
+  // const [imgFileError, setImgFileError] = useState("");
+  // const [docFileError, setDocFileError] = useState("");
   // const [fileUrl, setFileUrl] = useState(null);
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm();
-  console.log(
-    "🚀~selectedItems",
-    { imgFileError },
-    { docFileError },
-    { selectedItems }
-  );
+
   const onSubmit = (data) => {
     console.log(data, { imgFile }, { docFile });
   };
@@ -215,13 +131,18 @@ const Inventory = () => {
   const handleImgInputChange = (e) => {
     const imgFileUploaded = e.target.files[0];
     setImgFile(imgFileUploaded);
-    setImgFileError("");
+    // setImgFileError("");
   };
   const handleDocInputChange = (e) => {
     const docFileUploaded = e.target.files[0];
     setDocFile(docFileUploaded);
-    setDocFileError("");
+    // setDocFileError("");
   };
+  const handleDelete = () => {
+    removeFromInventory(selectedItems);
+    setSelectedItems([])
+  };
+
   return (
     <section>
       <TopBar>
@@ -231,7 +152,7 @@ const Inventory = () => {
             <ButtonContainer
               className={selectedItems.length ? "visible" : "invisible"}
             >
-              <DeleteButton> Delete </DeleteButton>
+              <DeleteButton onClick={handleDelete}> Delete </DeleteButton>
               <EditButton
                 className={selectedItems.length === 1 ? "visible" : "invisible"}
               >
@@ -257,7 +178,7 @@ const Inventory = () => {
       {goto === "table" ? (
         <TableContainer className="overflow-hidden">
           <DataGrid
-            rows={rows}
+            rows={inventories}
             style={style.table}
             columns={columns}
             pageSize={10}
@@ -266,16 +187,14 @@ const Inventory = () => {
             autoHeight
             hideFooterSelectedRowCount
             disableColumnMenu
-            disableColumnSelector
-            disableSelectionOnClick
             checkboxSelection
             scrollbarSize={5}
             classes={"MuiDataGrid-columnHeader--alignCenter"}
-            onSelectionModelChange={(e) => {
+             onSelectionModelChange={(e) => {
               let selectedItemsIdArray = e;
               let selectedItems = [];
               selectedItemsIdArray.forEach((id) =>
-                selectedItems.push(rows.find((row) => row.id === id))
+                selectedItems.push(inventories.find((row) => row.id === id))
               );
               setSelectedItems(selectedItems);
             }}
@@ -442,4 +361,8 @@ const Inventory = () => {
   );
 };
 
-export default Inventory;
+const mapStateToProps = (state) => state;
+const mapDispatchToProps = {
+  removeFromInventory: removeFromInventory,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Inventory);

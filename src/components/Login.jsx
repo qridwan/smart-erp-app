@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import LoginImage from "../Assets/Images/loginPic.png";
 const Login = () => {
-  const [show, setShow] = useState("login")
+  const [show, setShow] = useState("login");
   const {
     register,
     handleSubmit,
@@ -22,12 +22,62 @@ const Login = () => {
           sm={12}
           className="py-3 m-0 d-flex justify-content-center align-items-center"
         >
-         {show === "login" ? <LoginContainer>
-            <GreetingText>Welcome Back</GreetingText>
-            <HeadingText>Login to your account</HeadingText>
-            <LoginForm>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <Label>Email</Label>
+          {show === "login" ? (
+            <LoginContainer>
+              <GreetingText>Welcome Back</GreetingText>
+              <HeadingText>Login to your account</HeadingText>
+              <LoginForm>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <Label>Email</Label>
+                  <Input
+                    type="email"
+                    {...register("email", {
+                      required: true,
+                      pattern:
+                        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                    })}
+                  />
+                  {errors.email?.type === "required" && (
+                    <Error>Email is required</Error>
+                  )}
+                  <Label>Password</Label>
+                  <Input
+                    type="password"
+                    {...register("password", { required: true })}
+                  />
+                  {errors.password && <Error>Password is not valid</Error>}
+
+                  <div className="d-flex justify-content-between">
+                    <span>
+                      <Label style={{cursor: 'pointer'}}>
+                        <input
+                          type="checkbox"
+                          {...register("toggle")}
+                          className="mx-2"
+                        />
+                        Remember Me
+                      </Label>
+                    </span>
+                    <Label
+                      style={{
+                        color: "#2C5282",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setShow("forgotPassword")}
+                    >
+                      Forget Password?
+                    </Label>
+                  </div>
+
+                  <SubmitButton type="submit" value="Login Now" />
+                </form>
+              </LoginForm>
+            </LoginContainer>
+          ) : (
+            <LoginContainer>
+              <HeadingText>Reset Password</HeadingText>
+              <form>
+                <Label>Your Email</Label>
                 <Input
                   type="email"
                   {...register("email", {
@@ -39,64 +89,20 @@ const Login = () => {
                 {errors.email?.type === "required" && (
                   <Error>Email is required</Error>
                 )}
-                <Label>Password</Label>
-                <Input
-                  type="password"
-                  {...register("password", { required: true })}
-                />
-                {errors.password && <Error>Password is not valid</Error>}
-
-                <div className="d-flex justify-content-between">
-                  <span>
-                    <input
-                      type="checkbox"
-                      {...register("toggle")}
-                      className="mx-2"
-                    />
-                    <Label>Remember Me</Label>
-                  </span>
-                  <Label
-                    style={{
-                      color: "#2C5282",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => setShow("forgotPassword")}
-                  >
-                    Forget Password?
-                  </Label>
-                </div>
-
-                <SubmitButton type="submit" value="Login Now" />
+                <SubmitButton type="submit" value="Reset" />
+                <Label
+                  style={{
+                    color: "#2C5282",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                  onClick={() => setShow("login")}
+                >
+                  Go to login page
+                </Label>
               </form>
-            </LoginForm>
-          </LoginContainer> : <LoginContainer>
-          <HeadingText>Reset Password</HeadingText>
-          <form>
-          <Label>Your Email</Label>
-                <Input
-                  type="email"
-                  {...register("email", {
-                    required: true,
-                    pattern:
-                      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                  })}
-                />
-                {errors.email?.type === "required" && (
-                  <Error>Email is required</Error>
-                )}
-            <SubmitButton type="submit" value="Reset" />
-            <Label
-                    style={{
-                      color: "#2C5282",
-                      cursor: "pointer",
-                      textDecoration: "underline"
-                    }}
-                    onClick={() => setShow("login")}
-                  >
-                    Go to login page
-                  </Label>
-          </form>
-            </LoginContainer>}
+            </LoginContainer>
+          )}
         </Col>
       </Row>
     </Container>
@@ -175,8 +181,8 @@ const Label = styled.label`
   color: #4a5568;
   @media only screen and (max-width: 1000px) {
     font-size: 12px;
-  line-height: 16px;
-  margin: 8px 0;
+    line-height: 16px;
+    margin: 8px 0;
   }
 `;
 const Error = styled.p`

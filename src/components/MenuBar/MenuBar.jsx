@@ -14,7 +14,7 @@ const StyledMenu = withStyles({
   paper: {
     border: "1px solid #d3d4d5",
     borderRadius: "10px",
-    padding: "15px 20px",
+    padding: "15px 20px 0 20px",
   },
 })((props) => (
   <Menu
@@ -48,10 +48,18 @@ const MenuBar = ({ show, setShow }) => {
         aria-controls="customized-menu"
         aria-haspopup="true"
         variant="contained"
+        style={{
+            marginRight: "10px",
+          }}
         color="primary"
         onClick={handleClick}
       >
-        <MenuRoundedIcon style={{ color: "red" }} />
+        <MenuRoundedIcon
+          style={{
+            background: "#FFFFFF",
+            borderRadius: "5px",
+          }}
+        />
       </IconButton>
       <StyledMenu
         id="customized-menu"
