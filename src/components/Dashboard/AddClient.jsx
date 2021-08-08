@@ -31,7 +31,7 @@ const AddClient = ({ setShow }) => {
         </div>
         <div className="text-center">
           <Button outline onClick={() => setShow("clients")}>
-            View Inventory
+            View Clients 
           </Button>
         </div>
       </TopBar>

@@ -9,6 +9,7 @@ import {
   Title,
 } from "../Dashboard/Dashboard";
 import { IconButton } from "@material-ui/core";
+import styled from "styled-components";
 
 const StyledMenu = withStyles({
   paper: {
@@ -49,17 +50,20 @@ const MenuBar = ({ show, setShow }) => {
         aria-haspopup="true"
         variant="contained"
         style={{
-            marginRight: "10px",
-          }}
+          marginRight: "10px",
+        }}
         color="primary"
         onClick={handleClick}
       >
+        <MenuIconWrapper>
         <MenuRoundedIcon
           style={{
-            background: "#FFFFFF",
+            fontSize: "30px",
             borderRadius: "5px",
           }}
         />
+        </MenuIconWrapper>
+        
       </IconButton>
       <StyledMenu
         id="customized-menu"
@@ -94,3 +98,10 @@ const MenuBar = ({ show, setShow }) => {
 };
 
 export default MenuBar;
+
+const MenuIconWrapper = styled.span` 
+
+path {
+  fill: #2d3850
+ }
+`

@@ -146,10 +146,9 @@ const Inventory = ({ inventories, removeFromInventory }) => {
   return (
     <section>
       <TopBar>
-        <BoldText> Inventory </BoldText>
-        {goto === "table" ? (
-          <div className="d-flex">
-            <ButtonContainer
+      <div className="d-flex">
+      <BoldText> Inventory </BoldText>
+        <ButtonContainer
               className={selectedItems.length ? "visible" : "invisible"}
             >
               <DeleteButton onClick={handleDelete}> Delete </DeleteButton>
@@ -159,6 +158,12 @@ const Inventory = ({ inventories, removeFromInventory }) => {
                 Edit
               </EditButton>
             </ButtonContainer>
+      </div>
+        
+            
+        {goto === "table" ? (
+          
+            
             <Button
               onClick={() => {
                 setGoto("addItem");
@@ -167,7 +172,6 @@ const Inventory = ({ inventories, removeFromInventory }) => {
             >
               + Add Items
             </Button>
-          </div>
         ) : (
           <Button outline onClick={() => setGoto("table")}>
             View Inventory

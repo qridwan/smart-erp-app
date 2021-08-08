@@ -22,6 +22,7 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { useState } from "react";
 import styled from "styled-components";
 import ReceiveOrder from "./ReceiveOrder";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 function createData(
   order,
@@ -98,7 +99,7 @@ const Inwards = () => {
     });
     console.log(state);
   };
-
+const options = ["item1", "item2", "item3"]
   return (
     <div>
       <TopBar>
@@ -109,24 +110,35 @@ const Inwards = () => {
         )}
         {show === "search_order" ? (
           <Button outline onClick={() => setShow("receive_order")}>
-             Receive Order
+            Receive Order
           </Button>
         ) : (
           <Button outline onClick={() => setShow("search_order")}>
-           Search Orders
+            Search Orders
           </Button>
         )}
       </TopBar>
       {show === "search_order" ? (
         <InwardsSearchContainer>
           <div className="d-flex justify-content-center mt-3">
-            <SearchContainer className="w-75">
-              <section className="w-100">
-                <SearchIcon className="pr-3" />
-                <SearchInput
-                  placeholder="Search by- AGENCY NAME/ORDER No."
-                  type="text"
-                ></SearchInput>
+            <SearchContainer className="w-75 overflow-hidden">
+              <section className="d-flex w-100">
+                <SearchIcon style={{ marginRight: "0.8em"}} />
+               <div className="w-50">
+               <Autocomplete
+                  id="custom-input-demo"
+                  options={options}
+                  renderInput={(params) => (
+                    <div className="" ref={params.InputProps.ref}>
+                      <SearchInput 
+                        placeholder="Search by- AGENCY NAME/ORDER No."
+                        type="text"
+                        {...params.inputProps}
+                      />
+                    </div>
+                  )}
+                />
+               </div>
               </section>
             </SearchContainer>
           </div>
@@ -134,7 +146,7 @@ const Inwards = () => {
             <Table className={classes.table} aria-label="simple table">
               <TableHead className={classes.thead}>
                 <TableRow>
-                  <TableCell className={classes.thead}>ORDER NO.</TableCell>
+                  <TableCell className={classes.thead}>Order No.</TableCell>
                   <TableCell className={classes.thead} align="center">
                     Agency Name
                   </TableCell>
@@ -178,10 +190,18 @@ const Inwards = () => {
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "age" }}
                           >
-                            <option value={row.item}>{row.item}</option>
-                            <option value={10}>Ten</option>
-                            <option value={20}>Twenty</option>
-                            <option value={30}>Thirty</option>
+                            <option title="number" value={row.item}>
+                              {row.item}
+                            </option>
+                            <option title="number" value={10}>
+                              Ten
+                            </option>
+                            <option title="number" value={20}>
+                              Twenty
+                            </option>
+                            <option title="number" value={30}>
+                              Thirty
+                            </option>
                           </NativeSelect>
                         </FormControl>
                       </TableCell>

@@ -342,7 +342,6 @@ export const AddItemContainer = styled.div`
 export const SearchInput = styled.input`
   width: 80%;
   height: 25px;
-  margin-left: 30px;
   font-family: Lexend;
   font-style: normal;
   font-weight: normal;

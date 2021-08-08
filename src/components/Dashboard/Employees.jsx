@@ -18,6 +18,7 @@ import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
 import employee1 from "../../Assets/Images/emp-1.png";
 import ModalEmployee from "./ModalEmployee";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const columns = [
   {
@@ -132,7 +133,7 @@ const Employees = () => {
   const handlePopup = () => {
     openModal();
   };
-
+const options = ["client1", "client2", "client3"]
   return (
     <div>
       <TopBar className="px-5 py-4">
@@ -155,12 +156,21 @@ const Employees = () => {
           </EditButton>
         </HiddenButtons>
         <EmployeeSearchContainer>
-          <section className="w-100 d-flex justify-content-between align-items-center">
-            <SearchIcon />
-            <SearchInput
-              placeholder="Search by client..."
-              type="text"
-            ></SearchInput>
+          <section className="w-100 d-flex justify-content-start align-items-center">
+            <SearchIcon  style={{ marginRight: "0.8rem" }}/>
+            <Autocomplete
+              id="custom-input-demo"
+              options={options}
+              renderInput={(params) => (
+                <div ref={params.InputProps.ref}>
+                  <SearchInput
+                    placeholder="Search by client..."
+                    type="text"
+                    {...params.inputProps}
+                  />
+                </div>
+              )}
+            />
           </section>
         </EmployeeSearchContainer>
       </TopBar>

@@ -1,7 +1,9 @@
-import { NativeSelect, FormControl } from "@material-ui/core";
+import { NativeSelect, FormControl, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core";
 import React, { useState } from "react";
 import styled from "styled-components";
+import Zoom from "@material-ui/core/Zoom";
+
 import {
   BoldText,
   Button,
@@ -20,6 +22,7 @@ import TableRow from "@material-ui/core/TableRow";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { Dropdown } from "react-bootstrap";
 import GenerateOutwards from "./GenerateOutwards";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useStyles = makeStyles({
   table: {
@@ -103,7 +106,7 @@ const Outwards = () => {
     });
     console.log(state);
   };
-
+  const options = ["Option 1", "Option 2"];
   return (
     <>
       {show !== "generate" ? (
@@ -114,11 +117,22 @@ const Outwards = () => {
           <TopBar className="py-0 pt-lg-3">
             <SearchContainer>
               <section className="w-100 d-flex justify-content-between align-items-center">
-                <SearchIcon />
-                <SearchInput
-                  placeholder="Search by client..."
-                  type="text"
-                ></SearchInput>
+                <div className="m-0 p-0 d-flex ">
+                  <SearchIcon style={{ marginRight: "0.8rem" }} />
+                  <Autocomplete
+                    id="custom-input-demo"
+                    options={options}
+                    renderInput={(params) => (
+                      <div ref={params.InputProps.ref}>
+                        <SearchInput
+                          placeholder="Search by client..."
+                          type="text"
+                          {...params.inputProps}
+                        />
+                      </div>
+                    )}
+                  />
+                </div>
                 <FilterIcon className="" />
               </section>
             </SearchContainer>
@@ -174,18 +188,24 @@ const Outwards = () => {
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "age" }}
                           >
-                            <option value={row.item}>{row.item}</option>
-                            <option value={10}>Ten</option>
-                            <option value={20}>Twenty</option>
-                            <option value={30}>Thirty</option>
+                            <Option value={row.item} title="number">
+                              {row.item}
+                            </Option>
+
+                            <Option value={10} title="number">
+                              Ten
+                            </Option>
+
+                            <Option value={20} title="number">
+                              Twenty
+                            </Option>
+                            <Option value={30} title="number">
+                              Thirty
+                            </Option>
                           </NativeSelect>
                         </FormControl>
                       </TableCell>
-                      <TableCell
-                        align="center"
-                       >
-                        {row.agency}
-                      </TableCell>
+                      <TableCell align="center">{row.agency}</TableCell>
                       <TableCell align="center">{row.quantity}</TableCell>
                       <TableCell align="center">{row.sent}</TableCell>
                       <TableCell align="center">{row.pending}</TableCell>
@@ -237,3 +257,5 @@ const TitleContainer = styled.div`
     padding: 20px 50px 0 50px;
   }
 `;
+
+const Option = styled.option``;
