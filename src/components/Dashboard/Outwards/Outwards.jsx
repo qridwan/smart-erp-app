@@ -1,53 +1,29 @@
-import { NativeSelect, FormControl, Tooltip } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core";
+import { NativeSelect, FormControl } from "@material-ui/core";
 import React, { useState } from "react";
 import styled from "styled-components";
-import Zoom from "@material-ui/core/Zoom";
-
 import {
   BoldText,
   Button,
   SearchContainer,
   SearchInput,
   TableContainer,
+  tableStyles,
   TopBar,
-} from "../../styles/styles";
-import { ReactComponent as SearchIcon } from "../../Assets/Icons/search.svg";
-import { ReactComponent as FilterIcon } from "../../Assets/Icons/filter.svg";
+} from "../../../styles/styles";
+import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
+import { ReactComponent as FilterIcon } from "../../../Assets/Icons/filter.svg";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { Dropdown } from "react-bootstrap";
 import GenerateOutwards from "./GenerateOutwards";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { getComparator, stableSort } from "../Tables/table.sort";
+import TableHeadCell from "../Tables/TableHead";
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-    paddingTop: "30px",
-    marginTop: "20px",
-  },
-  thead: {
-    borderBottom: "none",
-    fontFamily: "Poppins",
-    fontWeight: "500",
-    fontSize: "14px",
-    lineHeight: "21px",
-    color: "#6D83AE",
-    background: "#F7F9FD",
-  },
-  button: {
-    display: "block",
-    marginTop: "20px",
-  },
-  formControl: {
-    margin: "10px",
-    minWidth: 120,
-  },
-});
+
 
 function createData(
   order,
@@ -86,13 +62,20 @@ const rows = [
 ];
 
 const Outwards = () => {
-  const [show, setShow] = useState("");
-  const classes = useStyles();
+  const [show, setShow] = useState("outwards");
+  const classes = tableStyles();
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("name");
   const [state, setState] = useState({
     id: 1,
     age: "",
     name: "hai",
   });
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -111,14 +94,14 @@ const Outwards = () => {
     <>
       {show !== "generate" ? (
         <div>
-          <TitleContainer>
+          <TopBar className="">
             <BoldText> Outwards </BoldText>
-          </TitleContainer>
-          <TopBar className="py-0 pt-lg-3">
             <SearchContainer>
               <section className="w-100 d-flex justify-content-between align-items-center">
-                <div className="m-0 p-0 d-flex ">
-                  <SearchIcon style={{ marginRight: "0.8rem" }} />
+                <div className="m-0 p-0 d-flex">
+                  <SearchIcon
+                    style={{ marginRight: "0.8rem", width: "20px" }}
+                  />
                   <Autocomplete
                     id="custom-input-demo"
                     options={options}
@@ -142,37 +125,15 @@ const Outwards = () => {
           </TopBar>
           <TableContainer className="mt-lg-3">
             <Table className={classes.table} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell className={classes.thead}>Order No.</TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Shipping Date
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Item Name
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Agency Name
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Total Qty.
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Sent
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Pending
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Status
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    More
-                  </TableCell>
-                </TableRow>
-              </TableHead>
+              <TableHeadCell
+                classes={classes}
+                order={order}
+                orderBy={orderBy}
+                show={show}
+                onRequestSort={handleRequestSort}
+              />
               <TableBody>
-                {rows.map((row) => {
+                {stableSort(rows, getComparator(order, orderBy)).map((row) => {
                   return (
                     <TableRow key={row.order}>
                       <TableCell component="th" scope="row" align="center">
@@ -188,19 +149,19 @@ const Outwards = () => {
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "age" }}
                           >
-                            <Option value={row.item} title="number">
+                            <Option value={row.item} title={row.quantity}>
                               {row.item}
                             </Option>
 
-                            <Option value={10} title="number">
-                              Ten
+                            <Option value={10} title={row.quantity}>
+                              Lense Hood
                             </Option>
 
-                            <Option value={20} title="number">
-                              Twenty
+                            <Option value={20} title={row.quantity}>
+                              Tripod
                             </Option>
-                            <Option value={30} title="number">
-                              Thirty
+                            <Option value={30} title={row.quantity}>
+                              Extra Lens
                             </Option>
                           </NativeSelect>
                         </FormControl>
@@ -250,12 +211,5 @@ const Outwards = () => {
 };
 
 export default Outwards;
-
-const TitleContainer = styled.div`
-  padding: 40px 100px 0 100px;
-  @media only screen and (max-width: 1000px) {
-    padding: 20px 50px 0 50px;
-  }
-`;
 
 const Option = styled.option``;

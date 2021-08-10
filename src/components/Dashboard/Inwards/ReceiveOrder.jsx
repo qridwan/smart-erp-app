@@ -5,7 +5,7 @@ import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
-import { ReactComponent as DeleteIcon } from "../../Assets/Icons/delete.svg";
+import { ReactComponent as DeleteIcon } from "../../../Assets/Icons/delete.svg";
 
 import {
   AddItemContainer,
@@ -20,7 +20,7 @@ import {
   TableContainer,
   TableInput,
   TableSelect,
-} from "../../styles/styles";
+} from "../../../styles/styles";
 const useStyles = makeStyles({
   table: {
     width: "100%",

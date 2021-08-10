@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
@@ -13,12 +13,11 @@ import {
   MainTitle,
   Select,
   SubmitButton,
-  SubText,
   TableInput,
   TopBar,
-} from "../../styles/styles";
-import { ReactComponent as IndiaIcon } from "../../Assets/Icons/india.svg";
-import { ReactComponent as DeleteIcon } from "../../Assets/Icons/delete.svg";
+} from "../../../styles/styles";
+import { ReactComponent as IndiaIcon } from "../../../Assets/Icons/india.svg";
+import { ReactComponent as DeleteIcon } from "../../../Assets/Icons/delete.svg";
 import {
   IconButton,
   makeStyles,

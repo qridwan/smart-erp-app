@@ -11,7 +11,7 @@ import {
   Label,
   SubmitButton,
   TopBar,
-} from "../../styles/styles";
+} from "../../../styles/styles";
 
 const AddClient = ({ setShow }) => {
   const {

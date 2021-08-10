@@ -1,6 +1,6 @@
 import { DataGrid } from "@material-ui/data-grid";
 import React, { useRef, useState } from "react";
-import IPcamera from "../../Assets/Images/ipCamera.png";
+import IPcamera from "../../../Assets/Images/ipCamera.png";
 import {
   AddItemContainer,
   ApplyFormInput,
@@ -14,6 +14,7 @@ import {
   ImageInputArea,
   InputDiv,
   Label,
+  Select,
   style,
   SubmitButton,
   TableContainer,
@@ -21,11 +22,12 @@ import {
   TopBar,
   UploadButton,
   UploadInput,
-} from "../../styles/styles";
+} from "../../../styles/styles";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { connect } from "react-redux";
-import { removeFromInventory } from "../../Redux/actions/InventoryActions";
+import { removeFromInventory } from "../../../Redux/actions/InventoryActions";
+import ModalInventory from "./ModalInventory";
 
 const columns = [
   {
@@ -107,6 +109,7 @@ const Inventory = ({ inventories, removeFromInventory }) => {
   const [goto, setGoto] = useState("table");
   const [imgFile, setImgFile] = useState("");
   const [docFile, setDocFile] = useState("");
+  const [open, setOpen] = useState(false);
   // const [imgFileError, setImgFileError] = useState("");
   // const [docFileError, setDocFileError] = useState("");
   // const [fileUrl, setFileUrl] = useState(null);
@@ -138,47 +141,49 @@ const Inventory = ({ inventories, removeFromInventory }) => {
     setDocFile(docFileUploaded);
     // setDocFileError("");
   };
-  const handleDelete = () => {
-    removeFromInventory(selectedItems);
-    setSelectedItems([])
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDelete = async () => {
+    await removeFromInventory(selectedItems)
+      setSelectedItems([])
+      handleOpen()
   };
 
   return (
     <section>
       <TopBar>
-      <div className="d-flex">
-      <BoldText> Inventory </BoldText>
-        <ButtonContainer
-              className={selectedItems.length ? "visible" : "invisible"}
+        <div className="d-flex">
+          <BoldText> Inventory </BoldText>
+          <ButtonContainer
+            className={selectedItems.length ? "visible" : "invisible"}
+          >
+            <DeleteButton onClick={handleDelete}> Delete </DeleteButton>
+            <EditButton
+              className={selectedItems.length === 1 ? "visible" : "invisible"}
             >
-              <DeleteButton onClick={handleDelete}> Delete </DeleteButton>
-              <EditButton
-                className={selectedItems.length === 1 ? "visible" : "invisible"}
-              >
-                Edit
-              </EditButton>
-            </ButtonContainer>
-      </div>
-        
-            
+              Edit
+            </EditButton>
+          </ButtonContainer>
+        </div>
+
         {goto === "table" ? (
-          
-            
-            <Button
-              onClick={() => {
-                setGoto("addItem");
-                setSelectedItems([]);
-              }}
-            >
-              + Add Items
-            </Button>
+          <Button
+            onClick={() => {
+              setGoto("addItem");
+              setSelectedItems([]);
+            }}
+          >
+            + Add Items
+          </Button>
         ) : (
           <Button outline onClick={() => setGoto("table")}>
             View Inventory
           </Button>
         )}
       </TopBar>
-
+          <ModalInventory open={open} setOpen={setOpen} />
       {goto === "table" ? (
         <TableContainer className="overflow-hidden">
           <DataGrid
@@ -194,7 +199,7 @@ const Inventory = ({ inventories, removeFromInventory }) => {
             checkboxSelection
             scrollbarSize={5}
             classes={"MuiDataGrid-columnHeader--alignCenter"}
-             onSelectionModelChange={(e) => {
+            onSelectionModelChange={(e) => {
               let selectedItemsIdArray = e;
               let selectedItems = [];
               selectedItemsIdArray.forEach((id) =>
@@ -317,14 +322,17 @@ const Inventory = ({ inventories, removeFromInventory }) => {
                 <Row className="w-100  m-0">
                   <Col md={6} xs={12}>
                     <InputDiv>
-                      <Label>Location</Label>
-                      <ApplyFormInput
-                        placeholder=""
-                        {...register("location", {
+                      <Label>Warehouse</Label>
+                      <Select
+                        {...register("warehouse", {
                           required: true,
                         })}
-                      />
-                      {errors.location && <Error>Location is required</Error>}
+                      >
+                        <option className="d-none" value=""></option>
+                        <option value="ware-1"> WareHouse-1 </option>
+                        <option value="ware-2"> WareHouse-2 </option>
+                        <option value="ware-3"> WareHouse-3 </option>
+                      </Select>
                     </InputDiv>
                   </Col>
                   <Col md={6} xs={12}>

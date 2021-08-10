@@ -11,12 +11,12 @@ import {
   style,
   TableContainer,
   TopBar,
-} from "../../styles/styles";
-import { ReactComponent as SearchIcon } from "../../Assets/Icons/search.svg";
+} from "../../../styles/styles";
+import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
 import { DataGrid } from "@material-ui/data-grid";
 import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
-import employee1 from "../../Assets/Images/emp-1.png";
+import employee1 from "../../../Assets/Images/emp-1.png";
 import ModalEmployee from "./ModalEmployee";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
@@ -84,7 +84,7 @@ const rows = [
   {
     id: "1",
     photos: employee1,
-    name: "Snow Man",
+    name: "Snow Man-1",
     employee_id: "23888998231",
     joining_date: "27-06-2020",
     designation: "Supervisor",
@@ -93,29 +93,29 @@ const rows = [
   {
     id: "2",
     photos: employee1,
-    name: "Snow Man",
-    employee_id: "23888998231",
+    name: "Snow Man-2",
+    employee_id: "5448998231",
     joining_date: "27-06-20",
-    designation: "Supervisor",
-    location: "Delhi",
+    designation: "Administrator",
+    location: "Chennai",
   },
   {
     id: "3",
     photos: employee1,
-    name: "Snow Man",
-    employee_id: "23888998231",
+    name: "Snow Man-3",
+    employee_id: "2233998231",
     joining_date: "27-06-20",
-    designation: "Supervisor",
-    location: "Delhi",
+    designation: "Executive",
+    location: "Mumbai",
   },
   {
     id: "4",
     photos: employee1,
-    name: "Snow Man",
-    employee_id: "23888998231",
+    name: "Snow Man-4",
+    employee_id: "1118998231",
     joining_date: "27-06-20",
-    designation: "Supervisor",
-    location: "Delhi",
+    designation: "Admin",
+    location: "Panjab",
   },
 ];
 
@@ -133,18 +133,13 @@ const Employees = () => {
   const handlePopup = () => {
     openModal();
   };
-const options = ["client1", "client2", "client3"]
+  const options = ["client1", "client2", "client3"];
   return (
     <div>
-      <TopBar className="px-5 py-4">
+      <TopBar className="">
         <div>
           <BoldText> Employees </BoldText>
         </div>
-        <div className="text-center mt-lg-2">
-          <Button onClick={handlePopup}>+ Add Employees</Button>
-        </div>
-      </TopBar>
-      <TopBar className="py-2">
         <HiddenButtons
           className={selectedItems.length ? "visible" : "invisible"}
         >
@@ -157,22 +152,27 @@ const options = ["client1", "client2", "client3"]
         </HiddenButtons>
         <EmployeeSearchContainer>
           <section className="w-100 d-flex justify-content-start align-items-center">
-            <SearchIcon  style={{ marginRight: "0.8rem" }}/>
-            <Autocomplete
-              id="custom-input-demo"
-              options={options}
-              renderInput={(params) => (
-                <div ref={params.InputProps.ref}>
-                  <SearchInput
-                    placeholder="Search by client..."
-                    type="text"
-                    {...params.inputProps}
-                  />
-                </div>
-              )}
-            />
+            <div className="m-0 p-0 d-flex">
+              <SearchIcon style={{ marginRight: "0.8rem", width: "20px" }} />
+              <Autocomplete
+                id="custom-input-demo"
+                options={options}
+                renderInput={(params) => (
+                  <div ref={params.InputProps.ref}>
+                    <SearchInput
+                      placeholder="Search by client..."
+                      type="text"
+                      {...params.inputProps}
+                    />
+                  </div>
+                )}
+              />
+            </div>
           </section>
         </EmployeeSearchContainer>
+        <div className="text-center">
+          <Button onClick={handlePopup}>+ Add Employees</Button>
+        </div>
       </TopBar>
       <Row className="w-100 p-0 m-0">
         <Col lg={8} md={12} className="pl-4">

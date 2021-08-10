@@ -10,7 +10,7 @@ import {
   Label,
   SubmitButton,
   TopBar,
-} from "../../styles/styles";
+} from "../../../styles/styles";
 const WareHouse = () => {
   const {
     register,

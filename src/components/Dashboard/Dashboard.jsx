@@ -7,13 +7,13 @@ import { ReactComponent as InOutWardImg } from "../../Assets/Icons/in-outwards.s
 import { ReactComponent as EmployeeImg } from "../../Assets/Icons/employee.svg";
 import { ReactComponent as ClientsImg } from "../../Assets/Icons/clients.svg";
 import { ReactComponent as WareHouseImg } from "../../Assets/Icons/warehouse.svg";
-import Inventory from "./Inventory";
+import Inventory from "./Inventory/Inventory";
 import { Avatar, BoldText, DashboardContent } from "../../styles/styles";
-import Outwards from "./Outwards";
-import Inwards from "./Inwards";
-import Employees from "./Employees";
-import Clients from "./Clients";
-import WareHouse from "./WareHouse";
+import Outwards from "./Outwards/Outwards";
+import Inwards from "./Inwards/Inwards";
+import Employees from "./Employees/Employees";
+import Clients from "./Clients/Clients";
+import WareHouse from "./Warehouse/WareHouse";
 import MenuBar from "../MenuBar/MenuBar";
 
 export const sidebarData = [
@@ -43,7 +43,6 @@ export const sidebarData = [
   },
 ];
 const Dashboard = () => {
-
   const [show, setShow] = useState("inventory");
   const user = "Arjun.";
   const avatarText = user.slice(0, 1);
@@ -59,8 +58,8 @@ const Dashboard = () => {
                 <BoldText> {user} </BoldText>
               </Content>
               <MenuContainer>
-                <MenuBar show={show} setShow={setShow}/>
-          </MenuContainer>
+                <MenuBar show={show} setShow={setShow} />
+              </MenuContainer>
             </Head>
             <NavItems>
               {sidebarData.map((obj, i) => {
@@ -77,9 +76,7 @@ const Dashboard = () => {
                       }
                       onClick={(event) => handleOnCLick(event)}
                     >
-                     <SidebarIconWrapper>
-                     {obj.icon}
-                       </SidebarIconWrapper> 
+                      <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>
                       <Title className="title">{obj.title}</Title>
                     </SidebarContent>
                   </Section>
@@ -87,17 +84,16 @@ const Dashboard = () => {
               })}
             </NavItems>
           </Sidebar>
-          
         </Col>
         <Col lg={10} md={12} className="offset-lg-1 p-0">
           <ContentSection>
             <DashboardContent>
               {show === "inventory" && <Inventory />}
-              {show === "outwards" && <Outwards   />}
+              {show === "outwards" && <Outwards />}
               {show === "inwards" && <Inwards />}
-              {show === "employees" && <Employees   />}
-              {show === "clients" && <Clients   />}
-              {show === "warehouse" && <WareHouse   />}
+              {show === "employees" && <Employees />}
+              {show === "clients" && <Clients />}
+              {show === "warehouse" && <WareHouse />}
             </DashboardContent>
           </ContentSection>
         </Col>
@@ -116,9 +112,9 @@ const Sidebar = styled.div`
 `;
 const Section = styled.div``;
 const MenuContainer = styled.div`
-@media only screen and (min-width: 1000px) {
-display: none;
-}
+  @media only screen and (min-width: 1000px) {
+    display: none;
+  }
 `;
 const NavItems = styled.div`
   @media only screen and (max-width: 1000px) {
@@ -129,8 +125,8 @@ export const Title = styled.p`
   display: inline-block;
   font-family: Poppins;
   font-weight: 500;
-  font-size: 18px;
-  line-height: 22px;
+  font-size: 16px;
+  line-height: 20px;
   color: #2d3850;
   margin-bottom: 0;
   @media only screen and (max-width: 1000px) {
@@ -139,7 +135,7 @@ export const Title = styled.p`
   }
 `;
 export const SidebarContent = styled.div`
-  width: 180px;
+  width: 170px;
   height: 50px;
   border-radius: 12px;
   display: flex;
@@ -175,13 +171,12 @@ const Content = styled.div`
   }
 `;
 
-
 export const SidebarIconWrapper = styled.div`
-svg{
-  // stroke: #2D3850;
-  // fill: #2D3850;
-  fill: rgb(45, 56, 80);
-  width: 25px;
-  height: 25px;
-}
-`
+  svg {
+    // stroke: #2D3850;
+    // fill: #2D3850;
+    fill: rgb(45, 56, 80);
+    width: 22px;
+    height: 22px;
+  }
+`;

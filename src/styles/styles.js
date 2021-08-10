@@ -1,3 +1,4 @@
+import { makeStyles } from "@material-ui/core";
 import styled, { css } from "styled-components";
 import Calender from "../Assets/Icons/Calender.png";
 
@@ -17,6 +18,34 @@ export const style = {
     },
   },
 };
+
+export const tableStyles = makeStyles({
+  table: {
+    minWidth: 650,
+    paddingTop: "30px",
+    marginTop: "0",
+  },
+  thead: {
+    borderBottom: "none",
+    fontFamily: "Poppins",
+    fontWeight: "500",
+    fontSize: "14px",
+    lineHeight: "21px",
+    color: "#6D83AE",
+    background: "#F7F9FD",
+    cursor: "pointer",
+  },
+  button: {
+    display: "block",
+    marginTop: "20px",
+  },
+  formControl: {
+    margin: "10px",
+    minWidth: 120,
+  },
+});
+
+
 export const Heading = styled.p`
   font-family: Poppins;
   font-weight: 600;
@@ -118,6 +147,9 @@ export const DashboardContent = styled.div`
   margin: 30px 8px 20px 0px;
   box-shadow: 4px 4px 17px rgba(189, 202, 228, 0.55);
   padding-bottom: 30px;
+  @media only screen and (max-width: 1300px) {
+    margin: 30px 8px 20px 20px;
+  }
   @media only screen and (max-width: 1000px) {
     width: 100%;
     min-height: auto;
@@ -260,9 +292,9 @@ export const ApplyFormInput = styled.input`
     display: block;
     background: url(${Calender}) no-repeat;
     width: 20px;
-    height: 20px; 
+    height: 20px;
     border-width: thin;
-}
+  }
   @media only screen and (max-width: 1000px) {
     padding: 0 8px;
     height: 40px;
@@ -276,24 +308,13 @@ export const TopBar = styled.div`
   padding: 40px 100px 15px 100px;
   flex-wrap: wrap;
   @media only screen and (max-width: 1000px) {
-    padding: 10px 20px 8px 20px;
-  }
-`;
-
-export const SubText = styled.p`
-  font-weight: 500;
-  font-size: 22px;
-  line-height: 33px;
-  color: rgba(45, 56, 80, 0.5);
-  @media only screen and (max-width: 1000px) {
-    font-size: 16px;
-    line-height: 20px;
+    padding: 30px 20px 20px 20px;
   }
 `;
 
 export const SearchContainer = styled.div`
   width: 540px;
-  height: 50px;
+  height: 45px;
   background: #eff3fb;
   border-radius: 13px;
   padding: 20px;
@@ -340,7 +361,7 @@ export const AddItemContainer = styled.div`
 `;
 
 export const SearchInput = styled.input`
-  width: 80%;
+  width: 250px;
   height: 25px;
   font-family: Lexend;
   font-style: normal;
@@ -353,7 +374,10 @@ export const SearchInput = styled.input`
   :focus {
     outline: none;
   }
-  @media only screen and (max-width: 768px) {
+  ::placeholder {
+    font-size: 12px;
+  }
+  @media only screen and (max-width: 1000px) {
     width: 150px;
     height: 15px;
     font-size: 12px;

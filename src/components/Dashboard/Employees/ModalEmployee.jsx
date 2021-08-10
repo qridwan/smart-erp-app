@@ -3,11 +3,11 @@ import { useState } from "react";
 import { FormControl, InputGroup } from "react-bootstrap";
 import CopyToClipboard from "react-copy-to-clipboard";
 import Modal from "react-modal";
-import { Heading, Input } from "../../styles/styles";
-import clipboard from "../../Assets/Icons/modal_clip_board.png";
+import { Heading, Input } from "../../../styles/styles";
+import clipboard from "../../../Assets/Icons/modal_clip_board.png";
 import styled from "styled-components";
 import { IconButton } from "@material-ui/core";
-import { ReactComponent as CrossIcon } from "../../Assets/Icons/cross.svg";
+import { ReactComponent as CrossIcon } from "../../../Assets/Icons/cross.svg";
 
 const customStyles = {
   content: {

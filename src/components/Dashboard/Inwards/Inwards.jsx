@@ -5,17 +5,17 @@ import {
   SearchContainer,
   SearchInput,
   TableContainer,
+  tableStyles,
   TopBar,
-} from "../../styles/styles";
-import { ReactComponent as SearchIcon } from "../../Assets/Icons/search.svg";
-import { Dropdown, Table } from "react-bootstrap";
+} from "../../../styles/styles";
+import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
+import { Dropdown } from "react-bootstrap";
 import {
   FormControl,
-  makeStyles,
   NativeSelect,
+  Table,
   TableBody,
   TableCell,
-  TableHead,
   TableRow,
 } from "@material-ui/core";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
@@ -23,6 +23,8 @@ import { useState } from "react";
 import styled from "styled-components";
 import ReceiveOrder from "./ReceiveOrder";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import TableHeadCell from "../Tables/TableHead";
+import { getComparator, stableSort } from "../Tables/table.sort";
 
 function createData(
   order,
@@ -59,38 +61,21 @@ const rows = [
     "Completed"
   ),
 ];
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-    paddingTop: "30px",
-  },
-  thead: {
-    background: "#F7F9FD",
-    borderBottom: "none",
-    fontFamily: "Poppins",
-    fontWeight: "500",
-    fontSize: "14px",
-    lineHeight: "21px",
-    color: "#6D83AE",
-  },
-  button: {
-    display: "block",
-    marginTop: "20px",
-  },
-  formControl: {
-    margin: "10px",
-    minWidth: 120,
-  },
-});
 const Inwards = () => {
-  const classes = useStyles();
-  const [show, setShow] = useState("search_order");
+  const classes = tableStyles();
+  const [show, setShow] = useState("inwards");
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("name");
   const [state, setState] = useState({
     id: 1,
     age: "",
     name: "",
   });
-
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
   const handleChange = (event) => {
     const name = event.target.name;
     setState({
@@ -99,82 +84,64 @@ const Inwards = () => {
     });
     console.log(state);
   };
-const options = ["item1", "item2", "item3"]
+  const options = ["item1", "item2", "item3"];
   return (
     <div>
       <TopBar>
-        {show === "search_order" ? (
-          <BoldText>Inwards</BoldText>
+        {show === "inwards" ? (
+          <>
+            <BoldText>Inwards</BoldText>
+            <SearchContainer>
+              <section className="w-100 d-flex justify-content-start align-items-center">
+                <div className="m-0 p-0 d-flex">
+                  <SearchIcon
+                    style={{ marginRight: "0.8rem", width: "20px" }}
+                  />
+                  <div className="w-100">
+                    <Autocomplete
+                      id="custom-input-demo"
+                      options={options}
+                      renderInput={(params) => (
+                        <div className="" ref={params.InputProps.ref}>
+                          <SearchInput
+                            placeholder="Search by- AGENCY NAME/ORDER No."
+                            type="text"
+                            {...params.inputProps}
+                          />
+                        </div>
+                      )}
+                    />
+                  </div>
+                </div>
+              </section>
+            </SearchContainer>
+          </>
         ) : (
           <BoldText>Receive Order</BoldText>
         )}
-        {show === "search_order" ? (
+        {show === "inwards" ? (
           <Button outline onClick={() => setShow("receive_order")}>
             Receive Order
           </Button>
         ) : (
-          <Button outline onClick={() => setShow("search_order")}>
+          <Button outline onClick={() => setShow("inwards")}>
             Search Orders
           </Button>
         )}
       </TopBar>
-      {show === "search_order" ? (
-        <InwardsSearchContainer>
-          <div className="d-flex justify-content-center mt-3">
-            <SearchContainer className="w-75 overflow-hidden">
-              <section className="d-flex w-100">
-                <SearchIcon style={{ marginRight: "0.8em"}} />
-               <div className="w-50">
-               <Autocomplete
-                  id="custom-input-demo"
-                  options={options}
-                  renderInput={(params) => (
-                    <div className="" ref={params.InputProps.ref}>
-                      <SearchInput 
-                        placeholder="Search by- AGENCY NAME/ORDER No."
-                        type="text"
-                        {...params.inputProps}
-                      />
-                    </div>
-                  )}
-                />
-               </div>
-              </section>
-            </SearchContainer>
-          </div>
+      {show === "inwards" ? (
+        <InwardsTableContainer>
           <TableContainer className="mt-3">
             <Table className={classes.table} aria-label="simple table">
-              <TableHead className={classes.thead}>
-                <TableRow>
-                  <TableCell className={classes.thead}>Order No.</TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Agency Name
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Item Name
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Total Qty.
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Received
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Pending
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Date
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    Audit
-                  </TableCell>
-                  <TableCell className={classes.thead} align="center">
-                    More
-                  </TableCell>
-                </TableRow>
-              </TableHead>
+              <TableHeadCell
+                classes={classes}
+                order={order}
+                orderBy={orderBy}
+                show={show}
+                onRequestSort={handleRequestSort}
+              />
               <TableBody>
-                {rows.map((row) => {
+                {stableSort(rows, getComparator(order, orderBy)).map((row) => {
                   return (
                     <TableRow key={row.order}>
                       <TableCell component="th" scope="row" align="center">
@@ -190,17 +157,17 @@ const options = ["item1", "item2", "item3"]
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "age" }}
                           >
-                            <option title="number" value={row.item}>
+                            <option title={row.quantity} value={row.item}>
                               {row.item}
                             </option>
-                            <option title="number" value={10}>
-                              Ten
+                            <option title={row.quantity} value={10}>
+                              External Flash
                             </option>
-                            <option title="number" value={20}>
-                              Twenty
+                            <option title={row.quantity} value={20}>
+                              Camera Bag
                             </option>
-                            <option title="number" value={30}>
-                              Thirty
+                            <option title={row.quantity} value={30}>
+                              SD Card
                             </option>
                           </NativeSelect>
                         </FormControl>
@@ -242,7 +209,7 @@ const options = ["item1", "item2", "item3"]
               </TableBody>
             </Table>
           </TableContainer>
-        </InwardsSearchContainer>
+        </InwardsTableContainer>
       ) : (
         <ReceiveOrder />
       )}
@@ -252,4 +219,4 @@ const options = ["item1", "item2", "item3"]
 
 export default Inwards;
 
-const InwardsSearchContainer = styled.div``;
+const InwardsTableContainer = styled.div``;
