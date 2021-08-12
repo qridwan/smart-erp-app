@@ -157,7 +157,7 @@ const Inventory = ({ inventories, removeFromInventory }) => {
         <div className="d-flex">
           <BoldText> Inventory </BoldText>
           <ButtonContainer
-            className={selectedItems.length ? "visible" : "invisible"}
+            className={selectedItems.length ? "visible mx-lg-2" : "invisible"}
           >
             <DeleteButton onClick={handleDelete}> Delete </DeleteButton>
             <EditButton

@@ -9,9 +9,10 @@ import {
   TopBar,
 } from "../../../styles/styles";
 import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
-import { Dropdown } from "react-bootstrap";
 import {
   FormControl,
+  Menu,
+  MenuItem,
   NativeSelect,
   Table,
   TableBody,
@@ -24,7 +25,8 @@ import styled from "styled-components";
 import ReceiveOrder from "./ReceiveOrder";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TableHeadCell from "../Tables/TableHead";
-import { getComparator, stableSort } from "../Tables/table.sort";
+import { useSortableData } from "../Tables/table.sort";
+import MoreInwards from "./MoreInwards";
 
 function createData(
   order,
@@ -64,17 +66,20 @@ const rows = [
 const Inwards = () => {
   const classes = tableStyles();
   const [show, setShow] = useState("inwards");
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("name");
   const [state, setState] = useState({
     id: 1,
     age: "",
     name: "",
   });
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [details, setDetails] = useState({});
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
   const handleChange = (event) => {
     const name = event.target.name;
@@ -85,6 +90,23 @@ const Inwards = () => {
     console.log(state);
   };
   const options = ["item1", "item2", "item3"];
+  const { items, requestSort, sortConfig } = useSortableData(rows);
+  const getClassNamesFor = (name) => {
+    if (!sortConfig) {
+      return;
+    }
+    return sortConfig.key === name ? sortConfig.direction : undefined;
+  };
+
+  const MoreFunc = async (row, info) => {
+    console.log({ row });
+    setDetails({ ...row, info: info });
+    (await info) === "edit"
+      ? setShow("edit_inwards")
+      : setShow("more_inwards");
+    handleClose();
+  };
+
   return (
     <div>
       <TopBar>
@@ -135,13 +157,12 @@ const Inwards = () => {
             <Table className={classes.table} aria-label="simple table">
               <TableHeadCell
                 classes={classes}
-                order={order}
-                orderBy={orderBy}
                 show={show}
-                onRequestSort={handleRequestSort}
+                requestSort={requestSort}
+                getClassNamesFor={getClassNamesFor}
               />
               <TableBody>
-                {stableSort(rows, getComparator(order, orderBy)).map((row) => {
+                {items.map((row) => {
                   return (
                     <TableRow key={row.order}>
                       <TableCell component="th" scope="row" align="center">
@@ -189,18 +210,29 @@ const Inwards = () => {
                       </TableCell>
                       <TableCell align="center">
                         {row.status !== "Delivered" && (
-                          <Dropdown>
-                            <Dropdown.Toggle
-                              variant="white"
-                              id="dropdown-basic"
+                          <div>
+                            <MoreHorizIcon
+                              aria-controls="simple-menu"
+                              aria-haspopup="true"
+                              onClick={handleClick}
+                            />
+                            <Menu
+                              id="simple-menu"
+                              anchorEl={anchorEl}
+                              keepMounted
+                              open={Boolean(anchorEl)}
+                              onClose={handleClose}
                             >
-                              <MoreHorizIcon />
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                              <Dropdown.Item href="">View More</Dropdown.Item>
-                              <Dropdown.Item href="">Edit</Dropdown.Item>
-                            </Dropdown.Menu>
-                          </Dropdown>
+                              <MenuItem
+                                onClick={() => MoreFunc(row, "view_more")}
+                              >
+                                View More
+                              </MenuItem>
+                              <MenuItem onClick={() => MoreFunc(row, "edit")}>
+                                Edit
+                              </MenuItem>
+                            </Menu>
+                          </div>
                         )}
                       </TableCell>
                     </TableRow>
@@ -211,7 +243,14 @@ const Inwards = () => {
           </TableContainer>
         </InwardsTableContainer>
       ) : (
-        <ReceiveOrder />
+        <>
+          {show === "receive_order" || show === "edit_inwards" ? (
+            <ReceiveOrder details={details} setShow={setShow} />
+          ) : null}
+          {show === "more_inwards" && (
+            <MoreInwards details={details} setShow={setShow} />
+          )}
+        </>
       )}
     </div>
   );

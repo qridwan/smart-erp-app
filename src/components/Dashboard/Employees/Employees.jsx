@@ -137,11 +137,10 @@ const Employees = () => {
   return (
     <div>
       <TopBar className="">
-        <div>
+        <div className="d-flex flex-wrap">
           <BoldText> Employees </BoldText>
-        </div>
-        <HiddenButtons
-          className={selectedItems.length ? "visible" : "invisible"}
+          <HiddenButtons
+          className={selectedItems.length ? "visible mx-lg-2" : "invisible"}
         >
           <DeleteButton> Delete </DeleteButton>
           <EditButton
@@ -150,6 +149,8 @@ const Employees = () => {
             Edit
           </EditButton>
         </HiddenButtons>
+        </div>
+        
         <EmployeeSearchContainer>
           <section className="w-100 d-flex justify-content-start align-items-center">
             <div className="m-0 p-0 d-flex">
@@ -169,6 +170,7 @@ const Employees = () => {
               />
             </div>
           </section>
+          
         </EmployeeSearchContainer>
         <div className="text-center">
           <Button onClick={handlePopup}>+ Add Employees</Button>

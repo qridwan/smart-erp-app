@@ -1,5 +1,6 @@
 import { TableCell, TableHead, TableRow } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
+import { useSortableData } from "./table.sort";
 
 const outwardsHeadCells = [
   { id: "order", label: "Order No." },
@@ -36,7 +37,15 @@ const clientsHeadCells = [
 
 const TableHeadCell = (props) => {
   const [data, setData] = useState([]);
-  const { classes, order, orderBy, onRequestSort, show } = props;
+  const {
+    classes,
+    order,
+    orderBy,
+    onRequestSort,
+    show,
+    requestSort,
+    getClassNamesFor,
+  } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -50,19 +59,20 @@ const TableHeadCell = (props) => {
     if (show === "clients") {
       return setData(clientsHeadCells);
     }
-  }, [show]);
+  }, []);
+
   return (
     <TableHead>
       <TableRow>
         {data.map((headCell) => (
           <TableCell
-            className={classes.thead}
             align="center"
             key={headCell.id}
             sortDirection={orderBy === headCell.id ? order : false}
             active={orderBy === headCell.id}
             direction={orderBy === headCell.id ? order : "asc"}
-            onClick={createSortHandler(headCell.id)}
+            onClick={() => requestSort(headCell.id)}
+            className={(getClassNamesFor(headCell.id), classes.thead)}
           >
             {headCell.label}
           </TableCell>

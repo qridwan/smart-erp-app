@@ -9,7 +9,9 @@ import {
   tableStyles,
   TopBar,
 } from "../../../styles/styles";
-import { getComparator, stableSort } from "../Tables/table.sort";
+import {
+  useSortableData,
+} from "../Tables/table.sort";
 import TableHeadCell from "../Tables/TableHead";
 import AddClient from "./AddClient";
 
@@ -67,14 +69,15 @@ const rows = [
 const Clients = () => {
   const classes = tableStyles();
   const [show, setShow] = useState("clients");
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("name");
 
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
+  const { items, requestSort, sortConfig } = useSortableData(rows);
+  const getClassNamesFor = (name) => {
+    if (!sortConfig) {
+      return;
+    }
+    return sortConfig.key === name ? sortConfig.direction : undefined;
   };
+
   return (
     <main>
       {show === "clients" ? (
@@ -93,31 +96,28 @@ const Clients = () => {
             <Table className={classes.table} aria-label="simple table">
               <TableHeadCell
                 classes={classes}
-                order={order}
-                orderBy={orderBy}
                 show={show}
-                onRequestSort={handleRequestSort}
+                requestSort={requestSort}
+                getClassNamesFor={getClassNamesFor}
               />
               <TableBody>
-                {stableSort(rows, getComparator(order, orderBy)).map(
-                  (row, i) => {
-                    return (
-                      <TableRow key={i}>
-                        <TableCell component="th" scope="row" align="center">
-                          {row.agency}
-                        </TableCell>
-                        <TableCell align="center">{row.client_id}</TableCell>
-                        <TableCell align="center" className="text-primary">
-                          {row.date}
-                        </TableCell>
-                        <TableCell align="center">{row.contacts}</TableCell>
-                        <TableCell align="center">{row.delivered}</TableCell>
-                        <TableCell align="center">{row.location}</TableCell>
-                        <TableCell align="center">{row.orders}</TableCell>
-                      </TableRow>
-                    );
-                  }
-                )}
+                {items.map((row, i) => {
+                  return (
+                    <TableRow key={i}>
+                      <TableCell component="th" scope="row" align="center">
+                        {row.agency}
+                      </TableCell>
+                      <TableCell align="center">{row.client_id}</TableCell>
+                      <TableCell align="center" className="text-primary">
+                        {row.date}
+                      </TableCell>
+                      <TableCell align="center">{row.contacts}</TableCell>
+                      <TableCell align="center">{row.delivered}</TableCell>
+                      <TableCell align="center">{row.location}</TableCell>
+                      <TableCell align="center">{row.orders}</TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>

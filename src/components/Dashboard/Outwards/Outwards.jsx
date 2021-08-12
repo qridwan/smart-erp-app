@@ -1,5 +1,5 @@
-import { NativeSelect, FormControl } from "@material-ui/core";
-import React, { useState } from "react";
+import { NativeSelect, FormControl, Menu, MenuItem } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   BoldText,
@@ -17,13 +17,11 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import { Dropdown } from "react-bootstrap";
 import GenerateOutwards from "./GenerateOutwards";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { getComparator, stableSort } from "../Tables/table.sort";
+import { useSortableData } from "../Tables/table.sort";
 import TableHeadCell from "../Tables/TableHead";
-
-
+import MoreOutwards from "./MoreOutwards";
 
 function createData(
   order,
@@ -59,22 +57,37 @@ const rows = [
     1500,
     "Delivered"
   ),
+  createData(
+    "03",
+    "11-10-21",
+    "Tripod",
+    "MI Security",
+    300,
+    500,
+    1300,
+    "In-Transit"
+  ),
 ];
 
 const Outwards = () => {
   const [show, setShow] = useState("outwards");
   const classes = tableStyles();
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("name");
   const [state, setState] = useState({
     id: 1,
     age: "",
     name: "hai",
   });
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [details, setDetails] = useState({});
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const handleChange = (event) => {
@@ -90,9 +103,24 @@ const Outwards = () => {
     console.log(state);
   };
   const options = ["Option 1", "Option 2"];
+  const { items, requestSort, sortConfig } = useSortableData(rows);
+  const getClassNamesFor = (name) => {
+    if (!sortConfig) {
+      return;
+    }
+    return sortConfig.key === name ? sortConfig.direction : undefined;
+  };
+  const MoreFunc = async (row, info) => {
+    console.log({ row });
+    setDetails({ ...row, info: info });
+    (await info) === "edit"
+      ? setShow("edit_outwards")
+      : setShow("more_outwards");
+    handleClose();
+  };
   return (
     <>
-      {show !== "generate" ? (
+      {show === "outwards" ? (
         <div>
           <TopBar className="">
             <BoldText> Outwards </BoldText>
@@ -127,13 +155,13 @@ const Outwards = () => {
             <Table className={classes.table} aria-label="simple table">
               <TableHeadCell
                 classes={classes}
-                order={order}
-                orderBy={orderBy}
                 show={show}
-                onRequestSort={handleRequestSort}
+                requestSort={requestSort}
+                getClassNamesFor={getClassNamesFor}
               />
               <TableBody>
-                {stableSort(rows, getComparator(order, orderBy)).map((row) => {
+                {items.map((row) => {
+                   
                   return (
                     <TableRow key={row.order}>
                       <TableCell component="th" scope="row" align="center">
@@ -182,18 +210,31 @@ const Outwards = () => {
                       </TableCell>
                       <TableCell align="center">
                         {row.status !== "Delivered" && (
-                          <Dropdown>
-                            <Dropdown.Toggle
-                              variant="white"
-                              id="dropdown-basic"
+                          <div>
+                            <MoreHorizIcon
+                              aria-controls="simple-menu"
+                              aria-haspopup="true"
+                              onClick={handleClick}
+                            />
+                            <Menu
+                              id="simple-menu"
+                              anchorEl={anchorEl}
+                              keepMounted
+                              open={Boolean(anchorEl)}
+                              onClose={handleClose}
                             >
-                              <MoreHorizIcon />
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                              <Dropdown.Item href="">View More</Dropdown.Item>
-                              <Dropdown.Item href="">Edit</Dropdown.Item>
-                            </Dropdown.Menu>
-                          </Dropdown>
+                              <MenuItem
+                                onClick={() => MoreFunc(row, "view_more")}
+                              >
+                                View More
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() => MoreFunc(row, "edit")}
+                              >
+                                Edit
+                              </MenuItem>
+                            </Menu>
+                          </div>
                         )}
                       </TableCell>
                     </TableRow>
@@ -204,7 +245,14 @@ const Outwards = () => {
           </TableContainer>
         </div>
       ) : (
-        <GenerateOutwards setShow={setShow} />
+        <>
+          {show === "generate" || show === "edit_outwards" ? (
+            <GenerateOutwards details={details} setShow={setShow} />
+          ) : null}
+          {show === "more_outwards" && (
+            <MoreOutwards details={details} setShow={setShow} />
+          )}
+        </>
       )}
     </>
   );

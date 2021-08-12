@@ -45,7 +45,6 @@ export const tableStyles = makeStyles({
   },
 });
 
-
 export const Heading = styled.p`
   font-family: Poppins;
   font-weight: 600;
@@ -175,8 +174,16 @@ export const Label = styled.label`
   font-size: 14px;
   line-height: 21px;
   color: #6c6c6c;
-  padding-bottom: 8px;
-  @media only screen and (max-width: 768px) {
+
+  ${(props) =>
+    props.details
+      ? css`
+          padding-bottom: 2px;
+        `
+      : css`
+          padding-bottom: 8px;
+        `}
+  @media only screen and (max-width: 1000px) {
     font-size: 12px;
     margin-top: 8px;
     margin-bottom: 0;
@@ -195,7 +202,7 @@ export const Input = styled.input`
   :focus {
     outline: none;
   }
-  @media only screen and (max-width: 768px) {
+  @media only screen and (max-width: 1000px) {
     width: 100%;
     font-size: 12px;
   }
@@ -203,7 +210,7 @@ export const Input = styled.input`
 
 export const InputDiv = styled.div`
   padding-bottom: 20px;
-  @media only screen and (max-width: 768px) {
+  @media only screen and (max-width: 1000px) {
     padding-bottom: 10px;
   }
 `;
@@ -256,7 +263,7 @@ export const SubmitButton = styled.input`
           background: #0075ff;
         `;
   }}
-  @media only screen and (max-width: 768px) {
+  @media only screen and (max-width: 1000px) {
     margin-top: 20px;
     font-size: 16px;
     line-height: 20px;
@@ -273,15 +280,36 @@ export const Error = styled.span`
 `;
 
 export const ApplyFormInput = styled.input`
-  border: 1px solid #8e8e8e;
   border-radius: 5px;
-  height: 45px;
   width: 100%;
   padding: 0 15px;
+  font-family: Poppins;
+  font-weight: 500;
   color: black;
+  height: 45px;
   :focus {
     outline: none;
   }
+ 
+  ${(props) =>
+    props.details
+      ? css`
+          border: 1px solid #ffffff;
+          padding: 0;
+          @media only screen and (max-width: 1000px) {
+            padding: 0;
+            height: 30px;
+          }
+        `
+      : css`
+          border: 1px solid #8e8e8e;
+          @media only screen and (max-width: 1000px) {
+            padding: 0 8px;
+            height: 40px;
+          }
+        `};
+  }
+
   ::-webkit-inner-spin-button {
     -webkit-appearance: none;
   }
@@ -294,10 +322,6 @@ export const ApplyFormInput = styled.input`
     width: 20px;
     height: 20px;
     border-width: thin;
-  }
-  @media only screen and (max-width: 1000px) {
-    padding: 0 8px;
-    height: 40px;
   }
 `;
 
@@ -321,14 +345,14 @@ export const SearchContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
-  @media only screen and (max-width: 768px) {
+  @media only screen and (max-width: 1000px) {
     width: 250px;
     height: 44px;
   }
 `;
 
 export const Container = styled.div`
-  // @media only screen and (max-width: 768px) {
+  // @media only screen and (max-width: 1000px) {
   //   width: 100%;
   //   text-align: center;
   // }
