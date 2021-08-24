@@ -3,6 +3,9 @@ import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import LoginImage from "../Assets/Images/loginPic.png";
+
+import { auth } from '../firebase';
+
 const Login = () => {
   const [show, setShow] = useState("login");
   const {
@@ -10,7 +13,14 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) =>{
+    console.log(data);
+
+    auth.signInWithEmailAndPassword(data.email, data.password).catch(error => {
+      alert("Error signing in with password and email!");
+    });
+
+  };
   return (
     <Container>
       <Row className="w-100 m-0">

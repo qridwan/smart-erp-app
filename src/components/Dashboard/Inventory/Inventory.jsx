@@ -1,5 +1,5 @@
 import { DataGrid } from "@material-ui/data-grid";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
 import IPcamera from "../../../Assets/Images/ipCamera.png";
 import {
   AddItemContainer,
@@ -29,6 +29,10 @@ import { connect } from "react-redux";
 import { removeFromInventory } from "../../../Redux/actions/InventoryActions";
 import ModalInventory from "./ModalInventory";
 
+
+import { db as firebase, bucket, auth } from '../../../firebase';
+import { UserContext } from "../../../context/UserProvider";
+
 const columns = [
   {
     field: "photos",
@@ -57,12 +61,12 @@ const columns = [
     align: "center",
   },
   {
-    field: "sku",
+    field: "id",
     headerName: "SKU",
     align: "center",
     type: "number",
     width: 120,
-    sortable: true,
+    sortable: false,
   },
   {
     field: "condition",
@@ -72,8 +76,8 @@ const columns = [
     sortable: true,
   },
   {
-    field: "location",
-    headerName: "Location",
+    field: "supplier",
+    headerName: "Supplier",
     align: "center",
     width: 120,
     sortable: true,
@@ -117,11 +121,82 @@ const Inventory = ({ inventories, removeFromInventory }) => {
     register,
     formState: { errors },
     handleSubmit,
+    reset
   } = useForm();
 
+  const user = useContext(UserContext); 
+
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const productsRef = firebase.ref("inventory/products");
+    productsRef.once("value", (snapshot) => {
+      let products = []
+      Object.keys(snapshot.val()).map((key) => {
+        products.push(snapshot.val()[key])
+      })
+      console.log(snapshot.val());
+      console.log(products);
+      setProducts(products);
+    });
+
+  }, [goto]);
+
+
+  // HANDLE ADD PRODUCT SUBMIT
   const onSubmit = (data) => {
     console.log(data, { imgFile }, { docFile });
+    const productsRef = firebase.ref("inventory/products");
+    if(imgFile) {
+      const uploadTask = bucket.ref(`/pictures/${imgFile.name}`).put(imgFile);
+      uploadTask.on('state_changed',
+        (snapShot) => {
+        }, (err) => {
+          console.log(err)
+        }, () => {
+          bucket.ref('pictures').child(imgFile.name).getDownloadURL()
+            .then(fireBaseUrl => {
+              console.log(fireBaseUrl);
+              productsRef.child(`${data.productNo}`).update({
+                date: data.date,
+                name: data.item_name,
+                available: data.item_quantity,
+                poNo: data.po_number,
+                receivedDate: data.received_date,
+                remarks: data.remarks,
+                supplier: data.supplier,
+                id: data.productNo,
+                condition: data.condition,
+                photos: fireBaseUrl,
+                lastEditedBy: user.email
+              });
+            })
+        })
+    }
+    else {
+      productsRef.child(`${data.productNo}`).update({
+        date: data.date,
+        name: data.item_name,
+        available: data.item_quantity,
+        poNo: data.po_number,
+        receivedDate: data.received_date,
+        remarks: data.remarks,
+        supplier: data.supplier,
+        id: data.productNo,
+        condition: data.condition,
+        lastEditedBy: user.email,
+        onHand: data.onHand,
+        reserved: data.reserved
+      });
+    }
+    
+
+    console.log('new product added successfully');
+    setGoto("table");
+    reset();
   };
+
+
   const hiddenImageInput = useRef(null);
   const hiddenDocInput = useRef(null);
   const handleClick = (param) => {
@@ -147,9 +222,28 @@ const Inventory = ({ inventories, removeFromInventory }) => {
 
   const handleDelete = async () => {
     await removeFromInventory(selectedItems)
-      setSelectedItems([])
-      handleOpen()
+    setSelectedItems([])
+    handleOpen()
   };
+
+  const handleEdit = async () => {
+    
+    console.log(selectedItems);
+    const product = selectedItems[0];
+    reset({
+      date: product.date,
+      item_name: product.name,
+      item_quantity: product.available,
+      po_number: product.poNo,
+      received_date: product.receivedDate,
+      remarks: product.remarks,
+      supplier: product.supplier,
+      productNo: product.id,
+      condition: product.condition,
+    });
+    setGoto("addItem");
+    setSelectedItems([]);
+  }
 
   return (
     <section>
@@ -161,6 +255,7 @@ const Inventory = ({ inventories, removeFromInventory }) => {
           >
             <DeleteButton onClick={handleDelete}> Delete </DeleteButton>
             <EditButton
+              onClick={handleEdit}
               className={selectedItems.length === 1 ? "visible" : "invisible"}
             >
               Edit
@@ -178,16 +273,17 @@ const Inventory = ({ inventories, removeFromInventory }) => {
             + Add Items
           </Button>
         ) : (
-          <Button outline onClick={() => setGoto("table")}>
+          <Button outline onClick={() => {reset(); setGoto("table")}}>
             View Inventory
           </Button>
         )}
       </TopBar>
-          <ModalInventory open={open} setOpen={setOpen} />
+      <ModalInventory open={open} setOpen={setOpen} />
       {goto === "table" ? (
         <TableContainer className="overflow-hidden">
           <DataGrid
-            rows={inventories}
+            rows={products}
+            // rows={inventories}
             style={style.table}
             columns={columns}
             pageSize={10}
@@ -203,7 +299,7 @@ const Inventory = ({ inventories, removeFromInventory }) => {
               let selectedItemsIdArray = e;
               let selectedItems = [];
               selectedItemsIdArray.forEach((id) =>
-                selectedItems.push(inventories.find((row) => row.id === id))
+                selectedItems.push(products.find((row) => row.id === id))
               );
               setSelectedItems(selectedItems);
             }}
@@ -211,7 +307,9 @@ const Inventory = ({ inventories, removeFromInventory }) => {
         </TableContainer>
       ) : (
         <AddItemContainer>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <Row>
               <Col md={3} xs={12}>
                 <InputDiv>
@@ -277,6 +375,48 @@ const Inventory = ({ inventories, removeFromInventory }) => {
                     </InputDiv>
                   </Col>
                 </Row>
+
+                <Row className="w-100 justify-content-center m-0">
+                  <Col md={4} xs={12}>
+                    <InputDiv>
+                      <Label>Reserved Qty</Label>
+                      <ApplyFormInput
+                        placeholder=""
+                        {...register("reserved", { required: false })}
+                      />
+                      {errors.item_name && <Error>Item name is required</Error>}
+                    </InputDiv>
+                  </Col>
+                  <Col md={4} xs={12}>
+                    <InputDiv>
+                      <Label>On Hand Qty</Label>
+                      <ApplyFormInput
+                        placeholder=""
+                        {...register("onHand", {
+                          required: false,
+                        })}
+                      />
+                      {errors.item_quantity && (
+                        <Error>Give a valid quantity</Error>
+                      )}
+                    </InputDiv>
+                  </Col>
+                  <Col md={4} xs={12}>
+                    <InputDiv>
+                      <Label>Condition</Label>
+                      <ApplyFormInput
+                        placeholder=""
+                        {...register("condition", {
+                          required: true,
+                        })}
+                      />
+                      {errors.po_number && (
+                        <Error>Condition is required</Error>
+                      )}
+                    </InputDiv>
+                  </Col>
+                </Row>
+
                 <Row className="w-100 justify-content-center m-0">
                   <Col md={4} xs={12}>
                     <InputDiv>
@@ -319,13 +459,15 @@ const Inventory = ({ inventories, removeFromInventory }) => {
                     </InputDiv>
                   </Col>
                 </Row>
+
+
                 <Row className="w-100  m-0">
-                  <Col md={6} xs={12}>
+                  {/* <Col md={6} xs={12}>
                     <InputDiv>
                       <Label>Warehouse</Label>
                       <Select
                         {...register("warehouse", {
-                          required: true,
+                          required: false,
                         })}
                       >
                         <option className="d-none" value=""></option>
@@ -333,6 +475,20 @@ const Inventory = ({ inventories, removeFromInventory }) => {
                         <option value="ware-2"> WareHouse-2 </option>
                         <option value="ware-3"> WareHouse-3 </option>
                       </Select>
+                    </InputDiv>
+                  </Col> */}
+                  <Col md={6} xs={12}>
+                    <InputDiv>
+                      <Label>Product Number</Label>
+                      <ApplyFormInput
+                        placeholder=""
+                        {...register("productNo", {
+                          required: true,
+                        })}
+                      />
+                      {errors.productNo && (
+                        <Error>Product number is required</Error>
+                      )}
                     </InputDiv>
                   </Col>
                   <Col md={6} xs={12}>
@@ -360,6 +516,7 @@ const Inventory = ({ inventories, removeFromInventory }) => {
                       />
                     </InputDiv>
                   </Col>
+
                 </Row>
               </Col>
             </Row>

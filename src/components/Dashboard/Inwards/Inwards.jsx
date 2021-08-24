@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext, useEffect} from "react";
 import {
   BoldText,
   Button,
@@ -27,6 +27,9 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TableHeadCell from "../Tables/TableHead";
 import { useSortableData } from "../Tables/table.sort";
 import MoreInwards from "./MoreInwards";
+
+import { db as firebase, bucket, auth } from '../../../firebase';
+import { UserContext } from "../../../context/UserProvider";
 
 function createData(
   order,
@@ -63,6 +66,8 @@ const rows = [
     "Completed"
   ),
 ];
+
+
 const Inwards = () => {
   const classes = tableStyles();
   const [show, setShow] = useState("inwards");
@@ -106,6 +111,36 @@ const Inwards = () => {
       : setShow("more_inwards");
     handleClose();
   };
+
+  const [orders, setOrders] = useState([]);
+  const [clients, setClients] = useState([]);
+
+  useEffect(() => {
+    const inRef = firebase.ref("inventory/in-orders");
+    inRef.once("value", (snapshot) => {
+      if(snapshot.val()) {
+        let orders = []
+        Object.keys(snapshot.val()).map((key) => {
+          orders.push(snapshot.val()[key])
+        })
+        console.log(snapshot.val());
+        console.log(orders);
+        setOrders(orders);
+      } else {
+        console.log('no out orders')
+      }
+      
+    });
+
+    const clientsRef = firebase.ref("inventory/clients");
+    clientsRef.once("value", (snapshot) => {
+      let clients = []
+      Object.keys(snapshot.val()).map((key) => {
+        clients.push(snapshot.val()[key])
+      });
+      setClients(clients);
+    });
+  }, [show]);
 
   return (
     <div>
@@ -162,11 +197,11 @@ const Inwards = () => {
                 getClassNamesFor={getClassNamesFor}
               />
               <TableBody>
-                {items.map((row) => {
+                {orders.map((row) => {
                   return (
-                    <TableRow key={row.order}>
+                    <TableRow key={row.orderNo}>
                       <TableCell component="th" scope="row" align="center">
-                        {row.order}
+                        {row.orderNo}
                       </TableCell>
                       <TableCell align="center">{row.agency}</TableCell>
                       <TableCell align="center">
@@ -178,9 +213,9 @@ const Inwards = () => {
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "age" }}
                           >
-                            <option title={row.quantity} value={row.item}>
+                            {/* <option title={row.quantity} value={row.item}>
                               {row.item}
-                            </option>
+                            </option> */}
                             <option title={row.quantity} value={10}>
                               External Flash
                             </option>
@@ -194,19 +229,19 @@ const Inwards = () => {
                         </FormControl>
                       </TableCell>
 
-                      <TableCell align="center">{row.quantity}</TableCell>
+                      <TableCell align="center">{row.total}</TableCell>
                       <TableCell align="center">{row.received}</TableCell>
                       <TableCell align="center">{row.pending}</TableCell>
-                      <TableCell align="center">{row.date}</TableCell>
+                      <TableCell align="center">{row.receivedDate}</TableCell>
                       <TableCell
                         align="center"
                         className={
-                          row.audit === "Completed"
+                          row.auditStatus === "Completed"
                             ? "text-success"
                             : "text-danger"
                         }
                       >
-                        {row.audit}
+                        {row.auditStatus}
                       </TableCell>
                       <TableCell align="center">
                         {row.status !== "Delivered" && (

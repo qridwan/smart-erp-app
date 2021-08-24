@@ -1,7 +1,7 @@
 import { makeStyles, TableBody } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import { Table, TableCell, TableHead, TableRow } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
@@ -21,6 +21,13 @@ import {
   TableInput,
   TableSelect,
 } from "../../../styles/styles";
+
+import { db as firebase, bucket, auth } from '../../../firebase';
+import { UserContext } from "../../../context/UserProvider";
+
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
 const useStyles = makeStyles({
   table: {
     width: "100%",
@@ -45,9 +52,15 @@ const useStyles = makeStyles({
   },
 });
 
+
+
+
+
 const ReceiveOrder = ({ setShow, details }) => {
   const [edit, setEdit] = useState(false);
   const { agency, date, item, order, quantity, audit } = details;
+
+  const user = useContext(UserContext); 
 
   const items = [
     {
@@ -79,6 +92,8 @@ const ReceiveOrder = ({ setShow, details }) => {
     formState: { errors },
     handleSubmit,
     control,
+    setValue,
+    reset
   } = useForm();
 
   const { fields, append, remove } = useFieldArray({
@@ -92,8 +107,49 @@ const ReceiveOrder = ({ setShow, details }) => {
     }
   }, [setShow, details.info]);
 
+  const [clients, setClients] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [agencyName, setAgency] = useState('');
+
+  useEffect(() => {
+
+    console.log('inside useEffect')
+
+    const clientsRef = firebase.ref("inventory/clients");
+    clientsRef.once("value", (snapshot) => {
+      let clients = []
+      Object.keys(snapshot.val()).map((key) => {
+        clients.push(snapshot.val()[key])
+      });
+      setClients(clients);
+    });
+
+    const productsRef = firebase.ref("inventory/products");
+    productsRef.once("value", (snapshot) => {
+      let products = []
+      Object.keys(snapshot.val()).map((key) => {
+        products.push(snapshot.val()[key])
+      })
+      console.log(snapshot.val());
+      console.log(products);
+      setProducts(products);
+    });
+  }, []);
+
+
   const onSubmit = (data) => {
     console.log(data);
+    data['agency'] = agencyName;
+    let total = 0;
+    data.item.map(item => {
+      total = total + item.quantity;
+    });
+    data['total'] = total;
+    const inRef = firebase.ref("inventory/in-orders");
+    inRef.child(`${data.orderNo}`).update(data);
+    console.log('order created in db');
+    setShow("inwards");
+    reset();
   };
   return (
     <AddItemContainer className="mt-5">
@@ -106,7 +162,7 @@ const ReceiveOrder = ({ setShow, details }) => {
                 <ApplyFormInput
                   defaultValue={edit ? order : null}
                   type="text"
-                  {...register("order_no", { required: true })}
+                  {...register("orderNo", { required: true })}
                 />
                 {errors.order_no && <Error>Order number is required</Error>}
               </InputDiv>
@@ -117,7 +173,7 @@ const ReceiveOrder = ({ setShow, details }) => {
                 <ApplyFormInput
                   defaultValue={edit ? date : null}
                   type="date"
-                  {...register("received_date", {
+                  {...register("receivedDate", {
                     required: true,
                   })}
                 />
@@ -127,17 +183,33 @@ const ReceiveOrder = ({ setShow, details }) => {
               </InputDiv>
             </Col>
             <Col md={3} xs={12}>
-              <InputDiv>
-                <Label>Agency Name</Label>
-                <ApplyFormInput
-                  type="text"
-                  defaultValue={edit ? agency : null}
-                  {...register("agency", {
-                    required: true,
-                  })}
+            <Label>Agency Name</Label>
+                <Autocomplete
+                  id="combo-box-demo"
+                  options={clients}
+                  openOnFocus
+                  getOptionLabel={(option) => option.name}
+                  // defaultValue={edit ? client : null}
+                  renderOption={(option) => (
+                    <React.Fragment>
+                      <span>{option.name}</span>
+                    </React.Fragment>
+                  )}
+                  // PREFILLS DATA BASED ON CLIENT'S INFO
+                  onChange={(event, newValue) => {
+                    console.log(newValue);
+                    if(newValue) {
+                      setAgency(newValue.name);
+                      setValue("generatedBy", user.email);
+                    }
+                    else {
+                      setAgency('');
+                      setValue("generatedBy", "");
+                    }
+
+                  }}
+                  renderInput={(params) => <TextField {...params} placeholder={edit ? details.agency : ""}  variant="outlined"  />}
                 />
-                {errors.agency && <Error>Email is required</Error>}
-              </InputDiv>
             </Col>
             <Col md={3} xs={12}>
               <InputDiv>
@@ -145,7 +217,7 @@ const ReceiveOrder = ({ setShow, details }) => {
                 <ApplyFormInput
                   type="text"
                   defaultValue={edit ? "Kl Rahul" : null}
-                  {...register("generated_by", {
+                  {...register("generatedBy", {
                     required: true,
                   })}
                 />
@@ -165,6 +237,9 @@ const ReceiveOrder = ({ setShow, details }) => {
                     <TableCell className={classes.thead} align="center">
                       Item Name
                     </TableCell>
+                    {/* <TableCell className={classes.thead} align="center">
+                      SKU
+                    </TableCell> */}
                     <TableCell className={classes.thead} align="center">
                       Total Qty.
                     </TableCell>
@@ -197,10 +272,9 @@ const ReceiveOrder = ({ setShow, details }) => {
                             defaultValue={`${item.name}`}
                             {...register(`item.${index}.name`)}
                           >
-                            <option value="IP Camera">IP Camera</option>
-                            <option value="aa">A</option>
-                            <option value="bb">B</option>
-                            <option value="cc">C</option>
+                            {products.map(product => (
+                              <option value={product.name}>{product.name}</option>
+                            ))}
                           </TableSelect>
                         </TableCell>
                         <TableCell align="center">
@@ -263,7 +337,7 @@ const ReceiveOrder = ({ setShow, details }) => {
               outline
               onClick={() => {
                 append({
-                  name: "IP Camera",
+                  name: "",
                   quantity: "",
                   received: "",
                   good_condition: "",
@@ -281,7 +355,7 @@ const ReceiveOrder = ({ setShow, details }) => {
             <Col md={3} xs={12}>
               <InputDiv>
                 <Label>Mode of Transport</Label>
-                <Select defaultValue = {edit ? 'bb' : null} {...register("Transport")}>
+                <Select defaultValue = {edit ? 'bb' : null} {...register("transport")}>
                   <option value=" "> </option>
                   <option value="aa">A</option>
                   <option value="bb">B</option>
@@ -295,7 +369,7 @@ const ReceiveOrder = ({ setShow, details }) => {
                 <ApplyFormInput
                   type="text"
                   defaultValue={edit ? "2323DEMO" : null}
-                  {...register("courier_no", {
+                  {...register("courierNo", {
                     required: true,
                   })}
                 />
@@ -308,7 +382,7 @@ const ReceiveOrder = ({ setShow, details }) => {
                 <ApplyFormInput
                   type="text"
                   defaultValue={edit ? "Naagpur" : null}
-                  {...register("received_location", {
+                  {...register("receivedLocation", {
                     required: true,
                   })}
                 />
@@ -323,7 +397,7 @@ const ReceiveOrder = ({ setShow, details }) => {
                 <ApplyFormInput
                   type="text"
                   defaultValue={edit ? "GM Talla" : null}
-                  {...register("receiver_name", {
+                  {...register("receiverName", {
                     required: true,
                   })}
                 />
@@ -346,7 +420,7 @@ const ReceiveOrder = ({ setShow, details }) => {
             <Col md={3} xs={12}>
               <InputDiv>
                 <Label>Audit Status</Label>
-                <Select defaultValue = {edit ? audit : null}{...register("audit_status")}>
+                <Select defaultValue = {edit ? audit : null}{...register("auditStatus")}>
                   <option value="Incomplete"> Incomplete </option>
                   <option value="Complete"> Complete </option>
                 </Select>

@@ -23,6 +23,10 @@ import { useSortableData } from "../Tables/table.sort";
 import TableHeadCell from "../Tables/TableHead";
 import MoreOutwards from "./MoreOutwards";
 
+import { db as firebase, bucket, auth } from '../../../firebase';
+import { UserContext } from "../../../context/UserProvider";
+
+
 function createData(
   order,
   shipping,
@@ -104,20 +108,53 @@ const Outwards = () => {
   };
   const options = ["Option 1", "Option 2"];
   const { items, requestSort, sortConfig } = useSortableData(rows);
+
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;
     }
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
+
   const MoreFunc = async (row, info) => {
-    console.log({ row });
+    console.log({ ...row, info: info });
     setDetails({ ...row, info: info });
     (await info) === "edit"
       ? setShow("edit_outwards")
       : setShow("more_outwards");
     handleClose();
   };
+
+  const [orders, setOrders] = useState([]);
+  const [clients, setClients] = useState([]);
+
+  useEffect(() => {
+    const outRef = firebase.ref("inventory/out-orders");
+    outRef.once("value", (snapshot) => {
+      if(snapshot.val()) {
+        let orders = []
+        Object.keys(snapshot.val()).map((key) => {
+          orders.push(snapshot.val()[key])
+        })
+        console.log(snapshot.val());
+        console.log(orders);
+        setOrders(orders);
+      } else {
+        console.log('no out orders')
+      }
+      
+    });
+
+    const clientsRef = firebase.ref("inventory/clients");
+    clientsRef.once("value", (snapshot) => {
+      let clients = []
+      Object.keys(snapshot.val()).map((key) => {
+        clients.push(snapshot.val()[key])
+      });
+      setClients(clients);
+    });
+  }, [show]);
+
   return (
     <>
       {show === "outwards" ? (
@@ -132,7 +169,8 @@ const Outwards = () => {
                   />
                   <Autocomplete
                     id="custom-input-demo"
-                    options={options}
+                    options={clients}
+                    getOptionLabel={(option) => option.name}
                     renderInput={(params) => (
                       <div ref={params.InputProps.ref}>
                         <SearchInput
@@ -160,48 +198,45 @@ const Outwards = () => {
                 getClassNamesFor={getClassNamesFor}
               />
               <TableBody>
-                {items.map((row) => {
-                   
+                {orders.map((row) => {
+                  let rowTotal = 0;
                   return (
                     <TableRow key={row.order}>
                       <TableCell component="th" scope="row" align="center">
-                        {row.order}
+                        {row.ewayBill}
                       </TableCell>
-                      <TableCell align="center">{row.shipping}</TableCell>
+                      <TableCell align="center">{row.deliveryDate}</TableCell>
                       <TableCell align="center">
                         <FormControl className={classes.formControl}>
                           <NativeSelect
-                            value={state.key}
+                            value={state.key} 
                             onChange={handleChange}
                             name={row.item}
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "age" }}
                           >
-                            <Option value={row.item} title={row.quantity}>
+                            {/* <Option value={row.item} title={row.quantity}>
                               {row.item}
-                            </Option>
+                            </Option> */}
 
-                            <Option value={10} title={row.quantity}>
-                              Lense Hood
-                            </Option>
-
-                            <Option value={20} title={row.quantity}>
-                              Tripod
-                            </Option>
-                            <Option value={30} title={row.quantity}>
-                              Extra Lens
-                            </Option>
+                            {row.item.map(item => {
+                              return (
+                                <Option value={item.quantity} title={item.quantity}>
+                                  {item.name}
+                                </Option>
+                              )
+                            })}
                           </NativeSelect>
                         </FormControl>
                       </TableCell>
                       <TableCell align="center">{row.agency}</TableCell>
-                      <TableCell align="center">{row.quantity}</TableCell>
+                      <TableCell align="center">{row.total}</TableCell>
                       <TableCell align="center">{row.sent}</TableCell>
                       <TableCell align="center">{row.pending}</TableCell>
                       <TableCell
                         align="center"
                         className={
-                          row.status === "In-Transit"
+                          row.status === "intransit"
                             ? "text-success"
                             : "text-primary"
                         }
@@ -209,7 +244,7 @@ const Outwards = () => {
                         {row.status}
                       </TableCell>
                       <TableCell align="center">
-                        {row.status !== "Delivered" && (
+                        {row.status !== "delivered" && (
                           <div>
                             <MoreHorizIcon
                               aria-controls="simple-menu"
@@ -247,10 +282,10 @@ const Outwards = () => {
       ) : (
         <>
           {show === "generate" || show === "edit_outwards" ? (
-            <GenerateOutwards details={details} setShow={setShow} />
+            <GenerateOutwards details={details} setShow={setShow} setDetails={setDetails} />
           ) : null}
           {show === "more_outwards" && (
-            <MoreOutwards details={details} setShow={setShow} />
+            <MoreOutwards details={details} setShow={setShow}  setDetails={setDetails} />
           )}
         </>
       )}

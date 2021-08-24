@@ -1,5 +1,5 @@
 import { Table, TableBody, TableCell, TableRow } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import styled from "styled-components";
 import {
@@ -14,6 +14,9 @@ import {
 } from "../Tables/table.sort";
 import TableHeadCell from "../Tables/TableHead";
 import AddClient from "./AddClient";
+
+import { db as firebase, bucket, auth } from '../../../firebase';
+import { UserContext } from "../../../context/UserProvider";
 
 function createData(
   agency,
@@ -70,13 +73,28 @@ const Clients = () => {
   const classes = tableStyles();
   const [show, setShow] = useState("clients");
 
-  const { items, requestSort, sortConfig } = useSortableData(rows);
+  const [clients, setClients] = useState([]);
+
+  const { items, requestSort, sortConfig } = useSortableData(clients);
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;
     }
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
+
+  useEffect(() => {
+    const clientsRef = firebase.ref("inventory/clients");
+    clientsRef.once("value", (snapshot) => {
+      let clients = []
+      Object.keys(snapshot.val()).map((key) => {
+        clients.push(snapshot.val()[key])
+      })
+      console.log(snapshot.val());
+      console.log(clients);
+      setClients(clients);
+    });
+  }, [show]);
 
   return (
     <main>
@@ -105,15 +123,16 @@ const Clients = () => {
                   return (
                     <TableRow key={i}>
                       <TableCell component="th" scope="row" align="center">
-                        {row.agency}
+                        {row.name}
                       </TableCell>
-                      <TableCell align="center">{row.client_id}</TableCell>
+                      <TableCell align="center">{row.id}</TableCell>
+                      
+                      <TableCell align="center">{row.phone}</TableCell>
+                      <TableCell align="center">{row.email}</TableCell>
+                      <TableCell align="center">{row.city}</TableCell>
                       <TableCell align="center" className="text-primary">
-                        {row.date}
+                        {row.pincode}
                       </TableCell>
-                      <TableCell align="center">{row.contacts}</TableCell>
-                      <TableCell align="center">{row.delivered}</TableCell>
-                      <TableCell align="center">{row.location}</TableCell>
                       <TableCell align="center">{row.orders}</TableCell>
                     </TableRow>
                   );

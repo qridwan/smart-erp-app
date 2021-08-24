@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
 import { Container } from "../Login";
@@ -15,6 +15,8 @@ import Employees from "./Employees/Employees";
 import Clients from "./Clients/Clients";
 import WareHouse from "./Warehouse/WareHouse";
 import MenuBar from "../MenuBar/MenuBar";
+
+import { UserContext } from "../../context/UserProvider";
 
 export const sidebarData = [
   {
@@ -37,14 +39,15 @@ export const sidebarData = [
     icon: <ClientsImg className="icons" />,
     title: "Clients",
   },
-  {
-    icon: <WareHouseImg className="icons" />,
-    title: "Warehouse",
-  },
+  // {
+  //   icon: <WareHouseImg className="icons" />,
+  //   title: "Warehouse",
+  // },
 ];
 const Dashboard = () => {
   const [show, setShow] = useState("inventory");
-  const user = "Arjun.";
+  const userData = useContext(UserContext); 
+  const user = userData.email.slice(0, userData.email.indexOf('@'));
   const avatarText = user.slice(0, 1);
 
   return (

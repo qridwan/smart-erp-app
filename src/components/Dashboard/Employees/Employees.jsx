@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Avatar,
   BoldText,
@@ -19,25 +19,11 @@ import styled from "styled-components";
 import employee1 from "../../../Assets/Images/emp-1.png";
 import ModalEmployee from "./ModalEmployee";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import AddEmployee from "./AddEmployee";
+import { db as firebase, bucket, auth } from '../../../firebase';
+import { UserContext } from "../../../context/UserProvider";
 
 const columns = [
-  {
-    field: "photos",
-    headerName: "Photos",
-    width: 100,
-    sortable: true,
-    align: "start",
-    renderCell: (params) => {
-      return (
-        <img
-          src={params.row.photos}
-          alt={params.id}
-          height="45px"
-          width="45px"
-        />
-      );
-    },
-  },
   {
     field: "name",
     headerName: "Name",
@@ -46,7 +32,7 @@ const columns = [
     align: "center",
   },
   {
-    field: "employee_id",
+    field: "id",
     headerName: "Employee ID",
     align: "center",
     type: "number",
@@ -54,13 +40,13 @@ const columns = [
     sortable: true,
   },
   {
-    field: "joining_date",
+    field: "joiningDate",
     headerName: "Joining Date",
     width: 130,
     align: "center",
     sortable: true,
     renderCell: (params) => {
-      return <span style={{ color: "blue" }}>{params.row.joining_date}</span>;
+      return <span style={{ color: "blue" }}>{params.row.joiningDate}</span>;
     },
   },
   {
@@ -71,180 +57,202 @@ const columns = [
     sortable: true,
   },
   {
-    field: "location",
-    headerName: "Location",
-    width: 110,
+    field: "email",
+    headerName: "email",
+    width: 150,
     type: "number",
     align: "center",
     sortable: true,
   },
 ];
 
-const rows = [
-  {
-    id: "1",
-    photos: employee1,
-    name: "Snow Man-1",
-    employee_id: "23888998231",
-    joining_date: "27-06-2020",
-    designation: "Supervisor",
-    location: "Delhi",
-  },
-  {
-    id: "2",
-    photos: employee1,
-    name: "Snow Man-2",
-    employee_id: "5448998231",
-    joining_date: "27-06-20",
-    designation: "Administrator",
-    location: "Chennai",
-  },
-  {
-    id: "3",
-    photos: employee1,
-    name: "Snow Man-3",
-    employee_id: "2233998231",
-    joining_date: "27-06-20",
-    designation: "Executive",
-    location: "Mumbai",
-  },
-  {
-    id: "4",
-    photos: employee1,
-    name: "Snow Man-4",
-    employee_id: "1118998231",
-    joining_date: "27-06-20",
-    designation: "Admin",
-    location: "Panjab",
-  },
-];
 
 const Employees = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
-  function openModal() {
-    setIsOpen(true);
-  }
+
+  const [show, setShow] = useState("employees");
+  const [info, setInfo] = useState({});
+  const [employees, setEmployees] = useState([]);
+
 
   function closeModal() {
     setIsOpen(false);
   }
 
   const handlePopup = () => {
-    openModal();
+    if (show === 'employees') {
+      setShow("addEmployee");
+      setInfo({
+        edit: false
+      });
+      setSelectedItems([]);
+    } else {
+      setShow("employees");
+      setInfo({
+        edit: false
+      })
+      setSelectedItems([]);
+    }
   };
+
+  useEffect(() => {
+    const employeeRef = firebase.ref("inventory/employees");
+    employeeRef.once("value", (snapshot) => {
+      let employees = []
+      Object.keys(snapshot.val()).map((key) => {
+        employees.push(snapshot.val()[key])
+      })
+      console.log(snapshot.val());
+      console.log(employees);
+      setEmployees(employees);
+    });
+  }, [show]);
+
   const options = ["client1", "client2", "client3"];
+
+  const handleEdit = () => {
+    console.log(selectedItems);
+    setInfo({
+      ...selectedItems[0],
+      edit: true
+    });
+    setShow("addEmployee");
+    setSelectedItems([]);
+  }
+
+  const handleDelete = () => {
+
+  }
+
   return (
-    <div>
-      <TopBar className="">
-        <div className="d-flex flex-wrap">
-          <BoldText> Employees </BoldText>
-          <HiddenButtons
+    <>
+    <TopBar className="">
+      <div className="d-flex flex-wrap">
+        <BoldText> Employees </BoldText>
+        <HiddenButtons
           className={selectedItems.length ? "visible mx-lg-2" : "invisible"}
         >
-          <DeleteButton> Delete </DeleteButton>
+          <DeleteButton
+            onClick={handleDelete}
+          > Delete </DeleteButton>
           <EditButton
+            onClick={handleEdit}
             className={selectedItems.length === 1 ? "visible" : "invisible"}
           >
             Edit
           </EditButton>
         </HiddenButtons>
-        </div>
-        
-        <EmployeeSearchContainer>
-          <section className="w-100 d-flex justify-content-start align-items-center">
-            <div className="m-0 p-0 d-flex">
-              <SearchIcon style={{ marginRight: "0.8rem", width: "20px" }} />
-              <Autocomplete
-                id="custom-input-demo"
-                options={options}
-                renderInput={(params) => (
-                  <div ref={params.InputProps.ref}>
-                    <SearchInput
-                      placeholder="Search by client..."
-                      type="text"
-                      {...params.inputProps}
-                    />
-                  </div>
-                )}
-              />
-            </div>
-          </section>
+      </div>
+      
+      {show === 'employees' ? (
+          <EmployeeSearchContainer>
+            <section className="w-100 d-flex justify-content-start align-items-center">
+              <div className="m-0 p-0 d-flex">
+                <SearchIcon style={{ marginRight: "0.8rem", width: "20px" }} />
+                <Autocomplete
+                  id="custom-input-demo"
+                  options={options}
+                  renderInput={(params) => (
+                    <div ref={params.InputProps.ref}>
+                      <SearchInput
+                        placeholder="Search by client..."
+                        type="text"
+                        {...params.inputProps}
+                      />
+                    </div>
+                  )}
+                />
+              </div>
+            </section>
+          </EmployeeSearchContainer>
+      
+      ) : (
+        <></>
+      )}
+      
+      <div className="text-center">
+        <Button onClick={handlePopup}>
+          {show === 'employees' ?  'Add Employees' : 'View Employees'}
           
-        </EmployeeSearchContainer>
-        <div className="text-center">
-          <Button onClick={handlePopup}>+ Add Employees</Button>
-        </div>
-      </TopBar>
-      <Row className="w-100 p-0 m-0">
-        <Col lg={8} md={12} className="pl-4">
-          <TableContainer className="w-100 m-0 overflow-hidden">
-            <DataGrid
-              rows={rows}
-              style={style.table}
-              columns={columns}
-              pageSize={10}
-              rowHeight={65}
-              autoPageSize
-              hideFooterSelectedRowCount
-              disableColumnMenu
-              checkboxSelection
-              scrollbarSize={5}
-              onSelectionModelChange={(e) => {
-                let selectedItemsIdArray = e;
-                let selectedItems = [];
-                selectedItemsIdArray.forEach((id) =>
-                  selectedItems.push(rows.find((row) => row.id === id))
-                );
-                setSelectedItems(selectedItems);
-              }}
-              disableSelectionOnClick
-              autoHeight
-              hideFooter
-            />
-            <ModalEmployee modalIsOpen={modalIsOpen} closeModal={closeModal} />
-          </TableContainer>
-        </Col>
-        <Col
-          lg={4}
-          md={6}
-          xs={12}
-          className="offset-lg-0 offset-md-3  justify-content-center"
-        >
-          <RecentActivityContainer>
-            <Heading className="pt-md-3 px-md-4">Recent Activity</Heading>
-            <RecentEmployee>
-              <Avatar> S </Avatar>
-              <Content>
-                <HistoryText>Order Created</HistoryText>
-                <TimeCreated>10 min ago</TimeCreated>
-              </Content>
-            </RecentEmployee>
-            <RecentEmployee>
-              <Avatar> S </Avatar>
-              <Content>
-                <HistoryText>Order Created</HistoryText>
-                <TimeCreated>10 min ago</TimeCreated>
-              </Content>
-            </RecentEmployee>
-            <RecentEmployee>
-              <Avatar> S </Avatar>
-              <Content>
-                <HistoryText>Order Created</HistoryText>
-                <TimeCreated>10 min ago</TimeCreated>
-              </Content>
-            </RecentEmployee>
-            <RecentEmployee>
-              <Avatar> S </Avatar>
-              <Content>
-                <HistoryText>Order Created</HistoryText>
-                <TimeCreated>10 min ago</TimeCreated>
-              </Content>
-            </RecentEmployee>
-          </RecentActivityContainer>
-        </Col>
-      </Row>
-    </div>
+        </Button>
+      </div>
+    </TopBar>
+    {show === "employees" ? (
+      <div>
+        <Row className="w-100 p-0 m-0">
+          <Col lg={12} md={12} className="pl-4">
+            <TableContainer className="w-100 m-0 overflow-hidden">
+              <DataGrid
+                rows={employees}
+                style={style.table}
+                columns={columns}
+                pageSize={10}
+                rowHeight={65}
+                autoPageSize
+                hideFooterSelectedRowCount
+                disableColumnMenu
+                checkboxSelection
+                scrollbarSize={5}
+                onSelectionModelChange={(e) => {
+                  let selectedItemsIdArray = e;
+                  let selectedItems = [];
+                  selectedItemsIdArray.forEach((id) =>
+                    selectedItems.push(employees.find((row) => row.id === id))
+                  );
+                  setSelectedItems(selectedItems);
+                }}
+                disableSelectionOnClick
+                autoHeight
+                hideFooter
+              />
+              <ModalEmployee modalIsOpen={modalIsOpen} closeModal={closeModal} />
+            </TableContainer>
+          </Col>
+          {/* <Col
+            lg={4}
+            md={6}
+            xs={12}
+            className="offset-lg-0 offset-md-3  justify-content-center"
+          >
+            <RecentActivityContainer>
+              <Heading className="pt-md-3 px-md-4">Recent Activity</Heading>
+              <RecentEmployee>
+                <Avatar> S </Avatar>
+                <Content>
+                  <HistoryText>Order Created</HistoryText>
+                  <TimeCreated>10 min ago</TimeCreated>
+                </Content>
+              </RecentEmployee>
+              <RecentEmployee>
+                <Avatar> S </Avatar>
+                <Content>
+                  <HistoryText>Order Created</HistoryText>
+                  <TimeCreated>10 min ago</TimeCreated>
+                </Content>
+              </RecentEmployee>
+              <RecentEmployee>
+                <Avatar> S </Avatar>
+                <Content>
+                  <HistoryText>Order Created</HistoryText>
+                  <TimeCreated>10 min ago</TimeCreated>
+                </Content>
+              </RecentEmployee>
+              <RecentEmployee>
+                <Avatar> S </Avatar>
+                <Content>
+                  <HistoryText>Order Created</HistoryText>
+                  <TimeCreated>10 min ago</TimeCreated>
+                </Content>
+              </RecentEmployee>
+            </RecentActivityContainer>
+          </Col> */}
+        </Row>
+      </div>
+    ) : (
+      <AddEmployee setShow={setShow} info={info} />
+    )}
+    </>
   );
 };
 

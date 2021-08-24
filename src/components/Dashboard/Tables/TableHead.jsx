@@ -28,10 +28,11 @@ const inwardsHeadCells = [
 const clientsHeadCells = [
   { id: "agency", label: "Agency Name" },
   { id: "client_id", label: "Client ID" },
-  { id: "date", label: "Date" },
+  
   { id: "contacts", label: "Contacts" },
   { id: "delivered", label: "Delivered" },
   { id: "location", label: "Location" },
+  { id: "pincode", label: "Pincode" },
   { id: "orders", label: "Orders" },
 ];
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
@@ -29,6 +29,13 @@ import {
 } from "@material-ui/core";
 import { scrollToRef } from "../../../ScrollTop";
 
+import { db as firebase, bucket, auth } from '../../../firebase';
+import { UserContext } from "../../../context/UserProvider";
+
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+
 const useStyles = makeStyles({
   table: {
     width: "80%",
@@ -54,7 +61,7 @@ const useStyles = makeStyles({
   },
 });
 
-const GenerateOutwards = ({ setShow, details }) => {
+const GenerateOutwards = ({ setShow, details, setDetails }) => {
 console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ details", details)
   const classes = useStyles();
   const topbarRef = useRef(null);
@@ -62,37 +69,105 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
 
   const { agency, shipping, item, order, quantity } = details;
 
-  const items = [
-    { order, item, quantity, code: "12demo" },
-    { order, item, quantity, code: "33demo" },
-  ];
+  const user = useContext(UserContext); 
+
   const {
     register,
     formState: { errors },
     handleSubmit,
     control,
+    setValue,
+    reset
   } = useForm();
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "item",
   });
+  
+  
+
+  const [clients, setClients] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [agencyName, setAgency] = useState('');
+  const [client, setClient] = useState({});
+
+  useEffect(() => {
+
+    console.log('inside useEffect')
+
+    const clientsRef = firebase.ref("inventory/clients");
+    clientsRef.once("value", (snapshot) => {
+      let clients = []
+      Object.keys(snapshot.val()).map((key) => {
+        clients.push(snapshot.val()[key])
+      });
+      setClients(clients);
+    });
+
+    const productsRef = firebase.ref("inventory/products");
+    productsRef.once("value", (snapshot) => {
+      let products = []
+      Object.keys(snapshot.val()).map((key) => {
+        products.push(snapshot.val()[key])
+      })
+      console.log(snapshot.val());
+      console.log(products);
+      setProducts(products);
+    });
+  }, []);
+
   useEffect(() => {
     scrollToRef(topbarRef)
     if (details.info) {
       setEdit(true);
-      append(items)
+      append(details.item);  
+      console.log(details);
+      let client = clients.map((client) => {
+        if(client.name == details.agency) {
+          return client;
+        }
+      })
+      client = client[0];
+      setClient(client);
     }
 
   }, [setShow, details.info]);
+
+  // OUT ORDER SUBMIT FORM
   const onSubmit = (data) => {
     console.log(data);
+    let res = data;
+    res['agency'] = agencyName;
+    let total = 0;
+    res.item.map((item) => {
+      total = parseInt(total) + parseInt(item.quantity);
+    })
+    res['total'] = total;
+    res['sent'] = 0;
+    res['pending'] = total;
+    res['status'] = 'intransit'
+    const outRef = firebase.ref("inventory/out-orders");
+    outRef.child(`${data.ewayBill}`).update(data);
+    console.log('order created in db');
+    setShow("outwards");
+    reset();
   };
+
+  const clientChange = (e) => {
+    console.log(e.target.value);
+  }
+
   return (
     <div>
       <TopBar ref={topbarRef} className="mb-4">
         <BoldText>{edit? "Edit Outwards":"Generate Outwards"}</BoldText>
         <div>
-          <Button outline onClick={() => setShow("outwards")}>
+          <Button outline onClick={() => {
+            reset();
+            setShow("outwards");
+            setDetails({});
+          }}>
             View Outwards
           </Button>
         </div>
@@ -103,22 +178,60 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
             <MainTitle style={{ paddingTop: "10px" }}>Agency Details</MainTitle>
             <Row className="w-100 p-0 m-0">
               <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>Agency Name</Label>
-                  <ApplyFormInput
-                    placeholder="" 
-                    defaultValue={edit ? agency : null}
-                    type="text"
-                    {...register("agency", { required: true })}
-                  />
-                  {errors.agency && <Error>Agency name is required</Error>}
-                </InputDiv>
+                <Label>Agency Name</Label>
+                <Autocomplete
+                  id="combo-box-demo"
+                  options={clients}
+                  openOnFocus
+                  getOptionLabel={(option) => option.name}
+                  defaultValue={edit ? client : null}
+                  renderOption={(option) => (
+                    <React.Fragment>
+                      <span>{option.name}</span>
+                    </React.Fragment>
+                  )}
+                  // PREFILLS DATA BASED ON CLIENT'S INFO
+                  onChange={(event, newValue) => {
+                    console.log(newValue);
+                    if(newValue) {
+                      setAgency(newValue.name);
+                      setValue("receiver", newValue.supervisor);
+                      setValue("email", newValue.email);
+                      setValue("generated_by", user.email);
+                      setValue("phone_number", newValue.phone);
+                      setValue("address", newValue.address);
+                      setValue("city", newValue.city);
+                      setValue("district", newValue.district);
+                      setValue("state", newValue.state);
+                      setValue("pincode", newValue.pincode);
+                      setValue("state", newValue.state);
+                      setValue("remarks", newValue.remarks);
+                    }
+                    else {
+                      setAgency('');
+                      setValue("receiver", "");
+                      setValue("email", "");
+                      setValue("generated_by", "");
+                      setValue("phone_number", "");
+                      setValue("address", "");
+                      setValue("city", "");
+                      setValue("district", "");
+                      setValue("state", "");
+                      setValue("pincode", "");
+                      setValue("state", "");
+                      setValue("remarks","");
+                    }
+
+                  }}
+                  renderInput={(params) => <TextField {...params} placeholder={edit ? details.agency : ""}  variant="outlined"  />}
+                />
               </Col>
               <Col md={3} xs={12}>
                 <InputDiv>
                   <Label>Receiver's Name</Label>
                   <ApplyFormInput
-                    defaultValue={edit ? "Mick Hussy" : null}
+                    readOnly
+                    defaultValue={edit ? details.receiver : null}
                     {...register("receiver", {
                       required: true,
                     })}
@@ -134,7 +247,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                       <IndiaIcon />
                     </InputIcon>
                     <ApplyFormInput
-                      style={{ width: "100%", height: "98%", border: "none" }} defaultValue={edit ? "+91 889927" : null}
+                      readOnly
+                      style={{ width: "100%", height: "98%", border: "none" }} defaultValue={edit ? details.phone_number : null}
                       aria-label="phone_number"
                       {...register("phone_number", {
                         required: true,
@@ -150,8 +264,9 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>Email</Label>
                   <ApplyFormInput
+                    readOnly
                     type="email"
-                    placeholder="" defaultValue={edit ? "agency@yahoo.com" : null}
+                    placeholder="" defaultValue={edit ? details.email : null}
                     {...register("email", {
                       required: true,
                     })}
@@ -167,7 +282,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>Order Generated by</Label>
                   <ApplyFormInput
-                    placeholder="" defaultValue={edit ? "Ms Sinha" : null}
+                    readOnly
+                    placeholder="" defaultValue={edit ? details.generated_by : null}
                     type="text"
                     {...register("generated_by", { required: true })}
                   />
@@ -178,7 +294,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>Reference Number</Label>
                   <ApplyFormInput
-                    placeholder="" defaultValue={edit ? "99334" : null}
+                    placeholder="" defaultValue={edit ? details.reference : null}
                     
                     {...register("reference", {
                       required: true,
@@ -191,8 +307,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>P.O Number</Label>
                   <ApplyFormInput
-                    
-                    placeholder="" defaultValue={edit ? "99334" : null}
+                    placeholder="" defaultValue={edit ? details.po_number : null}
                     {...register("po_number", {
                       required: true,
                     })}
@@ -205,8 +320,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <Label>P.I Number</Label>
                   <ApplyFormInput
                     
-                    placeholder="" defaultValue={edit ? "99334" : null}
-                    {...register("PI_number", {
+                    placeholder="" defaultValue={edit ? details.piNumber : null}
+                    {...register("piNumber", {
                       required: true,
                     })}
                   />
@@ -218,8 +333,9 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <Label>Eway Bill</Label>
                   <ApplyFormInput
                     type="text"
-                    placeholder="" defaultValue={edit ? "99334" : null}
-                    {...register("eway_bill", {
+                    readOnly={edit ? true : false}
+                    placeholder="" defaultValue={edit ? details.ewayBill : null}
+                    {...register("ewayBill", {
                       required: true,
                     })}
                   />
@@ -233,8 +349,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <Label>D.C Number</Label>
                   <ApplyFormInput
                     
-                    placeholder="" defaultValue={edit ? "99334" : null}
-                    {...register("dc_number", {
+                    placeholder="" defaultValue={edit ? details.dcNumber : null}
+                    {...register("dcNumber", {
                       required: true,
                     })}
                   />
@@ -248,7 +364,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>Address</Label>
                   <ApplyFormInput
-                    placeholder="" defaultValue={edit ? agency : null}
+                    readOnly
+                    placeholder="" defaultValue={edit ? details.address : null}
                     type="text"
                     {...register("address", { required: true })}
                   />
@@ -259,7 +376,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>City</Label>
                   <ApplyFormInput
-                    placeholder="" defaultValue={edit ? "Mumbai" : null}
+                    readOnly
+                    placeholder="" defaultValue={edit ? details.city : null}
                     {...register("city", {
                       required: true,
                     })}
@@ -271,8 +389,9 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>District</Label>
                   <ApplyFormInput
+                    readOnly
                     type="text"
-                    placeholder="" defaultValue={edit ? "Mumbai" : null}
+                    placeholder="" defaultValue={edit ? details.district : null}
                     {...register("district", {
                       required: true,
                     })}
@@ -284,8 +403,9 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>State</Label>
                   <ApplyFormInput
+                    readOnly
                     type="text"
-                    placeholder="" defaultValue={edit ? "Mumbai" : null}
+                    placeholder="" defaultValue={edit ? details.state : null}
                     {...register("state", {
                       required: true,
                     })}
@@ -297,8 +417,9 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>Pincode</Label>
                   <ApplyFormInput
+                    readOnly
                     type=""
-                    placeholder="" defaultValue={edit ? "99334" : null}
+                    placeholder="" defaultValue={edit ? details.pincode : null}
                     {...register("pincode", {
                       required: true,
                     })}
@@ -309,7 +430,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
               <Col md={3} xs={12}>
                 <InputDiv>
                   <Label>Mode of Transportation</Label>
-                  <Select defaultValue = {edit ? 'aa' : null} {...register("Transport")}>
+                  <Select defaultValue = {edit ? details.transport : null} {...register("transport")}>
                     <option value=" "> </option>
                     <option value="aa">A</option>
                     <option value="bb">B</option>
@@ -322,8 +443,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <Label>Delivery Date</Label>
                   <ApplyFormInput
                     type={edit? null : 'date'}
-                    placeholder="" defaultValue={edit ? shipping : null}
-                    {...register("delivery_date", {
+                    placeholder="" defaultValue={edit ? details.deliveryDate : null}
+                    {...register("deliveryDate", {
                       required: true,
                     })}
                   />
@@ -337,7 +458,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <Label>Remarks</Label>
                   <ApplyFormInput
                     type="text"
-                    placeholder="" defaultValue={edit ? agency : null}
+                    placeholder="" defaultValue={edit ? details.remarks : null}
                     {...register("remarks")}
                   />
                 </InputDiv>
@@ -387,10 +508,11 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                             defaultValue={`${item.name}`}
                             {...register(`item.${index}.name`)}
                           >
-                            <option value="IP Camera">IP Camera</option>
-                            <option value="aa">A</option>
-                            <option value="bb">B</option>
-                            <option value="cc">C</option>
+                            {products.map(product => {
+                              return (
+                                <option value={product.name}>{product.name}</option>
+                              );
+                            })}
                           </select>
                         </TableCell>
                         <TableCell align="center">

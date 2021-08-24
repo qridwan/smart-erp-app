@@ -13,15 +13,39 @@ import {
   TopBar,
 } from "../../../styles/styles";
 
+
+import { db as firebase, bucket, auth } from '../../../firebase';
+import { UserContext } from "../../../context/UserProvider";
+
 const AddClient = ({ setShow }) => {
   const {
     register,
     formState: { errors },
     handleSubmit,
+    reset
   } = useForm();
 
   const onSubmit = (data) => {
     console.log(data);
+    const clientRef = firebase.ref("inventory/clients");
+    const clientId = data.agency.slice(0, 3).toUpperCase() + "-" + data.number.slice(-3);
+    console.log(clientId);
+    clientRef.child(`${clientId}`).update({
+      address: data.address,
+      city: data.city,
+      district: data.district,
+      email: data.email,
+      phone: data.number,
+      name: data.agency,
+      supervisor: data.customer_name,
+      pincode: data.pincode,
+      remarks: data.remarks,
+      state: data.state,
+      orders: 0,
+      id: clientId
+    });
+    setShow("clients");
+    reset();
   };
   return (
     <div>
