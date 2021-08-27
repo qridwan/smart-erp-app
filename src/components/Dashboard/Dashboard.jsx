@@ -18,7 +18,11 @@ import MenuBar from "../MenuBar/MenuBar";
 
 import { UserContext } from "../../context/UserProvider";
 
-export const sidebarData = [
+import { db as firebase, bucket, auth } from '../../firebase';
+
+
+
+export var sidebarDataAdmin = [
   {
     icon: <InventoryImg className="icons" />,
     title: "Inventory",
@@ -33,22 +37,47 @@ export const sidebarData = [
   },
   {
     icon: <EmployeeImg className="icons" />,
-    title: "Employees",
+    title: "Employees", 
   },
   {
     icon: <ClientsImg className="icons" />,
     title: "Clients",
   },
-  // {
-  //   icon: <WareHouseImg className="icons" />,
-  //   title: "Warehouse",
-  // },
+  {
+    icon: <WareHouseImg className="icons" />,
+    title: "Logout",
+  },
 ];
-const Dashboard = () => {
+
+export var sidebarData = [
+  {
+    icon: <InventoryImg className="icons" />,
+    title: "Inventory",
+  },
+  {
+    icon: <InOutWardImg className="icons" />,
+    title: "Outwards",
+  },
+  {
+    icon: <InOutWardImg className="icons" />,
+    title: "Inwards",
+  },
+  {
+    icon: <ClientsImg className="icons" />,
+    title: "Clients",
+  },
+  {
+    icon: <WareHouseImg className="icons" />,
+    title: "Logout",
+  },
+];
+const Dashboard = () => { 
   const [show, setShow] = useState("inventory");
   const userData = useContext(UserContext); 
   const user = userData.email.slice(0, userData.email.indexOf('@'));
   const avatarText = user.slice(0, 1);
+
+  const sideData = user == 'admin' ? sidebarDataAdmin : sidebarData
 
   return (
     <Container>
@@ -65,12 +94,22 @@ const Dashboard = () => {
               </MenuContainer>
             </Head>
             <NavItems>
-              {sidebarData.map((obj, i) => {
+              {sideData.map((obj, i) => {
                 const handleOnCLick = () => {
+                  if (obj.title.toLowerCase() == 'logout'){
+                    auth.signOut().then(() => {
+                      console.log('sign out succes')
+                    }).catch((error) => {
+                      console.log(error);
+                    });
+                  }
                   setShow(obj.title.toLowerCase());
                 };
                 return (
-                  <Section key={i}>
+                  <Section 
+                    key={i}
+                    style={{cursor: 'pointer'}}
+                  >
                     <SidebarContent
                       className={
                         show === obj.title.toLowerCase()

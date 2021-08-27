@@ -89,8 +89,11 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
 
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
+  const [productObj, setProductObj] = useState({});
   const [agencyName, setAgency] = useState('');
   const [client, setClient] = useState({});
+  const [items, setItems] = useState([]);
+  const [clientId, setClientId] = useState('');
 
   useEffect(() => {
 
@@ -114,6 +117,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
       console.log(snapshot.val());
       console.log(products);
       setProducts(products);
+      setProductObj(snapshot.val());
     });
   }, []);
 
@@ -128,30 +132,67 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
           return client;
         }
       })
+      let data = details;
+      delete data.info;
+      reset(data);
+      setAgency(data.agency);
       client = client[0];
       setClient(client);
     }
-
   }, [setShow, details.info]);
 
   // OUT ORDER SUBMIT FORM
   const onSubmit = (data) => {
     console.log(data);
+    console.log(productObj);
     let res = data;
+    let codeArr = [];
     res['agency'] = agencyName;
-    let total = 0;
-    res.item.map((item) => {
-      total = parseInt(total) + parseInt(item.quantity);
+
+    clients.map(client => {
+      if(client.name == agencyName) {
+        const cRef = firebase.ref(`inventory/clients/${client.id}`);
+        cRef.once('value', snapshot => {
+          cRef.update({
+            orders : snapshot.val().orders + 1
+          });
+        })
+      }
     })
-    res['total'] = total;
-    res['sent'] = 0;
-    res['pending'] = total;
+
+    res.item = res.item.map((item, index) => {
+
+      let pro = productObj[item.code];
+      if (edit){
+        pro['available'] = Math.abs(parseInt(pro['available']) - parseInt(item.sent) + parseInt(details.item[index].sent));
+      } else {
+        pro['available'] = Math.abs(parseInt(pro['available']) - parseInt(item.sent))
+      } 
+
+      const proRef = firebase.ref(`inventory/products/${item.code}`);
+      proRef.update({
+        available: pro['available']
+      })
+      
+
+      item['name'] = productObj[item.code].name;
+      item['pending'] = parseInt(item['quantity']) - parseInt(item['sent']);
+      codeArr.push(item.code);
+      return item;
+    });
+
     res['status'] = 'intransit'
     const outRef = firebase.ref("inventory/out-orders");
+    console.log(data);
     outRef.child(`${data.ewayBill}`).update(data);
     console.log('order created in db');
     setShow("outwards");
     reset();
+
+    // newProducts = products.map(product => {
+    //   if(codeArr(product.id))
+    // })
+
   };
 
   const clientChange = (e) => {
@@ -233,7 +274,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     readOnly
                     defaultValue={edit ? details.receiver : null}
                     {...register("receiver", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.receive && <Error>Receiver's name is required</Error>}
@@ -251,7 +292,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                       style={{ width: "100%", height: "98%", border: "none" }} defaultValue={edit ? details.phone_number : null}
                       aria-label="phone_number"
                       {...register("phone_number", {
-                        required: true,
+                        required: !edit,
                       })}
                     />
                   </InputGroup>
@@ -268,7 +309,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     type="email"
                     placeholder="" defaultValue={edit ? details.email : null}
                     {...register("email", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.email && <Error>Email is required</Error>}
@@ -285,7 +326,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     readOnly
                     placeholder="" defaultValue={edit ? details.generated_by : null}
                     type="text"
-                    {...register("generated_by", { required: true })}
+                    {...register("generated_by", { required: !edit,})}
                   />
                   {errors.generated_by && <Error>Input is empty</Error>}
                 </InputDiv>
@@ -297,7 +338,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     placeholder="" defaultValue={edit ? details.reference : null}
                     
                     {...register("reference", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.supplier && <Error>Reference is required</Error>}
@@ -309,7 +350,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <ApplyFormInput
                     placeholder="" defaultValue={edit ? details.po_number : null}
                     {...register("po_number", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.po_number && <Error>P.O number is required</Error>}
@@ -322,7 +363,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     
                     placeholder="" defaultValue={edit ? details.piNumber : null}
                     {...register("piNumber", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.PI_number && <Error>P.I number is required</Error>}
@@ -336,7 +377,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     readOnly={edit ? true : false}
                     placeholder="" defaultValue={edit ? details.ewayBill : null}
                     {...register("ewayBill", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.eway_bill && (
@@ -351,7 +392,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     
                     placeholder="" defaultValue={edit ? details.dcNumber : null}
                     {...register("dcNumber", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.dc_number && <Error>D.C number is required</Error>}
@@ -367,7 +408,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     readOnly
                     placeholder="" defaultValue={edit ? details.address : null}
                     type="text"
-                    {...register("address", { required: true })}
+                    {...register("address", { required: !edit, })}
                   />
                   {errors.address && <Error>Address is required</Error>}
                 </InputDiv>
@@ -379,7 +420,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     readOnly
                     placeholder="" defaultValue={edit ? details.city : null}
                     {...register("city", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.city && <Error>City is required</Error>}
@@ -393,7 +434,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     type="text"
                     placeholder="" defaultValue={edit ? details.district : null}
                     {...register("district", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.district && <Error>District name is required</Error>}
@@ -407,7 +448,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     type="text"
                     placeholder="" defaultValue={edit ? details.state : null}
                     {...register("state", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.state && <Error>State is required</Error>}
@@ -421,7 +462,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     type=""
                     placeholder="" defaultValue={edit ? details.pincode : null}
                     {...register("pincode", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.pincode && <Error>Pincode is required</Error>}
@@ -445,7 +486,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     type={edit? null : 'date'}
                     placeholder="" defaultValue={edit ? details.deliveryDate : null}
                     {...register("deliveryDate", {
-                      required: true,
+                      required: !edit,
                     })}
                   />
                   {errors.delivery_date && (
@@ -483,6 +524,18 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     <TableCell className={classes.thead} align="center">
                       Total Qty.
                     </TableCell>
+                    <TableCell className={classes.thead} align="center">
+                      Sent Qty.
+                    </TableCell>
+                    {
+                      edit ? (  
+                        <TableCell className={classes.thead} align="center">
+                          Pending Qty.
+                        </TableCell>  
+                      ) : (
+                        <></>
+                      )
+                    }
                     <TableCell
                       className={classes.thead}
                       align="center"
@@ -491,6 +544,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 </TableHead>
                 <TableBody>
                {fields.map((item, index) => {
+                    console.log(details);
                     return (
                       <TableRow key={item.id}>
                         <TableCell align="center">{index + 1}</TableCell>
@@ -498,19 +552,28 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                           <TableInput
                             style={{ border: "none" }}
                             name={`item[${index}].code`}
-                            defaultValue={`${item.code}`}
+                            defaultValue={edit ? `${details.item[index].code}` : `${item.code}`}
                             {...register(`item.${index}.code`)}
                           />
                         </TableCell>
                         <TableCell align="center">
                           <select
                             name={`item[${index}].name`}
-                            defaultValue={`${item.name}`}
+                            defaultValue={edit ? `${details.item[index].id}` : `${item.name}`}
                             {...register(`item.${index}.name`)}
+                            onChange={(e) => {
+                              console.log(e.target.value);
+                              setValue(`item.${index}.code`, e.target.value);
+                            }}
                           >
                             {products.map(product => {
+                              if(edit && details.item[index].id==product.id) 
                               return (
-                                <option value={product.name}>{product.name}</option>
+                                <option selected value={product.id}>{product.name}</option>
+                              );
+                              else 
+                              return (
+                                <option value={product.id}>{product.name}</option>
                               );
                             })}
                           </select>
@@ -519,10 +582,37 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                           <TableInput
                             
                             name={`item[${index}].quantity`}
-                            defaultValue={`${item.quantity}`}
+                            defaultValue={edit ? `${details.item[index].quantity}` : `${item.quantity}`}
                             {...register(`item.${index}.quantity`)}
                           ></TableInput>
                         </TableCell>
+                        <TableCell align="center">
+                          <TableInput
+                            // onInputCapture={(e) => {
+                            //   console.log(e.target.value);
+                            //   // setValue(`item.${index}.pending`, )
+                            //   console.log(formState);
+                            // }}
+                            name={`item[${index}].sent`}
+                            defaultValue={edit ? `${details.item[index].sent}` : `${item.sent}`}
+                            {...register(`item.${index}.sent`)}
+                          ></TableInput>
+                        </TableCell>
+                        {
+                          edit ? (
+                            <TableCell align="center">
+                              <TableInput
+                                readOnly
+                                name={`item[${index}].pending`}
+                                defaultValue={edit ? `${details.item[index].pending}` : `${item.pending}`}
+                                {...register(`item.${index}.pending`)}
+                              ></TableInput>
+                            </TableCell>
+                          ) : (
+                            <></>
+                          )
+                        }
+                        
                         <TableCell align="center">
                           <IconButton
                             type="button"
@@ -543,9 +633,10 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
           <div className="text-center mt-lg-5">
             <Button
               outline
-              onClick={() => {
+              onClick={(e) => {
                 let genCode = Math.floor(Math.random() + Math.random() * 10000);
-                append({ code: genCode, name: "IP Camera", quantity: 10 });
+                append({ code: "-", name: "", quantity: 0, sent: 0, pending: 0 });
+                e.preventDefault();
               }}
             >
               + Add Item

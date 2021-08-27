@@ -30,6 +30,7 @@ import MoreInwards from "./MoreInwards";
 
 import { db as firebase, bucket, auth } from '../../../firebase';
 import { UserContext } from "../../../context/UserProvider";
+import { set } from "react-hook-form";
 
 function createData(
   order,
@@ -76,24 +77,29 @@ const Inwards = () => {
     age: "",
     name: "",
   });
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState([]);
   const [details, setDetails] = useState({});
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = (event, index) => {
+    setAnchorEl(anchorEl.map((a, i) => {
+      if(i == index) {
+        return event.currentTarget
+      } else {
+        return a
+      }
+    }));
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleClose = (index) => {
+    setAnchorEl(anchorEl.map((a, i) => {
+      if(i == index) {
+        return null
+      } else {
+        return a
+      }
+    }));
   };
-  const handleChange = (event) => {
-    const name = event.target.name;
-    setState({
-      ...state,
-      [name]: event.target.value,
-    });
-    console.log(state);
-  };
+  
   const options = ["item1", "item2", "item3"];
   const { items, requestSort, sortConfig } = useSortableData(rows);
   const getClassNamesFor = (name) => {
@@ -114,22 +120,29 @@ const Inwards = () => {
 
   const [orders, setOrders] = useState([]);
   const [clients, setClients] = useState([]);
+  const [currArr, setCurrArr] = useState([]);
 
   useEffect(() => {
     const inRef = firebase.ref("inventory/in-orders");
     inRef.once("value", (snapshot) => {
       if(snapshot.val()) {
-        let orders = []
+        let orders = [];
+        let anchors = [];
         Object.keys(snapshot.val()).map((key) => {
-          orders.push(snapshot.val()[key])
+          orders.push(snapshot.val()[key]);
+          anchors.push(null);
         })
+        setAnchorEl(anchors);
         console.log(snapshot.val());
         console.log(orders);
+        let currArr = orders.map(order => {
+          return 0
+        });
+        setCurrArr(currArr);
         setOrders(orders);
       } else {
         console.log('no out orders')
       }
-      
     });
 
     const clientsRef = firebase.ref("inventory/clients");
@@ -141,6 +154,19 @@ const Inwards = () => {
       setClients(clients);
     });
   }, [show]);
+
+  const handleChange = (event, index) => {
+    // console.log(event.target.value);
+    setCurrArr(currArr.map((i, j) => {
+      if(j == index)  return parseInt(event.target.value)
+      else return j
+    }));
+  };
+
+  useEffect(() => {
+    console.log('currArr chnaged')
+  }, [currArr]);
+
 
   return (
     <div>
@@ -197,7 +223,7 @@ const Inwards = () => {
                 getClassNamesFor={getClassNamesFor}
               />
               <TableBody>
-                {orders.map((row) => {
+                {orders.map((row, index) => {
                   return (
                     <TableRow key={row.orderNo}>
                       <TableCell component="th" scope="row" align="center">
@@ -208,30 +234,25 @@ const Inwards = () => {
                         <FormControl className={classes.formControl}>
                           <NativeSelect
                             value={state.key}
-                            onChange={handleChange}
+                            onChange={(e) => handleChange(e, index)}
                             name={row.item}
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "age" }}
                           >
-                            {/* <option title={row.quantity} value={row.item}>
-                              {row.item}
-                            </option> */}
-                            <option title={row.quantity} value={10}>
-                              External Flash
-                            </option>
-                            <option title={row.quantity} value={20}>
-                              Camera Bag
-                            </option>
-                            <option title={row.quantity} value={30}>
-                              SD Card
-                            </option>
+                            {row.item.map((item, i) => {
+                              return  (
+                                <option title={item.name} key={i} value={i}>
+                                  {item.name}
+                                </option>
+                              )
+                            })}
                           </NativeSelect>
                         </FormControl>
                       </TableCell>
 
-                      <TableCell align="center">{row.total}</TableCell>
-                      <TableCell align="center">{row.received}</TableCell>
-                      <TableCell align="center">{row.pending}</TableCell>
+                      <TableCell align="center">{row.item[currArr[index]].quantity}</TableCell>
+                      <TableCell align="center">{row.item[currArr[index]].received}</TableCell>
+                      <TableCell align="center">{parseInt(row.item[currArr[index]].quantity) - parseInt(row.item[currArr[index]].received)}</TableCell>
                       <TableCell align="center">{row.receivedDate}</TableCell>
                       <TableCell
                         align="center"
@@ -249,14 +270,14 @@ const Inwards = () => {
                             <MoreHorizIcon
                               aria-controls="simple-menu"
                               aria-haspopup="true"
-                              onClick={handleClick}
+                              onClick={(e) => handleClick(e, index)}
                             />
                             <Menu
                               id="simple-menu"
-                              anchorEl={anchorEl}
+                              anchorEl={anchorEl[index]}
                               keepMounted
-                              open={Boolean(anchorEl)}
-                              onClose={handleClose}
+                              open={Boolean(anchorEl[index])}
+                              onClose={() => handleClose(index)}
                             >
                               <MenuItem
                                 onClick={() => MoreFunc(row, "view_more")}
@@ -280,7 +301,7 @@ const Inwards = () => {
       ) : (
         <>
           {show === "receive_order" || show === "edit_inwards" ? (
-            <ReceiveOrder details={details} setShow={setShow} />
+            <ReceiveOrder details={details} setShow={setShow} setDetails={setDetails} />
           ) : null}
           {show === "more_inwards" && (
             <MoreInwards details={details} setShow={setShow} />

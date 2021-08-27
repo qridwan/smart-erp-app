@@ -1,6 +1,10 @@
 import { DataGrid } from "@material-ui/data-grid";
 import React, { useRef, useState, useEffect, useContext } from "react";
 import IPcamera from "../../../Assets/Images/ipCamera.png";
+import moment from 'moment';
+import styled from "styled-components";
+
+
 import {
   AddItemContainer,
   ApplyFormInput,
@@ -22,7 +26,19 @@ import {
   TopBar,
   UploadButton,
   UploadInput,
+  MainTitle,
+  TableInput,
 } from "../../../styles/styles";
+
+import {
+  IconButton,
+  makeStyles,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@material-ui/core";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { connect } from "react-redux";
@@ -32,6 +48,33 @@ import ModalInventory from "./ModalInventory";
 
 import { db as firebase, bucket, auth } from '../../../firebase';
 import { UserContext } from "../../../context/UserProvider";
+
+const useStyles = makeStyles({
+  table: {
+    width: "80%",
+    paddingTop: "30px",
+    margin: "0 auto",
+  },
+  thead: {
+    borderBottom: "none",
+    fontFamily: "Poppins",
+    fontWeight: "500",
+    fontSize: "14px",
+    lineHeight: "21px",
+    color: "#6D83AE",
+    background: "#F7F9FD",
+  },
+  button: {
+    display: "block",
+    marginTop: "20px",
+  },
+  formControl: {
+    margin: "10px",
+    minWidth: 120,
+  },
+});
+
+
 
 const columns = [
   {
@@ -109,6 +152,7 @@ const columns = [
 ];
 
 const Inventory = ({ inventories, removeFromInventory }) => {
+  const classes = useStyles();
   const [selectedItems, setSelectedItems] = useState([]);
   const [goto, setGoto] = useState("table");
   const [imgFile, setImgFile] = useState("");
@@ -117,6 +161,9 @@ const Inventory = ({ inventories, removeFromInventory }) => {
   // const [imgFileError, setImgFileError] = useState("");
   // const [docFileError, setDocFileError] = useState("");
   // const [fileUrl, setFileUrl] = useState(null);
+
+  const [editImage, setEditImage] = useState('');
+
   const {
     register,
     formState: { errors },
@@ -124,7 +171,7 @@ const Inventory = ({ inventories, removeFromInventory }) => {
     reset
   } = useForm();
 
-  const user = useContext(UserContext); 
+  const user = useContext(UserContext);
 
   const [products, setProducts] = useState([]);
 
@@ -147,7 +194,21 @@ const Inventory = ({ inventories, removeFromInventory }) => {
   const onSubmit = (data) => {
     console.log(data, { imgFile }, { docFile });
     const productsRef = firebase.ref("inventory/products");
-    if(imgFile) {
+    productsRef.child(`${data.productNo}`).update({
+      date: data.date,
+      name: data.item_name,
+      available: data.item_quantity,
+      poNo: data.po_number,
+      receivedDate: data.received_date,
+      remarks: data.remarks,
+      supplier: data.supplier,
+      id: data.productNo,
+      condition: data.condition,
+      lastEditedBy: user.email,
+      reserved: data.reserved ? data.reserved : 0,
+      onHand: data.onHand ? data.onHand : 0,
+    });
+    if (imgFile) {
       const uploadTask = bucket.ref(`/pictures/${imgFile.name}`).put(imgFile);
       uploadTask.on('state_changed',
         (snapShot) => {
@@ -158,39 +219,25 @@ const Inventory = ({ inventories, removeFromInventory }) => {
             .then(fireBaseUrl => {
               console.log(fireBaseUrl);
               productsRef.child(`${data.productNo}`).update({
-                date: data.date,
-                name: data.item_name,
-                available: data.item_quantity,
-                poNo: data.po_number,
-                receivedDate: data.received_date,
-                remarks: data.remarks,
-                supplier: data.supplier,
-                id: data.productNo,
-                condition: data.condition,
                 photos: fireBaseUrl,
-                lastEditedBy: user.email
               });
             })
-        })
+        });
     }
-    else {
-      productsRef.child(`${data.productNo}`).update({
-        date: data.date,
-        name: data.item_name,
-        available: data.item_quantity,
-        poNo: data.po_number,
-        receivedDate: data.received_date,
-        remarks: data.remarks,
-        supplier: data.supplier,
-        id: data.productNo,
-        condition: data.condition,
-        lastEditedBy: user.email,
-        onHand: data.onHand,
-        reserved: data.reserved
-      });
+    if (docFile) {
+      const uploadTask = bucket.ref(`/pictures/${docFile.name}`).put(docFile);
+      uploadTask.on('state_changed',
+        (snapShot) => {
+        }, (err) => {
+          console.log(err)
+        }, () => {
+          bucket.ref('pictures').child(docFile.name).getDownloadURL()
+            .then(fireBaseUrl => {
+              const docsRef = firebase.ref(`inventory/products/${data.productNo}/docs`);
+              docsRef.push({ name: docFile.name, url: fireBaseUrl, date: moment().format('DD-MM-YY') });
+            })
+        });
     }
-    
-
     console.log('new product added successfully');
     setGoto("table");
     reset();
@@ -200,6 +247,7 @@ const Inventory = ({ inventories, removeFromInventory }) => {
   const hiddenImageInput = useRef(null);
   const hiddenDocInput = useRef(null);
   const handleClick = (param) => {
+
     if (param === "image") {
       hiddenImageInput.current.click();
     } else {
@@ -226,8 +274,10 @@ const Inventory = ({ inventories, removeFromInventory }) => {
     handleOpen()
   };
 
+  const [files, setfiles] = useState([]);
+
   const handleEdit = async () => {
-    
+
     console.log(selectedItems);
     const product = selectedItems[0];
     reset({
@@ -240,7 +290,18 @@ const Inventory = ({ inventories, removeFromInventory }) => {
       supplier: product.supplier,
       productNo: product.id,
       condition: product.condition,
+      reserved: product.reserved,
+      onHand: product.onHand
     });
+    let files = [];
+    if (product.docs) {
+      Object.keys(product.docs).map((obj) => {
+        files.push(product.docs[obj]);
+      })
+    }
+    console.log(files);
+    setfiles(files);
+    setEditImage(product.photos);
     setGoto("addItem");
     setSelectedItems([]);
   }
@@ -273,7 +334,7 @@ const Inventory = ({ inventories, removeFromInventory }) => {
             + Add Items
           </Button>
         ) : (
-          <Button outline onClick={() => {reset(); setGoto("table")}}>
+          <Button outline onClick={() => { reset(); setGoto("table"); setEditImage(""); }}>
             View Inventory
           </Button>
         )}
@@ -317,11 +378,16 @@ const Inventory = ({ inventories, removeFromInventory }) => {
                     Item Image
                   </Label>
                   <ImageInputArea onClick={() => handleClick("image")}>
-                    <ImageInput className="img-fluid" src={IPcamera} alt="" />
+                    <ImageInput className="img-fluid" src={editImage == '' ? IPcamera : editImage} alt="" />
                   </ImageInputArea>
                   <div className="text-center">
-                    <UploadButton onClick={() => handleClick("image")}>
-                      + Upload Image
+                    <UploadButton onClick={(e) => {
+                      e.preventDefault();
+                      handleClick("image");
+                    }}>
+                      {
+                        imgFile ? imgFile.name : '+ Upload Image'
+                      }
                     </UploadButton>
                     <input
                       ref={hiddenImageInput}
@@ -423,7 +489,7 @@ const Inventory = ({ inventories, removeFromInventory }) => {
                       <Label>Date</Label>
                       <ApplyFormInput
                         placeholder=""
-                        type="datetime"
+                        type="date"
                         {...register("date", { required: true })}
                       />
                       {errors.date && <Error>Date is required</Error>}
@@ -447,7 +513,7 @@ const Inventory = ({ inventories, removeFromInventory }) => {
                     <InputDiv>
                       <Label>Received Date</Label>
                       <ApplyFormInput
-                        type="datetime"
+                        type="date"
                         placeholder=""
                         {...register("received_date", {
                           required: true,
@@ -494,8 +560,14 @@ const Inventory = ({ inventories, removeFromInventory }) => {
                   <Col md={6} xs={12}>
                     <InputDiv>
                       <Label>Delivery Proof</Label>
-                      <UploadButton outline onClick={() => handleClick("doc")}>
-                        + Upload Document
+                      <UploadButton onClick={(e) => {
+                        e.preventDefault();
+                        handleClick("doc");
+                      }}>
+                        {
+                          docFile ? docFile.name : '+ Upload Document'
+                        }
+
                       </UploadButton>
                       <UploadInput
                         ref={hiddenDocInput}
@@ -517,6 +589,75 @@ const Inventory = ({ inventories, removeFromInventory }) => {
                     </InputDiv>
                   </Col>
 
+                  <Col md={12} xs={12}>
+                    <Container style={{padding: '0 0px !important'}}>
+                      <MainTitle>Attachments</MainTitle>
+                      <Table style={{width: '100%'}} className={classes.table} aria-label="simple table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell className={classes.thead} align="left">
+                              Index
+                            </TableCell>
+                            <TableCell className={classes.thead} align="left">
+                              Date
+                            </TableCell>
+                            <TableCell className={classes.thead} align="left">
+                              File (click to download)
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {files.map((file, index) => {
+                            return (
+                              <TableRow key={index}>
+                                <TableCell align="left">{index + 1}</TableCell>
+                                {/* <TableCell align="left">
+                                  <TableInput
+                                    style={{ border: "none" }}
+                                    defaultValue={`Attachment ${index}`}
+                                  />
+                                </TableCell> */}
+                                <TableCell align="left">
+                                  <TableInput
+                                  style={{ border: "none" }}
+                                    defaultValue={file.date}
+                                  ></TableInput>
+                                </TableCell>
+                                <TableCell align="left">
+                                  <p
+                                    style={{cursor: 'pointer'}}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      window.open(file.url);
+                                    }}
+                                  >{file.name}</p>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </Container>
+                  </Col>
+
+                  {
+                    // files.map((file, index) => {
+                    //   return (
+                    //     <Col md={6} xs={12}>
+                    //       <Label>{`Attachment${index + 1}`}</Label>
+                    //       <UploadButton onClick={(e) => {
+                    //         e.preventDefault();
+                    //         window.open(file.url);
+                    //       }}>
+                    //         {
+                    //           file.name.length > 25 ? file.name.slice(0, 22) + '...' : file.name
+                    //         }
+                    //       </UploadButton>
+                    //     </Col>
+                    //   )
+
+                    // })
+                  }
                 </Row>
               </Col>
             </Row>
@@ -535,3 +676,10 @@ const mapDispatchToProps = {
   removeFromInventory: removeFromInventory,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Inventory);
+
+const Container = styled.div`
+  // padding: 0 50px;
+  @media only screen and (max-width: 1000px) {
+    padding: 0;
+  }
+`;

@@ -81,30 +81,41 @@ const Outwards = () => {
     age: "",
     name: "hai",
   });
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState([]);
   const [details, setDetails] = useState({});
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = (event, index) => {
+
+    setAnchorEl(anchorEl.map((a, i) => {
+      if(i == index) {
+        return event.currentTarget
+      } else {
+        return a
+      }
+    }));
   };
 
 
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleClose = (index) => {
+    setAnchorEl(anchorEl.map((a, i) => {
+      if(i == index) {
+        return null
+      } else {
+        return a
+      }
+    }));
   };
 
-  const handleChange = (event) => {
-    const name = event.target.name;
-    console.log(
-      "🚀 ~ file: Outwards.jsx ~ line 100 ~ handleChange ~ name",
-      name
-    );
-    setState({
-      ...state,
-      [name]: event.target.value,
-    });
-    console.log(state);
+  const [arr, setArr] = useState([]);
+
+  const handleChange = (event, index) => {
+    console.log(event.target.value);
+    console.log(index)
+    setArr(arr.map((a, j) => {
+      if (j == index) return(event.target.value);
+      else return a;
+    }))
   };
   const options = ["Option 1", "Option 2"];
   const { items, requestSort, sortConfig } = useSortableData(rows);
@@ -122,7 +133,7 @@ const Outwards = () => {
     (await info) === "edit"
       ? setShow("edit_outwards")
       : setShow("more_outwards");
-    handleClose();
+    // handleClose();
   };
 
   const [orders, setOrders] = useState([]);
@@ -132,10 +143,16 @@ const Outwards = () => {
     const outRef = firebase.ref("inventory/out-orders");
     outRef.once("value", (snapshot) => {
       if(snapshot.val()) {
-        let orders = []
+        let orders = [];
+        let anchors = [];
+        let indexes = [];
         Object.keys(snapshot.val()).map((key) => {
-          orders.push(snapshot.val()[key])
-        })
+          orders.push(snapshot.val()[key]);
+          anchors.push(null);
+          indexes.push(0);
+        });
+        setAnchorEl(anchors);
+        setArr(indexes);
         console.log(snapshot.val());
         console.log(orders);
         setOrders(orders);
@@ -153,6 +170,8 @@ const Outwards = () => {
       });
       setClients(clients);
     });
+
+
   }, [show]);
 
   return (
@@ -198,8 +217,8 @@ const Outwards = () => {
                 getClassNamesFor={getClassNamesFor}
               />
               <TableBody>
-                {orders.map((row) => {
-                  let rowTotal = 0;
+                {orders.map((row, index) => {
+                  console.log(row);
                   return (
                     <TableRow key={row.order}>
                       <TableCell component="th" scope="row" align="center">
@@ -210,7 +229,7 @@ const Outwards = () => {
                         <FormControl className={classes.formControl}>
                           <NativeSelect
                             value={state.key} 
-                            onChange={handleChange}
+                            onChange={(e) => handleChange(e, index)}
                             name={row.item}
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "age" }}
@@ -219,9 +238,9 @@ const Outwards = () => {
                               {row.item}
                             </Option> */}
 
-                            {row.item.map(item => {
+                            {row.item.map((item, j) => {
                               return (
-                                <Option value={item.quantity} title={item.quantity}>
+                                <Option value={j} title={item.quantity}>
                                   {item.name}
                                 </Option>
                               )
@@ -230,9 +249,9 @@ const Outwards = () => {
                         </FormControl>
                       </TableCell>
                       <TableCell align="center">{row.agency}</TableCell>
-                      <TableCell align="center">{row.total}</TableCell>
-                      <TableCell align="center">{row.sent}</TableCell>
-                      <TableCell align="center">{row.pending}</TableCell>
+                      <TableCell align="center">{row.item[arr[index]].quantity}</TableCell>
+                      <TableCell align="center">{row.item[arr[index]].sent}</TableCell>
+                      <TableCell align="center">{row.item[arr[index]].pending}</TableCell>
                       <TableCell
                         align="center"
                         className={
@@ -249,14 +268,14 @@ const Outwards = () => {
                             <MoreHorizIcon
                               aria-controls="simple-menu"
                               aria-haspopup="true"
-                              onClick={handleClick}
+                              onClick={(e) => handleClick(e, index)}
                             />
                             <Menu
                               id="simple-menu"
-                              anchorEl={anchorEl}
+                              anchorEl={anchorEl[index]}
                               keepMounted
-                              open={Boolean(anchorEl)}
-                              onClose={handleClose}
+                              open={Boolean(anchorEl[index])}
+                              onClose={(e) => handleClose(index)}
                             >
                               <MenuItem
                                 onClick={() => MoreFunc(row, "view_more")}

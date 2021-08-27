@@ -56,7 +56,7 @@ const useStyles = makeStyles({
 
 
 
-const ReceiveOrder = ({ setShow, details }) => {
+const ReceiveOrder = ({ setShow, details, setDetails }) => {
   const [edit, setEdit] = useState(false);
   const { agency, date, item, order, quantity, audit } = details;
 
@@ -100,10 +100,17 @@ const ReceiveOrder = ({ setShow, details }) => {
     control,
     name: "item",
   });
+
+
   useEffect(() => {
     if (details.info) {
       setEdit(true);
-      append(items)
+      append(items);
+
+      let data = details;
+      delete data.info;
+      reset(data);
+      setAgency(data.agency)
     }
   }, [setShow, details.info]);
 
@@ -145,6 +152,15 @@ const ReceiveOrder = ({ setShow, details }) => {
       total = total + item.quantity;
     });
     data['total'] = total;
+    data['item'] = data.item.map(item => {
+      products.map((product) => {
+        if (product.name == item.name) {
+          item['id'] = product.id
+        }
+      })
+
+      return item
+    })
     const inRef = firebase.ref("inventory/in-orders");
     inRef.child(`${data.orderNo}`).update(data);
     console.log('order created in db');
@@ -270,6 +286,10 @@ const ReceiveOrder = ({ setShow, details }) => {
                           <TableSelect
                             name={`item[${index}].name`}
                             defaultValue={`${item.name}`}
+                            onChange={(e, newVal) => {
+                              console.log('inside changed');
+                              console.log(e.target.value);
+                            }}
                             {...register(`item.${index}.name`)}
                           >
                             {products.map(product => (
