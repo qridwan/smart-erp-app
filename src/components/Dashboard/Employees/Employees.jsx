@@ -16,12 +16,10 @@ import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
 import { DataGrid } from "@material-ui/data-grid";
 import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
-import employee1 from "../../../Assets/Images/emp-1.png";
 import ModalEmployee from "./ModalEmployee";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddEmployee from "./AddEmployee";
-import { db as firebase, bucket, auth } from '../../../firebase';
-import { UserContext } from "../../../context/UserProvider";
+import { db as firebase } from '../../../firebase';
 
 const columns = [
   {
@@ -258,48 +256,48 @@ const Employees = () => {
 
 export default Employees;
 
-const RecentActivityContainer = styled.div`
-  border: 3px solid rgba(20, 55, 126, 0.1);
-  box-sizing: border-box;
-  border-radius: 19px;
-  margin-right: 20px;
-  @media only screen and (max-width: 1000px) {
-    margin: 0;
-    margin-top: 20px;
-  }
-`;
-const RecentEmployee = styled.div`
-  padding: 15px 20px;
-  display: flex;
-`;
-const Content = styled.div``;
-const HistoryText = styled.p`
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 22px;
-  color: rgba(45, 56, 80, 0.91);
-  padding: 0;
-  margin: 10px 0 10px 0;
-  @media only screen and (max-width: 1000px) {
-    font-size: 14px;
-    line-height: 18px;
-    padding: 0;
-    margin: 2px 0 0 0;
-  }
-`;
-const TimeCreated = styled.span`
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 20px;
-  color: rgba(45, 56, 80, 0.43);
-  padding-top: 10px;
-  margin: 0;
-  @media only screen and (max-width: 1000px) {
-    font-size: 12px;
-    line-height: 18px;
-    padding-top: 4px;
-  }
-`;
+// const RecentActivityContainer = styled.div`
+//   border: 3px solid rgba(20, 55, 126, 0.1);
+//   box-sizing: border-box;
+//   border-radius: 19px;
+//   margin-right: 20px;
+//   @media only screen and (max-width: 1000px) {
+//     margin: 0;
+//     margin-top: 20px;
+//   }
+// `;
+// const RecentEmployee = styled.div`
+//   padding: 15px 20px;
+//   display: flex;
+// `;
+// const Content = styled.div``;
+// const HistoryText = styled.p`
+//   font-weight: 500;
+//   font-size: 18px;
+//   line-height: 22px;
+//   color: rgba(45, 56, 80, 0.91);
+//   padding: 0;
+//   margin: 10px 0 10px 0;
+//   @media only screen and (max-width: 1000px) {
+//     font-size: 14px;
+//     line-height: 18px;
+//     padding: 0;
+//     margin: 2px 0 0 0;
+//   }
+// `;
+// const TimeCreated = styled.span`
+//   font-weight: 500;
+//   font-size: 16px;
+//   line-height: 20px;
+//   color: rgba(45, 56, 80, 0.43);
+//   padding-top: 10px;
+//   margin: 0;
+//   @media only screen and (max-width: 1000px) {
+//     font-size: 12px;
+//     line-height: 18px;
+//     padding-top: 4px;
+//   }
+// `;
 
 const HiddenButtons = styled.div`
   margin: 0;

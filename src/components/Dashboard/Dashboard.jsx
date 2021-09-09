@@ -18,9 +18,7 @@ import MenuBar from "../MenuBar/MenuBar";
 
 import { UserContext } from "../../context/UserProvider";
 
-import { db as firebase, bucket, auth } from '../../firebase';
-
-
+import { db as auth } from "../../firebase";
 
 export var sidebarDataAdmin = [
   {
@@ -37,7 +35,7 @@ export var sidebarDataAdmin = [
   },
   {
     icon: <EmployeeImg className="icons" />,
-    title: "Employees", 
+    title: "Employees",
   },
   {
     icon: <ClientsImg className="icons" />,
@@ -71,13 +69,13 @@ export var sidebarData = [
     title: "Logout",
   },
 ];
-const Dashboard = () => { 
+const Dashboard = () => {
   const [show, setShow] = useState("inventory");
-  const userData = useContext(UserContext); 
-  const user = userData.email.slice(0, userData.email.indexOf('@'));
+  const userData = useContext(UserContext);
+  const user = userData.email.slice(0, userData.email.indexOf("@"));
   const avatarText = user.slice(0, 1);
 
-  const sideData = user == 'admin' ? sidebarDataAdmin : sidebarData
+  const sideData = user === "admin" ? sidebarDataAdmin : sidebarData;
 
   return (
     <Container>
@@ -96,20 +94,20 @@ const Dashboard = () => {
             <NavItems>
               {sideData.map((obj, i) => {
                 const handleOnCLick = () => {
-                  if (obj.title.toLowerCase() == 'logout'){
-                    auth.signOut().then(() => {
-                      console.log('sign out succes')
-                    }).catch((error) => {
-                      console.log(error);
-                    });
+                  if (obj.title.toLowerCase() === "logout") {
+                    auth
+                      .signOut()
+                      .then(() => {
+                        console.log("sign out succes");
+                      })
+                      .catch((error) => {
+                        console.log(error);
+                      });
                   }
                   setShow(obj.title.toLowerCase());
                 };
                 return (
-                  <Section 
-                    key={i}
-                    style={{cursor: 'pointer'}}
-                  >
+                  <Section key={i} style={{ cursor: "pointer" }}>
                     <SidebarContent
                       className={
                         show === obj.title.toLowerCase()

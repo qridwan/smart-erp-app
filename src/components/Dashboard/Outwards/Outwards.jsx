@@ -23,9 +23,7 @@ import { useSortableData } from "../Tables/table.sort";
 import TableHeadCell from "../Tables/TableHead";
 import MoreOutwards from "./MoreOutwards";
 
-import { db as firebase, bucket, auth } from '../../../firebase';
-import { UserContext } from "../../../context/UserProvider";
-
+import { db as firebase } from "../../../firebase";
 
 function createData(
   order,
@@ -85,40 +83,43 @@ const Outwards = () => {
   const [details, setDetails] = useState({});
 
   const handleClick = (event, index) => {
-
-    setAnchorEl(anchorEl.map((a, i) => {
-      if(i == index) {
-        return event.currentTarget
-      } else {
-        return a
-      }
-    }));
+    setAnchorEl(
+      anchorEl.map((a, i) => {
+        if (i == index) {
+          return event.currentTarget;
+        } else {
+          return a;
+        }
+      })
+    );
   };
 
-
-
   const handleClose = (index) => {
-    setAnchorEl(anchorEl.map((a, i) => {
-      if(i == index) {
-        return null
-      } else {
-        return a
-      }
-    }));
+    setAnchorEl(
+      anchorEl.map((a, i) => {
+        if (i == index) {
+          return null;
+        } else {
+          return a;
+        }
+      })
+    );
   };
 
   const [arr, setArr] = useState([]);
 
   const handleChange = (event, index) => {
     console.log(event.target.value);
-    console.log(index)
-    setArr(arr.map((a, j) => {
-      if (j == index) return(event.target.value);
-      else return a;
-    }))
+    console.log(index);
+    setArr(
+      arr.map((a, j) => {
+        if (j == index) return event.target.value;
+        else return a;
+      })
+    );
   };
-  const options = ["Option 1", "Option 2"];
-  const { items, requestSort, sortConfig } = useSortableData(rows);
+
+  const { requestSort, sortConfig } = useSortableData(rows);
 
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
@@ -142,7 +143,7 @@ const Outwards = () => {
   useEffect(() => {
     const outRef = firebase.ref("inventory/out-orders");
     outRef.once("value", (snapshot) => {
-      if(snapshot.val()) {
+      if (snapshot.val()) {
         let orders = [];
         let anchors = [];
         let indexes = [];
@@ -157,21 +158,18 @@ const Outwards = () => {
         console.log(orders);
         setOrders(orders);
       } else {
-        console.log('no out orders')
+        console.log("no out orders");
       }
-      
     });
 
     const clientsRef = firebase.ref("inventory/clients");
     clientsRef.once("value", (snapshot) => {
-      let clients = []
+      let clients = [];
       Object.keys(snapshot.val()).map((key) => {
-        clients.push(snapshot.val()[key])
+        clients.push(snapshot.val()[key]);
       });
       setClients(clients);
     });
-
-
   }, [show]);
 
   return (
@@ -228,7 +226,7 @@ const Outwards = () => {
                       <TableCell align="center">
                         <FormControl className={classes.formControl}>
                           <NativeSelect
-                            value={state.key} 
+                            value={state.key}
                             onChange={(e) => handleChange(e, index)}
                             name={row.item}
                             className={classes.selectEmpty}
@@ -243,15 +241,21 @@ const Outwards = () => {
                                 <Option value={j} title={item.quantity}>
                                   {item.name}
                                 </Option>
-                              )
+                              );
                             })}
                           </NativeSelect>
                         </FormControl>
                       </TableCell>
                       <TableCell align="center">{row.agency}</TableCell>
-                      <TableCell align="center">{row.item[arr[index]].quantity}</TableCell>
-                      <TableCell align="center">{row.item[arr[index]].sent}</TableCell>
-                      <TableCell align="center">{row.item[arr[index]].pending}</TableCell>
+                      <TableCell align="center">
+                        {row.item[arr[index]].quantity}
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.item[arr[index]].sent}
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.item[arr[index]].pending}
+                      </TableCell>
                       <TableCell
                         align="center"
                         className={
@@ -282,9 +286,7 @@ const Outwards = () => {
                               >
                                 View More
                               </MenuItem>
-                              <MenuItem
-                                onClick={() => MoreFunc(row, "edit")}
-                              >
+                              <MenuItem onClick={() => MoreFunc(row, "edit")}>
                                 Edit
                               </MenuItem>
                             </Menu>
@@ -301,10 +303,18 @@ const Outwards = () => {
       ) : (
         <>
           {show === "generate" || show === "edit_outwards" ? (
-            <GenerateOutwards details={details} setShow={setShow} setDetails={setDetails} />
+            <GenerateOutwards
+              details={details}
+              setShow={setShow}
+              setDetails={setDetails}
+            />
           ) : null}
           {show === "more_outwards" && (
-            <MoreOutwards details={details} setShow={setShow}  setDetails={setDetails} />
+            <MoreOutwards
+              details={details}
+              setShow={setShow}
+              setDetails={setDetails}
+            />
           )}
         </>
       )}

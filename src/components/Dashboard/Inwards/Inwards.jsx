@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from "react";
+import React, { useEffect } from "react";
 import {
   BoldText,
   Button,
@@ -28,9 +28,7 @@ import TableHeadCell from "../Tables/TableHead";
 import { useSortableData } from "../Tables/table.sort";
 import MoreInwards from "./MoreInwards";
 
-import { db as firebase, bucket, auth } from '../../../firebase';
-import { UserContext } from "../../../context/UserProvider";
-import { set } from "react-hook-form";
+import { db as firebase } from "../../../firebase";
 
 function createData(
   order,
@@ -68,7 +66,6 @@ const rows = [
   ),
 ];
 
-
 const Inwards = () => {
   const classes = tableStyles();
   const [show, setShow] = useState("inwards");
@@ -81,27 +78,31 @@ const Inwards = () => {
   const [details, setDetails] = useState({});
 
   const handleClick = (event, index) => {
-    setAnchorEl(anchorEl.map((a, i) => {
-      if(i == index) {
-        return event.currentTarget
-      } else {
-        return a
-      }
-    }));
+    setAnchorEl(
+      anchorEl.map((a, i) => {
+        if (i == index) {
+          return event.currentTarget;
+        } else {
+          return a;
+        }
+      })
+    );
   };
 
   const handleClose = (index) => {
-    setAnchorEl(anchorEl.map((a, i) => {
-      if(i == index) {
-        return null
-      } else {
-        return a
-      }
-    }));
+    setAnchorEl(
+      anchorEl.map((a, i) => {
+        if (i == index) {
+          return null;
+        } else {
+          return a;
+        }
+      })
+    );
   };
-  
+
   const options = ["item1", "item2", "item3"];
-  const { items, requestSort, sortConfig } = useSortableData(rows);
+  const {  requestSort, sortConfig } = useSortableData(rows);
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;
@@ -112,9 +113,7 @@ const Inwards = () => {
   const MoreFunc = async (row, info) => {
     console.log({ row });
     setDetails({ ...row, info: info });
-    (await info) === "edit"
-      ? setShow("edit_inwards")
-      : setShow("more_inwards");
+    (await info) === "edit" ? setShow("edit_inwards") : setShow("more_inwards");
     handleClose();
   };
 
@@ -125,31 +124,31 @@ const Inwards = () => {
   useEffect(() => {
     const inRef = firebase.ref("inventory/in-orders");
     inRef.once("value", (snapshot) => {
-      if(snapshot.val()) {
+      if (snapshot.val()) {
         let orders = [];
         let anchors = [];
         Object.keys(snapshot.val()).map((key) => {
           orders.push(snapshot.val()[key]);
           anchors.push(null);
-        })
+        });
         setAnchorEl(anchors);
         console.log(snapshot.val());
         console.log(orders);
-        let currArr = orders.map(order => {
-          return 0
+        let currArr = orders.map((order) => {
+          return 0;
         });
         setCurrArr(currArr);
         setOrders(orders);
       } else {
-        console.log('no out orders')
+        console.log("no out orders");
       }
     });
 
     const clientsRef = firebase.ref("inventory/clients");
     clientsRef.once("value", (snapshot) => {
-      let clients = []
+      let clients = [];
       Object.keys(snapshot.val()).map((key) => {
-        clients.push(snapshot.val()[key])
+        clients.push(snapshot.val()[key]);
       });
       setClients(clients);
     });
@@ -157,16 +156,17 @@ const Inwards = () => {
 
   const handleChange = (event, index) => {
     // console.log(event.target.value);
-    setCurrArr(currArr.map((i, j) => {
-      if(j == index)  return parseInt(event.target.value)
-      else return j
-    }));
+    setCurrArr(
+      currArr.map((i, j) => {
+        if (j == index) return parseInt(event.target.value);
+        else return j;
+      })
+    );
   };
 
   useEffect(() => {
-    console.log('currArr chnaged')
+    console.log("currArr chnaged");
   }, [currArr]);
-
 
   return (
     <div>
@@ -240,19 +240,26 @@ const Inwards = () => {
                             inputProps={{ "aria-label": "age" }}
                           >
                             {row.item.map((item, i) => {
-                              return  (
+                              return (
                                 <option title={item.name} key={i} value={i}>
                                   {item.name}
                                 </option>
-                              )
+                              );
                             })}
                           </NativeSelect>
                         </FormControl>
                       </TableCell>
 
-                      <TableCell align="center">{row.item[currArr[index]].quantity}</TableCell>
-                      <TableCell align="center">{row.item[currArr[index]].received}</TableCell>
-                      <TableCell align="center">{parseInt(row.item[currArr[index]].quantity) - parseInt(row.item[currArr[index]].received)}</TableCell>
+                      <TableCell align="center">
+                        {row.item[currArr[index]].quantity}
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.item[currArr[index]].received}
+                      </TableCell>
+                      <TableCell align="center">
+                        {parseInt(row.item[currArr[index]].quantity) -
+                          parseInt(row.item[currArr[index]].received)}
+                      </TableCell>
                       <TableCell align="center">{row.receivedDate}</TableCell>
                       <TableCell
                         align="center"
@@ -301,7 +308,11 @@ const Inwards = () => {
       ) : (
         <>
           {show === "receive_order" || show === "edit_inwards" ? (
-            <ReceiveOrder details={details} setShow={setShow} setDetails={setDetails} />
+            <ReceiveOrder
+              details={details}
+              setShow={setShow}
+              setDetails={setDetails}
+            />
           ) : null}
           {show === "more_inwards" && (
             <MoreInwards details={details} setShow={setShow} />

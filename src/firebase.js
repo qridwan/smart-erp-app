@@ -1,18 +1,22 @@
-import { firebase } from "@firebase/app";
-import "firebase/database";
-import "firebase/storage";
-import "firebase/auth";
+import firebase from "firebase";
+// import 'firebase/compat/auth';
+// import 'firebase/compat/firestore';
+// import 'firebase/compat/database';
+
+// import "firebase/auth";
+// import "firebase/database";
+// import "firebase/storage";
 
 const config = {
-    apiKey: "AIzaSyDdyCOlVsHwA6QMkZNb1ISRd-e0roA5_d4",
-    authDomain: "paar-dev-e8ad9.firebaseapp.com",
-    databaseURL: "https://paar-dev-default-rtdb.firebaseio.com",
-    projectId: "paar-dev",
-    storageBucket: "paar-dev.appspot.com",
-    messagingSenderId: "254916440704",
-    appId: "1:254916440704:web:4015433a3b9a47f0162c65",
-    measurementId: "G-B5JTTC5MLQ"
-  };
+  apiKey: "AIzaSyDdyCOlVsHwA6QMkZNb1ISRd-e0roA5_d4",
+  authDomain: "paar-dev-e8ad9.firebaseapp.com",
+  databaseURL: "https://paar-dev-default-rtdb.firebaseio.com",
+  projectId: "paar-dev",
+  storageBucket: "paar-dev.appspot.com",
+  messagingSenderId: "254916440704",
+  appId: "1:254916440704:web:4015433a3b9a47f0162c65",
+  measurementId: "G-B5JTTC5MLQ",
+};
 
 firebase.initializeApp(config);
 
@@ -57,5 +61,4 @@ const auth = firebase.auth();
 // };
 
 
-
-export  {db, bucket, auth};
+export { db, bucket, auth };

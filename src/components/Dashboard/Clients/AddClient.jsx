@@ -14,8 +14,8 @@ import {
 } from "../../../styles/styles";
 
 
-import { db as firebase, bucket, auth } from '../../../firebase';
-import { UserContext } from "../../../context/UserProvider";
+import { db as firebase} from '../../../firebase';
+
 
 const AddClient = ({ setShow }) => {
   const {

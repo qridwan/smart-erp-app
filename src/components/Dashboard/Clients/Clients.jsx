@@ -15,59 +15,58 @@ import {
 import TableHeadCell from "../Tables/TableHead";
 import AddClient from "./AddClient";
 
-import { db as firebase, bucket, auth } from '../../../firebase';
-import { UserContext } from "../../../context/UserProvider";
+import { db as firebase } from '../../../firebase';
 
-function createData(
-  agency,
-  client_id,
-  date,
-  contacts,
-  delivered,
-  location,
-  orders
-) {
-  return { agency, client_id, date, contacts, delivered, location, orders };
-}
+// function createData(
+//   agency,
+//   client_id,
+//   date,
+//   contacts,
+//   delivered,
+//   location,
+//   orders
+// ) {
+//   return { agency, client_id, date, contacts, delivered, location, orders };
+// }
 
-const rows = [
-  createData(
-    "Lorem ipsum A",
-    "#111-ABS",
-    "11th June 2021",
-    "+91 1199271973",
-    "testmail111@gmail.com",
-    "Coimbatore-1",
-    "11"
-  ),
-  createData(
-    "Lorem ipsum B",
-    "#222-ABS",
-    "22th June 2021",
-    "+92 2899271973",
-    "testmail222@gmail.com",
-    "Coimbatore-2",
-    "22"
-  ),
-  createData(
-    "Lorem ipsum C",
-    "#333-ABS",
-    "19th June 2021",
-    "+93 999271973",
-    "mail323@gmail.com",
-    "Coimbatore",
-    "6"
-  ),
-  createData(
-    "Lorem ipsum 32",
-    "#475-xsa",
-    "1st June 2021",
-    "+91 8899271973",
-    "testmail@gmail.com",
-    "Coimbatore",
-    "9"
-  ),
-];
+// const rows = [
+//   createData(
+//     "Lorem ipsum A",
+//     "#111-ABS",
+//     "11th June 2021",
+//     "+91 1199271973",
+//     "testmail111@gmail.com",
+//     "Coimbatore-1",
+//     "11"
+//   ),
+//   createData(
+//     "Lorem ipsum B",
+//     "#222-ABS",
+//     "22th June 2021",
+//     "+92 2899271973",
+//     "testmail222@gmail.com",
+//     "Coimbatore-2",
+//     "22"
+//   ),
+//   createData(
+//     "Lorem ipsum C",
+//     "#333-ABS",
+//     "19th June 2021",
+//     "+93 999271973",
+//     "mail323@gmail.com",
+//     "Coimbatore",
+//     "6"
+//   ),
+//   createData(
+//     "Lorem ipsum 32",
+//     "#475-xsa",
+//     "1st June 2021",
+//     "+91 8899271973",
+//     "testmail@gmail.com",
+//     "Coimbatore",
+//     "9"
+//   ),
+// ];
 
 const Clients = () => {
   const classes = tableStyles();
