@@ -100,7 +100,11 @@ const Dashboard = () => {
                 <BoldText> {user} </BoldText>
               </Content>
               <MenuContainer>
-                <MenuBar show={show} setShow={setShow} />
+                <MenuBar
+                  show={show}
+                  setShow={setShow}
+                  handleLogout={handleLogout}
+                />
               </MenuContainer>
             </Head>
             <NavItems>

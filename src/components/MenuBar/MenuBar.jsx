@@ -33,7 +33,7 @@ const StyledMenu = withStyles({
   />
 ));
 
-const MenuBar = ({ show, setShow }) => {
+const MenuBar = ({ show, setShow, handleLogout }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -73,9 +73,7 @@ const MenuBar = ({ show, setShow }) => {
         onClose={handleClose}
       >
         {sidebarData.map((obj, i) => {
-          const handleOnCLick = () => {
-            setShow(obj.title.toLowerCase());
-          };
+           const Title = obj.title.toLowerCase();
           return (
             <section key={i}>
               <SidebarContent
@@ -84,7 +82,11 @@ const MenuBar = ({ show, setShow }) => {
                     ? "active side_nav"
                     : "side_nav"
                 }
-                onClick={(event) => handleOnCLick(event)}
+                onClick={() =>
+                  Title === "logout"
+                    ? handleLogout()
+                    : setShow(obj.title.toLowerCase())
+                }
               >
                 <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>
                 <Title className="title">{obj.title}</Title>
