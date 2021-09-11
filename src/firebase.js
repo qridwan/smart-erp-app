@@ -3,9 +3,9 @@ import firebase from "firebase";
 // import 'firebase/compat/firestore';
 // import 'firebase/compat/database';
 
-// import "firebase/auth";
-// import "firebase/database";
-// import "firebase/storage";
+import "firebase/auth";
+import "firebase/database";
+import "firebase/storage";
 
 const config = {
   apiKey: "AIzaSyDdyCOlVsHwA6QMkZNb1ISRd-e0roA5_d4",

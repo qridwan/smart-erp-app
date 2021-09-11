@@ -18,7 +18,7 @@ import MenuBar from "../MenuBar/MenuBar";
 
 import { UserContext } from "../../context/UserProvider";
 
-import { db as auth } from "../../firebase";
+import { auth } from "../../firebase";
 
 export var sidebarDataAdmin = [
   {
@@ -77,6 +77,18 @@ const Dashboard = () => {
 
   const sideData = user === "admin" ? sidebarDataAdmin : sidebarData;
 
+  const handleLogout = () => {
+    auth
+      .signOut()
+      .then(() => {
+        console.log("sign out success");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  // setShow(obj.title.toLowerCase());
+
   return (
     <Container>
       <Row className="p-0 m-0 w-100">
@@ -93,19 +105,20 @@ const Dashboard = () => {
             </Head>
             <NavItems>
               {sideData.map((obj, i) => {
-                const handleOnCLick = () => {
-                  if (obj.title.toLowerCase() === "logout") {
-                    auth
-                      .signOut()
-                      .then(() => {
-                        console.log("sign out succes");
-                      })
-                      .catch((error) => {
-                        console.log(error);
-                      });
-                  }
-                  setShow(obj.title.toLowerCase());
-                };
+                const Title = obj.title.toLowerCase();
+                // const handleOnCLick = () => {
+                //   if (obj.title.toLowerCase() === "logout") {
+                //     auth
+                //       .signOut()
+                //       .then(() => {
+                //         console.log("sign out success");
+                //       })
+                //       .catch((error) => {
+                //         console.log(error);
+                //       });
+                //   }
+                //   // setShow(obj.title.toLowerCase());
+                // };
                 return (
                   <Section key={i} style={{ cursor: "pointer" }}>
                     <SidebarContent
@@ -114,7 +127,11 @@ const Dashboard = () => {
                           ? "active side_nav"
                           : "side_nav"
                       }
-                      onClick={(event) => handleOnCLick(event)}
+                      onClick={() =>
+                        Title === "logout"
+                          ? handleLogout()
+                          : setShow(obj.title.toLowerCase())
+                      }
                     >
                       <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>
                       <Title className="title">{obj.title}</Title>
