@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
-import LoginImage from "../Assets/Images/loginPic.png";
-
-import { auth } from '../firebase';
+import LoginImage from "../Assets/Images/loginPic-1.png";
+import { auth } from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const Login = () => {
   const [show, setShow] = useState("login");
@@ -13,13 +13,24 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) =>{
+
+  const onSubmit = (data) => {
     console.log(data);
+    // auth
+    //   .signInWithEmailAndPassword(data.email, data.password)
+    //   .catch((error) => {
+    //     alert("Error signing in with password and email!");
+    //   });
 
-    auth.signInWithEmailAndPassword(data.email, data.password).catch(error => {
-      alert("Error signing in with password and email!");
-    });
-
+    signInWithEmailAndPassword(auth, data.email, data.password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        // console.log("🚀 ~ .then ~ user", user)
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
   };
   return (
     <Container>
@@ -50,6 +61,20 @@ const Login = () => {
                   {errors.email?.type === "required" && (
                     <Error>Email is required</Error>
                   )}
+
+                  {/* <Label>Phone Number</Label>
+                  <Input
+                    type="text"
+                    {...register("phone", {
+                      // required: true,
+                      pattern:
+                        /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
+                    })}
+                  />
+                  {errors.phone?.type === "required" && (
+                    <Error>Phone number is required</Error>
+                  )} */}
+
                   <Label>Password</Label>
                   <Input
                     type="password"
@@ -59,7 +84,7 @@ const Login = () => {
 
                   <div className="d-flex justify-content-between">
                     <span>
-                      <Label style={{cursor: 'pointer'}}>
+                      <Label style={{ cursor: "pointer" }}>
                         <input
                           type="checkbox"
                           {...register("toggle")}

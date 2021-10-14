@@ -29,12 +29,12 @@ import {
 } from "@material-ui/core";
 import { scrollToRef } from "../../../ScrollTop";
 
-import { db as firebase, bucket, auth } from '../../../firebase';
+import { db } from "../../../firebase";
 import { UserContext } from "../../../context/UserProvider";
 
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { onValue, ref } from "@firebase/database";
 
 const useStyles = makeStyles({
   table: {
@@ -62,14 +62,17 @@ const useStyles = makeStyles({
 });
 
 const GenerateOutwards = ({ setShow, details, setDetails }) => {
-console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ details", details)
+  console.log(
+    "🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ details",
+    details
+  );
   const classes = useStyles();
   const topbarRef = useRef(null);
   const [edit, setEdit] = useState(false);
 
-  const { agency, shipping, item, order, quantity } = details;
+  // const { agency, shipping, item, order, quantity } = details;
 
-  const user = useContext(UserContext); 
+  const user = useContext(UserContext);
 
   const {
     register,
@@ -77,43 +80,40 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
     handleSubmit,
     control,
     setValue,
-    reset
+    reset,
   } = useForm();
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "item",
   });
-  
-  
 
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
   const [productObj, setProductObj] = useState({});
-  const [agencyName, setAgency] = useState('');
+  const [agencyName, setAgency] = useState("");
   const [client, setClient] = useState({});
-  const [items, setItems] = useState([]);
-  const [clientId, setClientId] = useState('');
+  // const [items, setItems] = useState([]);
+  // const [clientId, setClientId] = useState("");
 
   useEffect(() => {
+    console.log("inside useEffect");
 
-    console.log('inside useEffect')
-
-    const clientsRef = firebase.ref("inventory/clients");
-    clientsRef.once("value", (snapshot) => {
-      let clients = []
-      Object.keys(snapshot.val()).map((key) => {
-        clients.push(snapshot.val()[key])
+    const clientsRef = ref(db, "inventory/clients");
+    onValue(clientsRef, (snapshot) => {
+      let clients = [];
+      Object.keys(snapshot.val()).forEach((key) => {
+        clients.push(snapshot.val()[key]);
       });
       setClients(clients);
     });
 
-    const productsRef = firebase.ref("inventory/products");
-    productsRef.once("value", (snapshot) => {
-      let products = []
-      Object.keys(snapshot.val()).map((key) => {
-        products.push(snapshot.val()[key])
-      })
+    const productsRef = ref(db, "inventory/products");
+    onValue(productsRef, (snapshot) => {
+      let products = [];
+      Object.keys(snapshot.val()).forEach((key) => {
+        products.push(snapshot.val()[key]);
+      });
       console.log(snapshot.val());
       console.log(products);
       setProducts(products);
@@ -122,16 +122,16 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
   }, []);
 
   useEffect(() => {
-    scrollToRef(topbarRef)
+    scrollToRef(topbarRef);
     if (details.info) {
       setEdit(true);
-      append(details.item);  
+      append(details.item);
       console.log(details);
-      let client = clients.map((client) => {
-        if(client.name == details.agency) {
+      let client = clients.forEach((client) => {
+        if (client.name === details.agency) {
           return client;
         }
-      })
+      });
       let data = details;
       delete data.info;
       reset(data);
@@ -147,68 +147,74 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
     console.log(productObj);
     let res = data;
     let codeArr = [];
-    res['agency'] = agencyName;
+    res["agency"] = agencyName;
 
-    clients.map(client => {
-      if(client.name == agencyName) {
-        const cRef = firebase.ref(`inventory/clients/${client.id}`);
-        cRef.once('value', snapshot => {
+    clients.forEach((client) => {
+      if (client.name === agencyName) {
+        const cRef = ref(db, `inventory/clients/${client.id}`);
+        onValue(cRef, (snapshot) => {
           cRef.update({
-            orders : snapshot.val().orders + 1
+            orders: snapshot.val().orders + 1,
           });
-        })
+        });
       }
-    })
+    });
 
     res.item = res.item.map((item, index) => {
-
       let pro = productObj[item.code];
-      if (edit){
-        pro['available'] = Math.abs(parseInt(pro['available']) - parseInt(item.sent) + parseInt(details.item[index].sent));
+      if (edit) {
+        pro["available"] = Math.abs(
+          parseInt(pro["available"]) -
+            parseInt(item.sent) +
+            parseInt(details.item[index].sent)
+        );
       } else {
-        pro['available'] = Math.abs(parseInt(pro['available']) - parseInt(item.sent))
-      } 
+        pro["available"] = Math.abs(
+          parseInt(pro["available"]) - parseInt(item.sent)
+        );
+      }
 
-      const proRef = firebase.ref(`inventory/products/${item.code}`);
+      const proRef = ref(db, `inventory/products/${item.code}`);
       proRef.update({
-        available: pro['available']
-      })
-      
+        available: pro["available"],
+      });
 
-      item['name'] = productObj[item.code].name;
-      item['pending'] = parseInt(item['quantity']) - parseInt(item['sent']);
+      item["name"] = productObj[item.code].name;
+      item["pending"] = parseInt(item["quantity"]) - parseInt(item["sent"]);
       codeArr.push(item.code);
       return item;
     });
 
-    res['status'] = 'intransit'
-    const outRef = firebase.ref("inventory/out-orders");
+    res["status"] = "intransit";
+    const outRef = ref(db, "inventory/out-orders");
     console.log(data);
     outRef.child(`${data.ewayBill}`).update(data);
-    console.log('order created in db');
+    console.log("order created in db");
     setShow("outwards");
     reset();
 
     // newProducts = products.map(product => {
     //   if(codeArr(product.id))
     // })
-
   };
 
-  const clientChange = (e) => {
-    console.log(e.target.value);
-  }
+  // const clientChange = (e) => {
+  //   console.log(e.target.value);
+  // };
 
   return (
     <div>
       <TopBar ref={topbarRef} className="mb-4">
-        <BoldText>{edit? "Edit Outwards":"Generate Outwards"}</BoldText>
+        <BoldText>{edit ? "Edit Outwards" : "Generate Outwards"}</BoldText>
         <div>
-          <Button outline onClick={() => {
-            reset();
-            setShow("outwards");
-            setDetails({});
-          }}>
+          <Button
+            outline
+            onClick={() => {
+              reset();
+              setShow("outwards");
+              setDetails({});
+            }}
+          >
             View Outwards
           </Button>
         </div>
@@ -234,7 +240,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   // PREFILLS DATA BASED ON CLIENT'S INFO
                   onChange={(event, newValue) => {
                     console.log(newValue);
-                    if(newValue) {
+                    if (newValue) {
                       setAgency(newValue.name);
                       setValue("receiver", newValue.supervisor);
                       setValue("email", newValue.email);
@@ -247,9 +253,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                       setValue("pincode", newValue.pincode);
                       setValue("state", newValue.state);
                       setValue("remarks", newValue.remarks);
-                    }
-                    else {
-                      setAgency('');
+                    } else {
+                      setAgency("");
                       setValue("receiver", "");
                       setValue("email", "");
                       setValue("generated_by", "");
@@ -260,11 +265,16 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                       setValue("state", "");
                       setValue("pincode", "");
                       setValue("state", "");
-                      setValue("remarks","");
+                      setValue("remarks", "");
                     }
-
                   }}
-                  renderInput={(params) => <TextField {...params} placeholder={edit ? details.agency : ""}  variant="outlined"  />}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder={edit ? details.agency : ""}
+                      variant="outlined"
+                    />
+                  )}
                 />
               </Col>
               <Col md={3} xs={12}>
@@ -289,7 +299,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     </InputIcon>
                     <ApplyFormInput
                       readOnly
-                      style={{ width: "100%", height: "98%", border: "none" }} defaultValue={edit ? details.phone_number : null}
+                      style={{ width: "100%", height: "98%", border: "none" }}
+                      defaultValue={edit ? details.phone_number : null}
                       aria-label="phone_number"
                       {...register("phone_number", {
                         required: !edit,
@@ -307,7 +318,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <ApplyFormInput
                     readOnly
                     type="email"
-                    placeholder="" defaultValue={edit ? details.email : null}
+                    placeholder=""
+                    defaultValue={edit ? details.email : null}
                     {...register("email", {
                       required: !edit,
                     })}
@@ -324,9 +336,10 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <Label>Order Generated by</Label>
                   <ApplyFormInput
                     readOnly
-                    placeholder="" defaultValue={edit ? details.generated_by : null}
+                    placeholder=""
+                    defaultValue={edit ? details.generated_by : null}
                     type="text"
-                    {...register("generated_by", { required: !edit,})}
+                    {...register("generated_by", { required: !edit })}
                   />
                   {errors.generated_by && <Error>Input is empty</Error>}
                 </InputDiv>
@@ -335,8 +348,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>Reference Number</Label>
                   <ApplyFormInput
-                    placeholder="" defaultValue={edit ? details.reference : null}
-                    
+                    placeholder=""
+                    defaultValue={edit ? details.reference : null}
                     {...register("reference", {
                       required: !edit,
                     })}
@@ -348,7 +361,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>P.O Number</Label>
                   <ApplyFormInput
-                    placeholder="" defaultValue={edit ? details.po_number : null}
+                    placeholder=""
+                    defaultValue={edit ? details.po_number : null}
                     {...register("po_number", {
                       required: !edit,
                     })}
@@ -360,8 +374,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>P.I Number</Label>
                   <ApplyFormInput
-                    
-                    placeholder="" defaultValue={edit ? details.piNumber : null}
+                    placeholder=""
+                    defaultValue={edit ? details.piNumber : null}
                     {...register("piNumber", {
                       required: !edit,
                     })}
@@ -375,7 +389,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <ApplyFormInput
                     type="text"
                     readOnly={edit ? true : false}
-                    placeholder="" defaultValue={edit ? details.ewayBill : null}
+                    placeholder=""
+                    defaultValue={edit ? details.ewayBill : null}
                     {...register("ewayBill", {
                       required: !edit,
                     })}
@@ -389,8 +404,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>D.C Number</Label>
                   <ApplyFormInput
-                    
-                    placeholder="" defaultValue={edit ? details.dcNumber : null}
+                    placeholder=""
+                    defaultValue={edit ? details.dcNumber : null}
                     {...register("dcNumber", {
                       required: !edit,
                     })}
@@ -406,9 +421,10 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <Label>Address</Label>
                   <ApplyFormInput
                     readOnly
-                    placeholder="" defaultValue={edit ? details.address : null}
+                    placeholder=""
+                    defaultValue={edit ? details.address : null}
                     type="text"
-                    {...register("address", { required: !edit, })}
+                    {...register("address", { required: !edit })}
                   />
                   {errors.address && <Error>Address is required</Error>}
                 </InputDiv>
@@ -418,7 +434,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <Label>City</Label>
                   <ApplyFormInput
                     readOnly
-                    placeholder="" defaultValue={edit ? details.city : null}
+                    placeholder=""
+                    defaultValue={edit ? details.city : null}
                     {...register("city", {
                       required: !edit,
                     })}
@@ -432,7 +449,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <ApplyFormInput
                     readOnly
                     type="text"
-                    placeholder="" defaultValue={edit ? details.district : null}
+                    placeholder=""
+                    defaultValue={edit ? details.district : null}
                     {...register("district", {
                       required: !edit,
                     })}
@@ -446,7 +464,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <ApplyFormInput
                     readOnly
                     type="text"
-                    placeholder="" defaultValue={edit ? details.state : null}
+                    placeholder=""
+                    defaultValue={edit ? details.state : null}
                     {...register("state", {
                       required: !edit,
                     })}
@@ -460,7 +479,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <ApplyFormInput
                     readOnly
                     type=""
-                    placeholder="" defaultValue={edit ? details.pincode : null}
+                    placeholder=""
+                    defaultValue={edit ? details.pincode : null}
                     {...register("pincode", {
                       required: !edit,
                     })}
@@ -471,7 +491,10 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
               <Col md={3} xs={12}>
                 <InputDiv>
                   <Label>Mode of Transportation</Label>
-                  <Select defaultValue = {edit ? details.transport : null} {...register("transport")}>
+                  <Select
+                    defaultValue={edit ? details.transport : null}
+                    {...register("transport")}
+                  >
                     <option value=" "> </option>
                     <option value="aa">A</option>
                     <option value="bb">B</option>
@@ -483,8 +506,9 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                 <InputDiv>
                   <Label>Delivery Date</Label>
                   <ApplyFormInput
-                    type={edit? null : 'date'}
-                    placeholder="" defaultValue={edit ? details.deliveryDate : null}
+                    type={edit ? null : "date"}
+                    placeholder=""
+                    defaultValue={edit ? details.deliveryDate : null}
                     {...register("deliveryDate", {
                       required: !edit,
                     })}
@@ -499,7 +523,8 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   <Label>Remarks</Label>
                   <ApplyFormInput
                     type="text"
-                    placeholder="" defaultValue={edit ? details.remarks : null}
+                    placeholder=""
+                    defaultValue={edit ? details.remarks : null}
                     {...register("remarks")}
                   />
                 </InputDiv>
@@ -527,15 +552,13 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                     <TableCell className={classes.thead} align="center">
                       Sent Qty.
                     </TableCell>
-                    {
-                      edit ? (  
-                        <TableCell className={classes.thead} align="center">
-                          Pending Qty.
-                        </TableCell>  
-                      ) : (
-                        <></>
-                      )
-                    }
+                    {edit ? (
+                      <TableCell className={classes.thead} align="center">
+                        Pending Qty.
+                      </TableCell>
+                    ) : (
+                      <></>
+                    )}
                     <TableCell
                       className={classes.thead}
                       align="center"
@@ -543,7 +566,7 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                   </TableRow>
                 </TableHead>
                 <TableBody>
-               {fields.map((item, index) => {
+                  {fields.map((item, index) => {
                     console.log(details);
                     return (
                       <TableRow key={item.id}>
@@ -552,37 +575,52 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                           <TableInput
                             style={{ border: "none" }}
                             name={`item[${index}].code`}
-                            defaultValue={edit ? `${details.item[index].code}` : `${item.code}`}
+                            defaultValue={
+                              edit
+                                ? `${details.item[index].code}`
+                                : `${item.code}`
+                            }
                             {...register(`item.${index}.code`)}
                           />
                         </TableCell>
                         <TableCell align="center">
                           <select
                             name={`item[${index}].name`}
-                            defaultValue={edit ? `${details.item[index].id}` : `${item.name}`}
+                            defaultValue={
+                              edit
+                                ? `${details.item[index].id}`
+                                : `${item.name}`
+                            }
                             {...register(`item.${index}.name`)}
                             onChange={(e) => {
                               console.log(e.target.value);
                               setValue(`item.${index}.code`, e.target.value);
                             }}
                           >
-                            {products.map(product => {
-                              if(edit && details.item[index].id==product.id) 
-                              return (
-                                <option selected value={product.id}>{product.name}</option>
-                              );
-                              else 
-                              return (
-                                <option value={product.id}>{product.name}</option>
-                              );
+                            {products.map((product) => {
+                              if (edit && details.item[index].id == product.id)
+                                return (
+                                  <option selected value={product.id}>
+                                    {product.name}
+                                  </option>
+                                );
+                              else
+                                return (
+                                  <option value={product.id}>
+                                    {product.name}
+                                  </option>
+                                );
                             })}
                           </select>
                         </TableCell>
                         <TableCell align="center">
                           <TableInput
-                            
                             name={`item[${index}].quantity`}
-                            defaultValue={edit ? `${details.item[index].quantity}` : `${item.quantity}`}
+                            defaultValue={
+                              edit
+                                ? `${details.item[index].quantity}`
+                                : `${item.quantity}`
+                            }
                             {...register(`item.${index}.quantity`)}
                           ></TableInput>
                         </TableCell>
@@ -594,25 +632,31 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
                             //   console.log(formState);
                             // }}
                             name={`item[${index}].sent`}
-                            defaultValue={edit ? `${details.item[index].sent}` : `${item.sent}`}
+                            defaultValue={
+                              edit
+                                ? `${details.item[index].sent}`
+                                : `${item.sent}`
+                            }
                             {...register(`item.${index}.sent`)}
                           ></TableInput>
                         </TableCell>
-                        {
-                          edit ? (
-                            <TableCell align="center">
-                              <TableInput
-                                readOnly
-                                name={`item[${index}].pending`}
-                                defaultValue={edit ? `${details.item[index].pending}` : `${item.pending}`}
-                                {...register(`item.${index}.pending`)}
-                              ></TableInput>
-                            </TableCell>
-                          ) : (
-                            <></>
-                          )
-                        }
-                        
+                        {edit ? (
+                          <TableCell align="center">
+                            <TableInput
+                              readOnly
+                              name={`item[${index}].pending`}
+                              defaultValue={
+                                edit
+                                  ? `${details.item[index].pending}`
+                                  : `${item.pending}`
+                              }
+                              {...register(`item.${index}.pending`)}
+                            ></TableInput>
+                          </TableCell>
+                        ) : (
+                          <></>
+                        )}
+
                         <TableCell align="center">
                           <IconButton
                             type="button"
@@ -635,7 +679,13 @@ console.log("🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ de
               outline
               onClick={(e) => {
                 let genCode = Math.floor(Math.random() + Math.random() * 10000);
-                append({ code: "-", name: "", quantity: 0, sent: 0, pending: 0 });
+                append({
+                  code: "-",
+                  name: "",
+                  quantity: 0,
+                  sent: 0,
+                  pending: 0,
+                });
                 e.preventDefault();
               }}
             >

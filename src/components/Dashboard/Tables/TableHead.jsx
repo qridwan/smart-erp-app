@@ -28,12 +28,25 @@ const inwardsHeadCells = [
 const clientsHeadCells = [
   { id: "agency", label: "Agency Name" },
   { id: "client_id", label: "Client ID" },
-  
+
   { id: "contacts", label: "Contacts" },
   { id: "delivered", label: "Delivered" },
   { id: "location", label: "Location" },
   { id: "pincode", label: "Pincode" },
   { id: "orders", label: "Orders" },
+];
+
+const inventoryHeadCells = [
+  { id: "img", label: "Image" },
+  { id: "item_name", label: "Item Name" },
+  { id: "code", label: "Code" },
+  { id: "purchase_count", label: "Purchase Count" },
+  { id: "onHand", label: "On Hand" },
+  { id: "client_count", label: "Client Count" },
+  { id: "not_working", label: "Not Working" },
+  { id: "damaged", label: "Damaged" },
+  { id: "missing", label: "Missing" },
+  { id: "more", label: "More" },
 ];
 
 const TableHeadCell = (props) => {
@@ -47,9 +60,9 @@ const TableHeadCell = (props) => {
     requestSort,
     getClassNamesFor,
   } = props;
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
+  // const createSortHandler = (property) => (event) => {
+  //   onRequestSort(event, property);
+  // };
   useEffect(() => {
     if (show === "inwards") {
       return setData(inwardsHeadCells);
@@ -59,6 +72,9 @@ const TableHeadCell = (props) => {
     }
     if (show === "clients") {
       return setData(clientsHeadCells);
+    }
+    if (show === "inventory") {
+      return setData(inventoryHeadCells);
     }
   }, []);
 

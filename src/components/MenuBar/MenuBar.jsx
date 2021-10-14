@@ -6,7 +6,7 @@ import {
   SidebarContent,
   sidebarData,
   SidebarIconWrapper,
-  Title,
+  // Title,
 } from "../Dashboard/Dashboard";
 import { IconButton } from "@material-ui/core";
 import styled from "styled-components";
@@ -56,14 +56,13 @@ const MenuBar = ({ show, setShow, handleLogout }) => {
         onClick={handleClick}
       >
         <MenuIconWrapper>
-        <MenuRoundedIcon
-          style={{
-            fontSize: "30px",
-            borderRadius: "5px",
-          }}
-        />
+          <MenuRoundedIcon
+            style={{
+              fontSize: "30px",
+              borderRadius: "5px",
+            }}
+          />
         </MenuIconWrapper>
-        
       </IconButton>
       <StyledMenu
         id="customized-menu"
@@ -73,7 +72,7 @@ const MenuBar = ({ show, setShow, handleLogout }) => {
         onClose={handleClose}
       >
         {sidebarData.map((obj, i) => {
-           const Title = obj.title.toLowerCase();
+          const Title = obj.title.toLowerCase();
           return (
             <section key={i}>
               <SidebarContent
@@ -101,9 +100,8 @@ const MenuBar = ({ show, setShow, handleLogout }) => {
 
 export default MenuBar;
 
-const MenuIconWrapper = styled.span` 
-
-path {
-  fill: #2d3850
- }
-`
+const MenuIconWrapper = styled.span`
+  path {
+    fill: #2d3850;
+  }
+`;

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
-  Avatar,
   BoldText,
   Button,
   DeleteButton,
   EditButton,
-  Heading,
   SearchContainer,
   SearchInput,
   style,
@@ -19,7 +17,8 @@ import styled from "styled-components";
 import ModalEmployee from "./ModalEmployee";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddEmployee from "./AddEmployee";
-import { db as firebase } from '../../../firebase';
+import { db, db as firebase } from '../../../firebase';
+import { onValue, ref } from "@firebase/database";
 
 const columns = [
   {
@@ -95,10 +94,10 @@ const Employees = () => {
   };
 
   useEffect(() => {
-    const employeeRef = firebase.ref("inventory/employees");
-    employeeRef.once("value", (snapshot) => {
+    const employeeRef = ref(db,"inventory/employees");
+    onValue(employeeRef, (snapshot) => {
       let employees = []
-      Object.keys(snapshot.val()).map((key) => {
+      Object.keys(snapshot.val()).forEach((key) => {
         employees.push(snapshot.val()[key])
       })
       console.log(snapshot.val());

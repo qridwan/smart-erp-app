@@ -27,8 +27,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TableHeadCell from "../Tables/TableHead";
 import { useSortableData } from "../Tables/table.sort";
 import MoreInwards from "./MoreInwards";
-
-import { db as firebase } from "../../../firebase";
+import { db, db as firebase } from "../../../firebase";
+import { onValue, ref } from "@firebase/database";
 
 function createData(
   order,
@@ -76,7 +76,6 @@ const Inwards = () => {
   });
   const [anchorEl, setAnchorEl] = useState([]);
   const [details, setDetails] = useState({});
-
   const handleClick = (event, index) => {
     setAnchorEl(
       anchorEl.map((a, i) => {
@@ -88,7 +87,6 @@ const Inwards = () => {
       })
     );
   };
-
   const handleClose = (index) => {
     setAnchorEl(
       anchorEl.map((a, i) => {
@@ -122,12 +120,12 @@ const Inwards = () => {
   const [currArr, setCurrArr] = useState([]);
 
   useEffect(() => {
-    const inRef = firebase.ref("inventory/in-orders");
-    inRef.once("value", (snapshot) => {
+    const inRef = ref(db,"inventory/in-orders");
+    onValue(inRef, (snapshot) => {
       if (snapshot.val()) {
         let orders = [];
         let anchors = [];
-        Object.keys(snapshot.val()).map((key) => {
+        Object.keys(snapshot.val()).forEach((key) => {
           orders.push(snapshot.val()[key]);
           anchors.push(null);
         });
@@ -144,10 +142,10 @@ const Inwards = () => {
       }
     });
 
-    const clientsRef = firebase.ref("inventory/clients");
-    clientsRef.once("value", (snapshot) => {
+    const clientsRef = ref(db,"inventory/clients");
+    onValue(clientsRef, (snapshot) => {
       let clients = [];
-      Object.keys(snapshot.val()).map((key) => {
+      Object.keys(snapshot.val()).forEach((key) => {
         clients.push(snapshot.val()[key]);
       });
       setClients(clients);

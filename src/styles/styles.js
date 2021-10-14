@@ -2,6 +2,31 @@ import { makeStyles } from "@material-ui/core";
 import styled, { css } from "styled-components";
 import Calender from "../Assets/Icons/Calender.png";
 
+export const inventoryStyles = makeStyles({
+  table: {
+    width: "80%",
+    paddingTop: "30px",
+    margin: "0 auto",
+  },
+  thead: {
+    borderBottom: "none",
+    fontFamily: "Poppins",
+    fontWeight: "500",
+    fontSize: "14px",
+    lineHeight: "21px",
+    color: "#6D83AE",
+    background: "#F7F9FD",
+  },
+  button: {
+    display: "block",
+    marginTop: "20px",
+  },
+  formControl: {
+    margin: "10px",
+    minWidth: 120,
+  },
+});
+
 export const style = {
   table: {
     border: "none",
@@ -11,11 +36,16 @@ export const style = {
     lineHeight: "16px",
     width: "auto",
     color: "black",
-    "& .MuiDataGrid-root": {
+    "& .MuiDataGridRoot": {
       "& .MuiDataGrid-Cell:focus": {
         outline: "none",
       },
     },
+    // "& .MuiDataGrid-root": {
+    //   "& .MuiDataGrid-Cell:focus": {
+    //     outline: "none",
+    //   },
+    // },
   },
 };
 
@@ -329,7 +359,7 @@ export const TopBar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 40px 100px 15px 100px;
+  padding: 40px 55px 15px 55px;
   flex-wrap: wrap;
   @media only screen and (max-width: 1000px) {
     padding: 30px 20px 20px 20px;

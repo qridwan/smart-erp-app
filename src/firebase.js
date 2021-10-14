@@ -1,11 +1,13 @@
-import firebase from "firebase";
-// import 'firebase/compat/auth';
-// import 'firebase/compat/firestore';
-// import 'firebase/compat/database';
+import firebase from "firebase/compat/app";
+// import * as firebase from "firebase";
 
-import "firebase/auth";
-import "firebase/database";
-import "firebase/storage";
+// import { initializeApp } from "firebase/compat/app";
+import { getDatabase } from "firebase/database";
+import { getStorage } from "firebase/storage";
+import { getAuth } from "firebase/auth";
+// import "firebase/auth";
+// import "firebase/database";
+// import "firebase/storage";
 
 const config = {
   apiKey: "AIzaSyDdyCOlVsHwA6QMkZNb1ISRd-e0roA5_d4",
@@ -17,12 +19,15 @@ const config = {
   appId: "1:254916440704:web:4015433a3b9a47f0162c65",
   measurementId: "G-B5JTTC5MLQ",
 };
-
-firebase.initializeApp(config);
-
-const db = firebase.database();
-const bucket = firebase.storage();
-const auth = firebase.auth();
+console.log(typeof initializeApp);
+// const app = firebase.initializeApp(config);
+const app = firebase.initializeApp(config);
+// const db = app.database();
+const db = getDatabase(app);
+// const bucket = app.storage();
+const bucket = getStorage(app);
+const auth = getAuth();
+// const auth = app.auth();
 
 // export const generateUserDocument = async (user, additionalData) => {
 //   if (!user) return;
@@ -59,6 +64,5 @@ const auth = firebase.auth();
 //     console.error("Error fetching user", error);
 //   }
 // };
-
 
 export { db, bucket, auth };

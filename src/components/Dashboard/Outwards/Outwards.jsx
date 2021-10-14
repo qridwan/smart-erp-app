@@ -23,7 +23,8 @@ import { useSortableData } from "../Tables/table.sort";
 import TableHeadCell from "../Tables/TableHead";
 import MoreOutwards from "./MoreOutwards";
 
-import { db as firebase } from "../../../firebase";
+import { db, db as firebase } from "../../../firebase";
+import { onValue, ref } from "@firebase/database";
 
 function createData(
   order,
@@ -141,13 +142,15 @@ const Outwards = () => {
   const [clients, setClients] = useState([]);
 
   useEffect(() => {
-    const outRef = firebase.ref("inventory/out-orders");
-    outRef.once("value", (snapshot) => {
+    const outRef = ref(db, "inventory/out-orders");
+
+    // onValue(productsRef, (snapshot) => {
+    onValue(outRef, (snapshot) => {
       if (snapshot.val()) {
         let orders = [];
         let anchors = [];
         let indexes = [];
-        Object.keys(snapshot.val()).map((key) => {
+        Object.keys(snapshot.val()).forEach((key) => {
           orders.push(snapshot.val()[key]);
           anchors.push(null);
           indexes.push(0);
@@ -162,10 +165,10 @@ const Outwards = () => {
       }
     });
 
-    const clientsRef = firebase.ref("inventory/clients");
-    clientsRef.once("value", (snapshot) => {
+    const clientsRef = ref(db, "inventory/clients");
+    onValue(clientsRef, (snapshot) => {
       let clients = [];
-      Object.keys(snapshot.val()).map((key) => {
+      Object.keys(snapshot.val()).forEach((key) => {
         clients.push(snapshot.val()[key]);
       });
       setClients(clients);

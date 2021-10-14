@@ -9,13 +9,12 @@ import {
   tableStyles,
   TopBar,
 } from "../../../styles/styles";
-import {
-  useSortableData,
-} from "../Tables/table.sort";
+import { useSortableData } from "../Tables/table.sort";
 import TableHeadCell from "../Tables/TableHead";
 import AddClient from "./AddClient";
 
-import { db as firebase } from '../../../firebase';
+import { db, db as firebase } from "../../../firebase";
+import { onValue, ref } from "@firebase/database";
 
 // function createData(
 //   agency,
@@ -83,12 +82,12 @@ const Clients = () => {
   };
 
   useEffect(() => {
-    const clientsRef = firebase.ref("inventory/clients");
-    clientsRef.once("value", (snapshot) => {
-      let clients = []
+    const clientsRef = ref(db, "inventory/clients");
+    onValue(clientsRef, (snapshot) => {
+      let clients = [];
       Object.keys(snapshot.val()).map((key) => {
-        clients.push(snapshot.val()[key])
-      })
+        clients.push(snapshot.val()[key]);
+      });
       console.log(snapshot.val());
       console.log(clients);
       setClients(clients);
@@ -125,7 +124,7 @@ const Clients = () => {
                         {row.name}
                       </TableCell>
                       <TableCell align="center">{row.id}</TableCell>
-                      
+
                       <TableCell align="center">{row.phone}</TableCell>
                       <TableCell align="center">{row.email}</TableCell>
                       <TableCell align="center">{row.city}</TableCell>
