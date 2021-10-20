@@ -47,7 +47,7 @@ const useStyles = makeStyles({
   },
 });
 
-const MoreOutwards = ({ setShow, details, setDetails }) => {
+const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
   const classes = useStyles();
   const topbarRef = useRef(null);
   const { agency, shipping, item, order, quantity } = details;
@@ -232,7 +232,7 @@ const MoreOutwards = ({ setShow, details, setDetails }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {details.item.map((item, index) => {
+                  {details?.item?.map((item, index) => {
                     return (
                       <TableRow key={item.id}>
                         <TableCell align="center">{index + 1}</TableCell>
@@ -268,7 +268,7 @@ const MoreOutwards = ({ setShow, details, setDetails }) => {
           </AddItemsContainer>
           <div className="text-center mt-lg-5 my-2">
             <Button outline onClick={() => {
-              setShow("outwards");
+              setShow("outwardsTable");
               setDetails({});
             }}>
               Go back
@@ -280,7 +280,7 @@ const MoreOutwards = ({ setShow, details, setDetails }) => {
   );
 };
 
-export default MoreOutwards;
+export default ViewMoreOutwards;
 
 const AddItemsContainer = styled.div`
   @media only screen and (max-width: 1000px) {

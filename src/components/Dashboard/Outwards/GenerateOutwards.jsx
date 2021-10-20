@@ -4,6 +4,8 @@ import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
 import {
   AddItemContainer,
+  AddItemsContainer,
+  addTableStyles,
   ApplyFormInput,
   BoldText,
   Button,
@@ -20,7 +22,7 @@ import { ReactComponent as IndiaIcon } from "../../../Assets/Icons/india.svg";
 import { ReactComponent as DeleteIcon } from "../../../Assets/Icons/delete.svg";
 import {
   IconButton,
-  makeStyles,
+  // makeStyles,
   Table,
   TableBody,
   TableCell,
@@ -35,43 +37,19 @@ import { UserContext } from "../../../context/UserProvider";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { onValue, ref } from "@firebase/database";
-
-const useStyles = makeStyles({
-  table: {
-    width: "80%",
-    paddingTop: "30px",
-    margin: "0 auto",
-  },
-  thead: {
-    borderBottom: "none",
-    fontFamily: "Poppins",
-    fontWeight: "500",
-    fontSize: "14px",
-    lineHeight: "21px",
-    color: "#6D83AE",
-    background: "#F7F9FD",
-  },
-  button: {
-    display: "block",
-    marginTop: "20px",
-  },
-  formControl: {
-    margin: "10px",
-    minWidth: 120,
-  },
-});
+import TopbarAtom from "../../../atoms/TopbarAtom";
+import InputAtom from "../../../atoms/InputAtom";
+import DocInputAtom from "../../../atoms/DocInputAtom";
 
 const GenerateOutwards = ({ setShow, details, setDetails }) => {
-  console.log(
-    "🚀 ~ file: GenerateOutwards.jsx ~ line 57 ~ GenerateOutwards ~ details",
-    details
-  );
-  const classes = useStyles();
+  const classes = addTableStyles();
   const topbarRef = useRef(null);
+  const SubmitButtonRef = useRef(null);
   const [edit, setEdit] = useState(false);
-
-  // const { agency, shipping, item, order, quantity } = details;
-
+  const [ewayDocFile, setEwayDocFile] = useState("");
+  const [dcDocFile, setDcDocFile] = useState("");
+  const [courierDocFile, setCourierDocFile] = useState("");
+  const [packagingDocFile, setPackagingDocFile] = useState("");
   const user = useContext(UserContext);
 
   const {
@@ -127,11 +105,12 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
       setEdit(true);
       append(details.item);
       console.log(details);
-      let client = clients.forEach((client) => {
+      let client = clients.map((client) => {
         if (client.name === details.agency) {
           return client;
         }
       });
+      console.log("🚀 ~ client ~ client", client);
       let data = details;
       delete data.info;
       reset(data);
@@ -197,14 +176,16 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
     //   if(codeArr(product.id))
     // })
   };
-
-  // const clientChange = (e) => {
-  //   console.log(e.target.value);
-  // };
-
   return (
     <div>
-      <TopBar ref={topbarRef} className="mb-4">
+      <TopbarAtom
+        topRef={topbarRef}
+        buttonRef={SubmitButtonRef}
+        buttonTitle={edit ? "Update" : "Save"}
+        title="Generate Outwards"
+        goBack="outwardsTable"
+      />
+      {/* <TopBar ref={topbarRef} className="mb-4">
         <BoldText>{edit ? "Edit Outwards" : "Generate Outwards"}</BoldText>
         <div>
           <Button
@@ -218,12 +199,14 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
             View Outwards
           </Button>
         </div>
-      </TopBar>
+      </TopBar> */}
       <AddItemContainer>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Container>
-            <MainTitle style={{ paddingTop: "10px" }}>Agency Details</MainTitle>
             <Row className="w-100 p-0 m-0">
+              <MainTitle style={{ paddingTop: "10px" }}>
+                Agency Details
+              </MainTitle>
               <Col md={3} xs={12}>
                 <Label>Agency Name</Label>
                 <Autocomplete
@@ -277,217 +260,90 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                   )}
                 />
               </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>Receiver's Name</Label>
-                  <ApplyFormInput
-                    readOnly
-                    defaultValue={edit ? details.receiver : null}
-                    {...register("receiver", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.receive && <Error>Receiver's name is required</Error>}
-                </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>Phone Number</Label>
-                  <InputGroup className="">
-                    <InputIcon id="basic-addon1" className="bg-white">
-                      <IndiaIcon />
-                    </InputIcon>
-                    <ApplyFormInput
-                      readOnly
-                      style={{ width: "100%", height: "98%", border: "none" }}
-                      defaultValue={edit ? details.phone_number : null}
-                      aria-label="phone_number"
-                      {...register("phone_number", {
-                        required: !edit,
-                      })}
-                    />
-                  </InputGroup>
-                  {errors.received_date && (
-                    <Error>Received date number is required</Error>
-                  )}
-                </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>Email</Label>
-                  <ApplyFormInput
-                    readOnly
-                    type="email"
-                    placeholder=""
-                    defaultValue={edit ? details.email : null}
-                    {...register("email", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.email && <Error>Email is required</Error>}
-                </InputDiv>
-              </Col>
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="Receiver's Name"
+                required={edit ? false : true}
+                id="receiver"
+                placeholder=""
+                defaultValue={edit ? details.receiver : null}
+                md={3}
+              />
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="Email"
+                required={edit ? false : true}
+                id="email"
+                placeholder=""
+                defaultValue={edit ? details.email : null}
+                md={3}
+              />
             </Row>
 
-            <MainTitle>Order Details</MainTitle>
             <Row className="w-100 p-0 m-0">
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>Order Generated by</Label>
-                  <ApplyFormInput
-                    readOnly
-                    placeholder=""
-                    defaultValue={edit ? details.generated_by : null}
-                    type="text"
-                    {...register("generated_by", { required: !edit })}
-                  />
-                  {errors.generated_by && <Error>Input is empty</Error>}
-                </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>Reference Number</Label>
-                  <ApplyFormInput
-                    placeholder=""
-                    defaultValue={edit ? details.reference : null}
-                    {...register("reference", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.supplier && <Error>Reference is required</Error>}
-                </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>P.O Number</Label>
-                  <ApplyFormInput
-                    placeholder=""
-                    defaultValue={edit ? details.po_number : null}
-                    {...register("po_number", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.po_number && <Error>P.O number is required</Error>}
-                </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>P.I Number</Label>
-                  <ApplyFormInput
-                    placeholder=""
-                    defaultValue={edit ? details.piNumber : null}
-                    {...register("piNumber", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.PI_number && <Error>P.I number is required</Error>}
-                </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>Eway Bill</Label>
-                  <ApplyFormInput
-                    type="text"
-                    readOnly={edit ? true : false}
-                    placeholder=""
-                    defaultValue={edit ? details.ewayBill : null}
-                    {...register("ewayBill", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.eway_bill && (
-                    <Error>Eway bill number is required</Error>
-                  )}
-                </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>D.C Number</Label>
-                  <ApplyFormInput
-                    placeholder=""
-                    defaultValue={edit ? details.dcNumber : null}
-                    {...register("dcNumber", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.dc_number && <Error>D.C number is required</Error>}
-                </InputDiv>
-              </Col>
-            </Row>
-            <MainTitle>Delivery Details</MainTitle>
-            <Row className="w-100 p-0 m-0">
-              <Col md={6} xs={12}>
-                <InputDiv>
-                  <Label>Address</Label>
-                  <ApplyFormInput
-                    readOnly
-                    placeholder=""
-                    defaultValue={edit ? details.address : null}
-                    type="text"
-                    {...register("address", { required: !edit })}
-                  />
-                  {errors.address && <Error>Address is required</Error>}
-                </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>City</Label>
-                  <ApplyFormInput
-                    readOnly
-                    placeholder=""
-                    defaultValue={edit ? details.city : null}
-                    {...register("city", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.city && <Error>City is required</Error>}
-                </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>District</Label>
-                  <ApplyFormInput
-                    readOnly
-                    type="text"
-                    placeholder=""
-                    defaultValue={edit ? details.district : null}
-                    {...register("district", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.district && <Error>District name is required</Error>}
-                </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>State</Label>
-                  <ApplyFormInput
-                    readOnly
-                    type="text"
-                    placeholder=""
-                    defaultValue={edit ? details.state : null}
-                    {...register("state", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.state && <Error>State is required</Error>}
-                </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>Pincode</Label>
-                  <ApplyFormInput
-                    readOnly
-                    type=""
-                    placeholder=""
-                    defaultValue={edit ? details.pincode : null}
-                    {...register("pincode", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.pincode && <Error>Pincode is required</Error>}
-                </InputDiv>
-              </Col>
+              <MainTitle>Delivery Details</MainTitle>
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="Address"
+                required={edit ? false : true}
+                id="address"
+                placeholder=""
+                defaultValue={edit ? details.address : null}
+                md={6}
+              />
+
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="City"
+                required={edit ? false : true}
+                id="city"
+                placeholder=""
+                defaultValue={edit ? details.city : null}
+                md={3}
+              />
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="District"
+                required={edit ? false : true}
+                id="district"
+                placeholder=""
+                defaultValue={edit ? details.district : null}
+                md={3}
+              />
+
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="State"
+                required={edit ? false : true}
+                id="state"
+                placeholder=""
+                defaultValue={edit ? details.district : null}
+                md={3}
+              />
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="Pincode"
+                required={edit ? false : true}
+                id="pincode"
+                placeholder=""
+                defaultValue={edit ? details.district : null}
+                md={3}
+              />
+
               <Col md={3} xs={12}>
                 <InputDiv>
                   <Label>Mode of Transportation</Label>
@@ -495,45 +351,157 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                     defaultValue={edit ? details.transport : null}
                     {...register("transport")}
                   >
-                    <option value=" "> </option>
-                    <option value="aa">A</option>
-                    <option value="bb">B</option>
-                    <option value="cc">C</option>
+                    <option value=""> </option>
+                    <option value="airways">Airways</option>
+                    <option value="road">Road</option>
+                    <option value="train">Train</option>
                   </Select>
                 </InputDiv>
               </Col>
-              <Col md={3} xs={12}>
-                <InputDiv>
-                  <Label>Delivery Date</Label>
-                  <ApplyFormInput
-                    type={edit ? null : "date"}
-                    placeholder=""
-                    defaultValue={edit ? details.deliveryDate : null}
-                    {...register("deliveryDate", {
-                      required: !edit,
-                    })}
-                  />
-                  {errors.delivery_date && (
-                    <Error>Delivery date is required</Error>
-                  )}
-                </InputDiv>
-              </Col>
-              <Col md={12} xs={12}>
-                <InputDiv>
-                  <Label>Remarks</Label>
-                  <ApplyFormInput
-                    type="text"
-                    placeholder=""
-                    defaultValue={edit ? details.remarks : null}
-                    {...register("remarks")}
-                  />
-                </InputDiv>
-              </Col>
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                type="date"
+                label="Shipping Date"
+                required={edit ? false : true}
+                id="shippingDate"
+                placeholder=""
+                defaultValue={edit ? details.shippingDate : null}
+                md={3}
+              />
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="Courier Name"
+                required={edit ? false : true}
+                id="courier_name"
+                placeholder=""
+                defaultValue={edit ? details.courier_name : null}
+                md={3}
+              />
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label=" Courier No./L.R. Number"
+                required={edit ? false : true}
+                id="courier_no"
+                placeholder=""
+                defaultValue={edit ? details.courier_no : null}
+                md={3}
+              />
+
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="Package Name"
+                required={edit ? false : true}
+                id="package_name"
+                placeholder=""
+                defaultValue={edit ? details.package_name : null}
+                md={3}
+              />
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                type="date"
+                label="Delivery Date"
+                required={edit ? false : true}
+                id="deliveryDate"
+                placeholder=""
+                defaultValue={edit ? details.deliveryDate : null}
+                md={3}
+              />
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="Remarks"
+                required={edit ? false : true}
+                id="remarks"
+                placeholder=""
+                defaultValue={edit ? details.remarks : null}
+                md={6}
+              />
+            </Row>
+
+            <Row className="w-100 p-0 m-0">
+              <MainTitle>Order Details</MainTitle>
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="Order Generated by"
+                required={edit ? false : true}
+                id="generated_by"
+                placeholder=""
+                defaultValue={edit ? details.generated_by : null}
+                md={3}
+              />
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="Reference Number"
+                required={edit ? false : true}
+                id="reference"
+                placeholder=""
+                defaultValue={edit ? details.reference : null}
+                md={3}
+              />
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="P.O Number"
+                required={edit ? false : true}
+                id="po_number"
+                placeholder=""
+                defaultValue={edit ? details.po_number : null}
+                md={3}
+              />
+              <InputAtom
+                readOnly={false}
+                register={register}
+                errors={errors}
+                label="P.I Number"
+                required={edit ? false : true}
+                id="piNumber"
+                placeholder=""
+                defaultValue={edit ? details.piNumber : null}
+                md={3}
+              />
+              <DocInputAtom
+                label="Eway Bill"
+                setDocFile={setEwayDocFile}
+                docFile={ewayDocFile}
+              />
+              <DocInputAtom
+                label="D.C Document"
+                setDocFile={setDcDocFile}
+                docFile={dcDocFile}
+              />
+              <DocInputAtom
+                label="Courier Document"
+                setDocFile={setCourierDocFile}
+                docFile={courierDocFile}
+              />
+              <DocInputAtom
+                label="Packaging List"
+                setDocFile={setPackagingDocFile}
+                docFile={packagingDocFile}
+              />
             </Row>
           </Container>
           <AddItemsContainer>
             <Container>
-              <MainTitle>Add Items</MainTitle>
+              <div className={classes.table}>
+                <MainTitle>Add Items</MainTitle>
+              </div>
               <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                   <TableRow>
@@ -541,16 +509,16 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                       #
                     </TableCell>
                     <TableCell className={classes.thead} align="center">
-                      Item Code
-                    </TableCell>
-                    <TableCell className={classes.thead} align="center">
                       Item
                     </TableCell>
                     <TableCell className={classes.thead} align="center">
-                      Total Qty.
+                      Available Qty.
                     </TableCell>
                     <TableCell className={classes.thead} align="center">
-                      Sent Qty.
+                      Quantity
+                    </TableCell>
+                    <TableCell className={classes.thead} align="center">
+                      No. of Boxes
                     </TableCell>
                     {edit ? (
                       <TableCell className={classes.thead} align="center">
@@ -571,18 +539,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                     return (
                       <TableRow key={item.id}>
                         <TableCell align="center">{index + 1}</TableCell>
-                        <TableCell align="center">
-                          <TableInput
-                            style={{ border: "none" }}
-                            name={`item[${index}].code`}
-                            defaultValue={
-                              edit
-                                ? `${details.item[index].code}`
-                                : `${item.code}`
-                            }
-                            {...register(`item.${index}.code`)}
-                          />
-                        </TableCell>
                         <TableCell align="center">
                           <select
                             name={`item[${index}].name`}
@@ -613,6 +569,19 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                             })}
                           </select>
                         </TableCell>
+                        <TableCell align="center">
+                          <TableInput
+                            style={{ border: "none" }}
+                            name={`item[${index}].code`}
+                            defaultValue={
+                              edit
+                                ? `${details.item[index].code}`
+                                : `${item.code}`
+                            }
+                            {...register(`item.${index}.code`)}
+                          />
+                        </TableCell>
+
                         <TableCell align="center">
                           <TableInput
                             name={`item[${index}].quantity`}
@@ -673,29 +642,30 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                 </TableBody>
               </Table>
             </Container>
+            <div className="text-center mt-lg-5 mb-lg-5 mb-3">
+              <Button
+                outline
+                onClick={(e) => {
+                  append({
+                    code: "-",
+                    name: "",
+                    quantity: 0,
+                    sent: 0,
+                    pending: 0,
+                  });
+                  e.preventDefault();
+                }}
+              >
+                + Add Item
+              </Button>
+            </div>
           </AddItemsContainer>
-          <div className="text-center mt-lg-5">
-            <Button
-              outline
-              onClick={(e) => {
-                let genCode = Math.floor(Math.random() + Math.random() * 10000);
-                append({
-                  code: "-",
-                  name: "",
-                  quantity: 0,
-                  sent: 0,
-                  pending: 0,
-                });
-                e.preventDefault();
-              }}
-            >
-              + Add Item
-            </Button>
-          </div>
 
-          <div className="text-center my-lg-5">
+          {/* Hide this part */}
+          <div className="text-center my-lg-5 d-none">
             <SubmitButton
               type="submit"
+              ref={SubmitButtonRef}
               value="Generate Order"
               disabled={fields.length ? "" : "disabled"}
             />
@@ -707,34 +677,10 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
 };
 
 export default GenerateOutwards;
-const AddItemsContainer = styled.div`
-  @media only screen and (max-width: 1000px) {
-    overflow-x: scroll;
-  }
-`;
+
 const Container = styled.div`
   padding: 0 50px;
   @media only screen and (max-width: 1000px) {
     padding: 0;
   }
-`;
-
-const InputGroup = styled.div`
-  display: flex;
-  flex-wrap: no-wrap;
-  align-items: center;
-  width: 100%;
-  border: 1px solid #8e8e8e;
-  border-radius: 5px;
-  height: 45px;
-  padding: 0;
-`;
-const InputIcon = styled.span`
-  border-right: 1px solid #8e8e8e;
-  padding: 0;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  padding: 0.375rem 0.75rem;
-  margin-left: 4px;
 `;

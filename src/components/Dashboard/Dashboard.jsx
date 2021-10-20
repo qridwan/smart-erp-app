@@ -6,7 +6,7 @@ import { ReactComponent as InventoryImg } from "../../Assets/Icons/inventory.svg
 import { ReactComponent as InOutWardImg } from "../../Assets/Icons/in-outwards.svg";
 import { ReactComponent as EmployeeImg } from "../../Assets/Icons/employee.svg";
 import { ReactComponent as ClientsImg } from "../../Assets/Icons/clients.svg";
-import { ReactComponent as WareHouseImg } from "../../Assets/Icons/warehouse.svg";
+import { ReactComponent as LogOut } from "../../Assets/Icons/SignOut.svg";
 import Inventory from "./Inventory/Inventory";
 import { Avatar, BoldText, DashboardContent } from "../../styles/styles";
 import Outwards from "./Outwards/Outwards";
@@ -19,8 +19,10 @@ import MenuBar from "../MenuBar/MenuBar";
 import { UserContext } from "../../context/UserProvider";
 
 import { auth } from "../../firebase";
+import { connect } from "react-redux";
+import { setPath, setShow } from "../../Redux/actions/renderActions";
 
-export var sidebarDataAdmin = [
+export const sidebarDataAdmin = [
   {
     icon: <InventoryImg className="icons" />,
     title: "Inventory",
@@ -42,12 +44,12 @@ export var sidebarDataAdmin = [
     title: "Clients",
   },
   {
-    icon: <WareHouseImg className="icons" />,
+    icon: <LogOut className="icons" />,
     title: "Logout",
   },
 ];
 
-export var sidebarData = [
+export const sidebarData = [
   {
     icon: <InventoryImg className="icons" />,
     title: "Inventory",
@@ -65,12 +67,12 @@ export var sidebarData = [
     title: "Clients",
   },
   {
-    icon: <WareHouseImg className="icons" />,
+    icon: <LogOut className="icons" />,
     title: "Logout",
   },
 ];
-const Dashboard = () => {
-  const [show, setShow] = useState("inventory");
+const Dashboard = ({ setShow, setPath, show, path }) => {
+console.log("🚀 ~ Dashboard ~ path", { show, path })
   const userData = useContext(UserContext);
   const user = userData.email.slice(0, userData.email.indexOf("@"));
   const avatarText = user.slice(0, 1);
@@ -101,8 +103,8 @@ const Dashboard = () => {
               </Content>
               <MenuContainer>
                 <MenuBar
-                  show={show}
-                  setShow={setShow}
+                  show={path}
+                  setShow={setPath}
                   handleLogout={handleLogout}
                 />
               </MenuContainer>
@@ -134,7 +136,7 @@ const Dashboard = () => {
                       onClick={() =>
                         Title === "logout"
                           ? handleLogout()
-                          : setShow(obj.title.toLowerCase())
+                          : setPath(obj.title.toLowerCase())
                       }
                     >
                       <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>
@@ -149,12 +151,12 @@ const Dashboard = () => {
         <Col lg={10} md={12} className="offset-lg-1 p-0">
           <ContentSection>
             <DashboardContent>
-              {show === "inventory" && <Inventory />}
-              {show === "outwards" && <Outwards />}
-              {show === "inwards" && <Inwards />}
-              {show === "employees" && <Employees />}
-              {show === "clients" && <Clients />}
-              {show === "warehouse" && <WareHouse />}
+              {path === "inventory" && <Inventory />}
+              {path === "outwards" && <Outwards />}
+              {path === "inwards" && <Inwards />}
+              {path === "employees" && <Employees />}
+              {path === "clients" && <Clients />}
+              {path === "warehouse" && <WareHouse />}
             </DashboardContent>
           </ContentSection>
         </Col>
@@ -162,8 +164,12 @@ const Dashboard = () => {
     </Container>
   );
 };
-
-export default Dashboard;
+const mapStateToProps = (state) => state;
+const mapDispatchToProps = {
+  setShow: setShow,
+  setPath: setPath,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
 
 const Sidebar = styled.div`
   padding-left: 30px;

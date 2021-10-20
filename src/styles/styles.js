@@ -2,6 +2,31 @@ import { makeStyles } from "@material-ui/core";
 import styled, { css } from "styled-components";
 import Calender from "../Assets/Icons/Calender.png";
 
+export const addTableStyles = makeStyles({
+  table: {
+    width: "80%",
+    paddingTop: "30px",
+    margin: "0 auto",
+  },
+  thead: {
+    borderBottom: "none",
+    fontFamily: "Poppins",
+    fontWeight: "500",
+    fontSize: "14px",
+    lineHeight: "21px",
+    color: "#6D83AE",
+    background: "#F7F9FD",
+  },
+  button: {
+    display: "block",
+    marginTop: "20px",
+  },
+  formControl: {
+    margin: "10px",
+    minWidth: 120,
+  },
+});
+
 export const inventoryStyles = makeStyles({
   table: {
     width: "80%",
@@ -137,14 +162,15 @@ export const ImageInputArea = styled.div`
   cursor: pointer;
 `;
 export const ImageInput = styled.img``;
-export const Button = styled.button`
+export const Button = styled.span`
+  cursor: pointer;
   height: auto;
   border-radius: 9px;
   padding: 8px 15px;
   font-family: Poppins;
   font-style: normal;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 22px;
   box-sizing: border-box;
   ${(props) =>
@@ -244,32 +270,51 @@ export const InputDiv = styled.div`
     padding-bottom: 10px;
   }
 `;
-
+export const AddItemsContainer = styled.div`
+  @media only screen and (max-width: 1000px) {
+    overflow-x: scroll;
+  }
+`;
 export const UploadInput = styled(Input)`
   background: #dfdfdf;
   border: 1px solid #b3b3b3;
   box-sizing: border-box;
   border-radius: 5px;
 `;
-
-export const UploadButton = styled.button`
-  text-align: center;
+export const UploadIcon = styled.span`
+  padding: 0 6px;
+  border: 1px solid #6c6c6c;
+  border-radius: 50%;
+  background: #e5e5e5;
+`;
+export const UploadButton = styled.div`
+  // text-align: center;
+  // color: #0075ff;
+  display: flex;
+  justify-content: space-between;
   font-size: 15px;
   line-height: 22px;
-  color: #0075ff;
+  color: #6c6c6c;
   background: #ffffff;
+  ${(props) =>
+    props.type === "transparent" &&
+    css`
+      color: #0075ff;
+      justify-content: center;
+      text-align: center;
+    `};
   ${(props) =>
     props.outline
       ? css`
           border: 1px solid rgba(0, 0, 0, 0.22);
           box-sizing: border-box;
           border-radius: 5px;
-          padding: 10px 0;
+          padding: 10px;
           width: 100%;
         `
       : css`
           border: none;
-          padding: 5px 0;
+          padding: 5px;
         `}
 `;
 
@@ -444,10 +489,10 @@ export const MainTitle = styled.p`
   font-weight: 500;
   font-size: 18px;
   line-height: 27px;
-  padding: 0 12px;
+  padding: 0 5px;
   padding-bottom: 15px;
   padding-top: 25px;
-  margin: 0;
+  margin: 0 8px;
   color: #2d3850;
   @media only screen and (max-width: 1000px) {
     font-size: 16px;

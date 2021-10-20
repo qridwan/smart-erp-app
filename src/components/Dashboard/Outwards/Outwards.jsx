@@ -4,27 +4,26 @@ import styled from "styled-components";
 import {
   BoldText,
   Button,
-  SearchContainer,
-  SearchInput,
   TableContainer,
   tableStyles,
   TopBar,
 } from "../../../styles/styles";
-import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
-import { ReactComponent as FilterIcon } from "../../../Assets/Icons/filter.svg";
+// import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
+// import { ReactComponent as FilterIcon } from "../../../Assets/Icons/filter.svg";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import GenerateOutwards from "./GenerateOutwards";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useSortableData } from "../Tables/table.sort";
 import TableHeadCell from "../Tables/TableHead";
-import MoreOutwards from "./MoreOutwards";
+import ViewMoreOutwards from "./ViewMoreOutwards";
 
-import { db, db as firebase } from "../../../firebase";
+import { db } from "../../../firebase";
 import { onValue, ref } from "@firebase/database";
+import { setGoto, setShow } from "../../../Redux/actions/renderActions";
+import { connect } from "react-redux";
 
 function createData(
   order,
@@ -72,8 +71,11 @@ const rows = [
   ),
 ];
 
-const Outwards = () => {
-  const [show, setShow] = useState("outwards");
+const Outwards = ({ show, setShow }) => {
+  // const [show, setShow] = useState("outwards");
+  useEffect(() => {
+    setShow("outwardsTable");
+  }, []);
   const classes = tableStyles();
   const [state, setState] = useState({
     id: 1,
@@ -130,7 +132,8 @@ const Outwards = () => {
   };
 
   const MoreFunc = async (row, info) => {
-    console.log({ ...row, info: info });
+  console.log("🚀 ~ MoreFunc ~ row, info", {row, info})
+    // console.log({ ...row, info: info });
     setDetails({ ...row, info: info });
     (await info) === "edit"
       ? setShow("edit_outwards")
@@ -177,11 +180,11 @@ const Outwards = () => {
 
   return (
     <>
-      {show === "outwards" ? (
+      {show === "outwardsTable" ? (
         <div>
           <TopBar className="">
             <BoldText> Outwards </BoldText>
-            <SearchContainer>
+            {/* <SearchContainer>
               <section className="w-100 d-flex justify-content-between align-items-center">
                 <div className="m-0 p-0 d-flex">
                   <SearchIcon
@@ -204,9 +207,11 @@ const Outwards = () => {
                 </div>
                 <FilterIcon className="" />
               </section>
-            </SearchContainer>
+            </SearchContainer> */}
             <div>
-              <Button onClick={() => setShow("generate")}>Generate New</Button>
+              <Button onClick={() => setShow("generateOutwards")}>
+                Generate New
+              </Button>
             </div>
           </TopBar>
           <TableContainer className="mt-lg-3">
@@ -253,12 +258,8 @@ const Outwards = () => {
                       <TableCell align="center">
                         {row.item[arr[index]].quantity}
                       </TableCell>
-                      <TableCell align="center">
-                        {row.item[arr[index]].sent}
-                      </TableCell>
-                      <TableCell align="center">
-                        {row.item[arr[index]].pending}
-                      </TableCell>
+                      <TableCell align="center">{row.dcNumber}</TableCell>
+                      <TableCell align="center">{row.generated_by}</TableCell>
                       <TableCell
                         align="center"
                         className={
@@ -269,6 +270,7 @@ const Outwards = () => {
                       >
                         {row.status}
                       </TableCell>
+                      <TableCell align="center">{row.deliveryDate}</TableCell>
                       <TableCell align="center">
                         {row.status !== "delivered" && (
                           <div>
@@ -305,7 +307,7 @@ const Outwards = () => {
         </div>
       ) : (
         <>
-          {show === "generate" || show === "edit_outwards" ? (
+          {show === "generateOutwards" || show === "edit_outwards" ? (
             <GenerateOutwards
               details={details}
               setShow={setShow}
@@ -313,7 +315,7 @@ const Outwards = () => {
             />
           ) : null}
           {show === "more_outwards" && (
-            <MoreOutwards
+            <ViewMoreOutwards
               details={details}
               setShow={setShow}
               setDetails={setDetails}
@@ -325,6 +327,9 @@ const Outwards = () => {
   );
 };
 
-export default Outwards;
-
+const mapStateToProps = (state) => state;
+const mapDispatchToProps = {
+  setShow: setShow,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Outwards);
 const Option = styled.option``;

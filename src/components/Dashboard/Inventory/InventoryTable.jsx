@@ -67,7 +67,7 @@ const InventoryTable = () => {
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
-  const MoreFunc = async (row, info) => {
+  const MoreFunc = (row, info) => {
     // console.log({ row });
     // setDetails({ ...row, info: info });
     // (await info) === "edit" ? setShow("edit_inwards") : setShow("more_inwards");
@@ -110,7 +110,9 @@ const InventoryTable = () => {
                 <TableCell align="center" style={{ color: "#FF8A00" }}>
                   {product.damaged}
                 </TableCell>
-                <TableCell align="center" style={{ color: "#85AAF4" }}>{product.missing}</TableCell>
+                <TableCell align="center" style={{ color: "#85AAF4" }}>
+                  {product.missing}
+                </TableCell>
 
                 <TableCell align="center">
                   {product.status !== "Delivered" && (
@@ -134,6 +136,11 @@ const InventoryTable = () => {
                         </MenuItem>
                         <MenuItem onClick={() => MoreFunc(product, "edit")}>
                           Edit
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => MoreFunc(product, "edit")}
+                        >
+                          Deactive
                         </MenuItem>
                       </Menu>
                     </div>

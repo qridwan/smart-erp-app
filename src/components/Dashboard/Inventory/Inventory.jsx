@@ -1,69 +1,43 @@
-// import { DataGrid } from "@material-ui/data-grid";
-import React, { useState } from "react";
-// import IPcamera from "../../../Assets/Images/ipCamera.png";
-import backArrow from "../../../Assets/Icons/backArrow.svg";
-// import moment from "moment";
-import styled from "styled-components";
+import React, { useEffect, useState } from "react";
+// import backArrow from "../../../Assets/Icons/backArrow.svg";
 import {
   BoldText,
   Button,
   TableContainer,
   TopBar,
 } from "../../../styles/styles";
-import { useForm } from "react-hook-form";
+// import { useForm } from "react-hook-form";
 import { connect } from "react-redux";
-import { removeFromInventory } from "../../../Redux/actions/InventoryActions";
+import {
+  // removeFromInventory,
+  setShow,
+} from "../../../Redux/actions/renderActions";
 import ModalInventory from "./ModalInventory";
 import InventoryTable from "./InventoryTable";
-import ItemForm from "./ItemForm";
+import PurchaseForm from "./PurchaseForm";
+import AddItem from "./AddItem";
+import PurchaseHistory from "./PurchaseHistory";
 
-const Inventory = () => {
-  // const classes = inventoryStyles();
+const Inventory = ({ setShow, show }) => {
   const [selectedItems, setSelectedItems] = useState([]);
-  const [goto, setGoto] = useState("table");
   const [open, setOpen] = useState(false);
-  const [editImage, setEditImage] = useState("");
-
-  const { reset } = useForm();
+  useEffect(() => {
+    setShow("inventoryTable");
+  }, []);
 
   return (
     <section>
-      <TopBar>
-        <div className="d-flex align-items-center">
-          {goto !== "table" && (
-            <img
-              src={backArrow}
-              alt="home inventory"
-              height="18px"
-              style={{ marginRight: "10px" }}
-            />
-          )}
-          {goto === "table" && <BoldText> Inventory </BoldText>}
+      {show === "inventoryTable" && (
+        <TopBar>
+          <div className="d-flex align-items-center">
+            <BoldText> Inventory </BoldText>
+          </div>
 
-          {goto === "addItem" && <BoldText> Add Item </BoldText>}
-          {goto === "addPurchase" && <BoldText> Add Purchase </BoldText>}
-          {goto === "purchaseHistory" && (
-            <BoldText> Purchase History </BoldText>
-          )}
-          {/* <ButtonContainer
-            className={selectedItems.length ? "visible mx-lg-2" : "invisible"}
-          >
-            <DeleteButton onClick={handleDelete}> Delete </DeleteButton>
-            <EditButton
-              onClick={handleEdit}
-              className={selectedItems.length === 1 ? "visible" : "invisible"}
-            >
-              Edit
-            </EditButton>
-          </ButtonContainer> */}
-        </div>
-
-        {goto === "table" ? (
           <div>
             <Button
               outline
               onClick={() => {
-                setGoto("purchaseHistory");
+                setShow("purchaseHistory");
                 setSelectedItems([]);
               }}
             >
@@ -73,7 +47,7 @@ const Inventory = () => {
             <Button
               outline
               onClick={() => {
-                setGoto("addItem");
+                setShow("addItem");
                 setSelectedItems([]);
               }}
               style={{ margin: "0 10px" }}
@@ -83,28 +57,17 @@ const Inventory = () => {
 
             <Button
               onClick={() => {
-                setGoto("addPurchase");
+                setShow("addPurchase");
                 setSelectedItems([]);
               }}
             >
               + Add Purchase
             </Button>
           </div>
-        ) : (
-          <Button
-            outline
-            onClick={() => {
-              reset();
-              setGoto("table");
-              setEditImage("");
-            }}
-          >
-            View Inventory
-          </Button>
-        )}
-      </TopBar>
+        </TopBar>
+      )}
       <ModalInventory open={open} setOpen={setOpen} />
-      {goto === "table" && (
+      {show === "inventoryTable" && (
         <TableContainer className="overflow-hidden">
           <InventoryTable />
           {/* <DataGrid
@@ -132,20 +95,15 @@ const Inventory = () => {
           /> */}
         </TableContainer>
       )}
-      {goto === "addItem" && <ItemForm />}
+      {show === "addItem" && <AddItem />}
+      {show === "addPurchase" && <PurchaseForm />}
+      {show === "purchaseHistory" && <PurchaseHistory />}
     </section>
   );
 };
 
 const mapStateToProps = (state) => state;
 const mapDispatchToProps = {
-  removeFromInventory: removeFromInventory,
+  setShow: setShow,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Inventory);
-
-const Container = styled.div`
-  // padding: 0 50px;
-  @media only screen and (max-width: 1000px) {
-    padding: 0;
-  }
-`;
