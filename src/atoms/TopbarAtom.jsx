@@ -6,11 +6,11 @@ import { setShow } from "../Redux/actions/renderActions";
 
 const TopbarAtom = ({
   setShow,
-  goto,
   title,
   topRef,
   buttonRef,
   buttonTitle,
+  buttonType,
   goBack,
 }) => {
   return (
@@ -28,12 +28,13 @@ const TopbarAtom = ({
         <BoldText>{title}</BoldText>
       </div>
 
-      {buttonRef && (
+      {buttonTitle && (
         <div>
           <Button
-            // outline
+            buttonType
+            outline={Boolean(buttonType)}
             onClick={() => {
-              buttonRef.current.click();
+              buttonRef && buttonRef.current.click();
               //   reset();
               //   setShow("outwards");
               //   setDetails({});

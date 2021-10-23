@@ -72,7 +72,7 @@ export const sidebarData = [
   },
 ];
 const Dashboard = ({ setShow, setPath, show, path }) => {
-console.log("🚀 ~ Dashboard ~ path", { show, path })
+  console.log("🚀 ~ Dashboard ~ path", { show, path });
   const userData = useContext(UserContext);
   const user = userData.email.slice(0, userData.email.indexOf("@"));
   const avatarText = user.slice(0, 1);
@@ -83,7 +83,7 @@ console.log("🚀 ~ Dashboard ~ path", { show, path })
     auth
       .signOut()
       .then(() => {
-        console.log("sign out success");
+        console.log("Logout success");
       })
       .catch((error) => {
         console.log(error);
@@ -109,7 +109,7 @@ console.log("🚀 ~ Dashboard ~ path", { show, path })
                 />
               </MenuContainer>
             </Head>
-            <NavItems>
+            <NavItems className="d-flex flex-column">
               {sideData.map((obj, i) => {
                 const Title = obj.title.toLowerCase();
                 // const handleOnCLick = () => {
@@ -126,10 +126,14 @@ console.log("🚀 ~ Dashboard ~ path", { show, path })
                 //   // setShow(obj.title.toLowerCase());
                 // };
                 return (
-                  <Section key={i} style={{ cursor: "pointer" }}>
+                  <Section
+                    key={i}
+                    className={Title === "logout" ? "mt-auto" : ""}
+                    style={{ cursor: "pointer" }}
+                  >
                     <SidebarContent
                       className={
-                        show === obj.title.toLowerCase()
+                        path === obj.title.toLowerCase()
                           ? "active side_nav"
                           : "side_nav"
                       }
@@ -184,6 +188,7 @@ const MenuContainer = styled.div`
   }
 `;
 const NavItems = styled.div`
+  height: 80vh;
   @media only screen and (max-width: 1000px) {
     display: none;
   }

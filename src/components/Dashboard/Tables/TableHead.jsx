@@ -19,21 +19,20 @@ const inwardsHeadCells = [
   { id: "order", label: "Order No." },
   { id: "agency", label: "Agency Name" },
   { id: "item", label: "Item Name" },
-  { id: "quantity", label: "Total Qty." },
-  { id: "received", label: "Received" },
-  { id: "pending", label: "Pending" },
-  { id: "date", label: "Date" },
+  { id: "goodCondition", label: "Good Condition" },
+  { id: "notWorking", label: "Not Working" },
+  { id: "damaged", label: "Damaged" },
+  { id: "receivingDate", label: "Receiving Date" },
   { id: "audit", label: "Audit" },
   { id: "more", label: "More" },
 ];
 const clientsHeadCells = [
   { id: "agency", label: "Agency Name" },
   { id: "client_id", label: "Client ID" },
-
-  { id: "contacts", label: "Contacts" },
-  { id: "delivered", label: "Delivered" },
-  { id: "location", label: "Location" },
-  { id: "pincode", label: "Pincode" },
+  { id: "date", label: "Date" },
+  { id: "name", label: "Name" },
+  { id: "email", label: "Email" },
+  { id: "location", label: "Location/City" },
   { id: "orders", label: "Orders" },
 ];
 
@@ -59,6 +58,15 @@ const purchaseHistoryHeadCells = [
   { id: "more", label: "More" },
 ];
 
+const employeesHeadCells = [
+  { id: "id", label: "ID No." },
+  { id: "item_name", label: "Employee Name" },
+  { id: "role", label: "Role" },
+  { id: "phone_number", label: "Phone Number" },
+  { id: "status", label: "Status" },
+  { id: "more", label: "More" },
+];
+
 const TableHeadCell = (props) => {
   const [data, setData] = useState([]);
   const {
@@ -74,10 +82,10 @@ const TableHeadCell = (props) => {
   //   onRequestSort(event, property);
   // };
   useEffect(() => {
-    if (show === "inwards") {
+    if (show === "inwardsTable") {
       return setData(inwardsHeadCells);
     }
-    if (show === "outwards") {
+    if (show === "outwardsTable") {
       return setData(outwardsHeadCells);
     }
     if (show === "clients") {
@@ -89,6 +97,9 @@ const TableHeadCell = (props) => {
     if (show === "purchaseHistory") {
       return setData(purchaseHistoryHeadCells);
     }
+    if (show === "employees") {
+      return setData(employeesHeadCells);
+    }
   }, []);
 
   return (
@@ -96,7 +107,7 @@ const TableHeadCell = (props) => {
       <TableRow>
         {data.map((headCell) => (
           <TableCell
-            align="center"
+            align={headCell.align ? headCell.align : "center"}
             key={headCell.id}
             sortDirection={orderBy === headCell.id ? order : false}
             active={orderBy === headCell.id}

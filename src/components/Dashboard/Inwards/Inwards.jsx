@@ -22,13 +22,15 @@ import {
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { useState } from "react";
 import styled from "styled-components";
-import ReceiveOrder from "./ReceiveOrder";
+import GenerateInwards from "./GenerateInwards";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TableHeadCell from "../Tables/TableHead";
 import { useSortableData } from "../Tables/table.sort";
-import MoreInwards from "./MoreInwards";
+import ViewMoreInwards from "./ViewMoreInwards";
 import { db, db as firebase } from "../../../firebase";
 import { onValue, ref } from "@firebase/database";
+import { setShow } from "../../../Redux/actions/renderActions";
+import { connect } from "react-redux";
 
 function createData(
   order,
@@ -66,9 +68,9 @@ const rows = [
   ),
 ];
 
-const Inwards = () => {
+const Inwards = ({ show, setShow }) => {
   const classes = tableStyles();
-  const [show, setShow] = useState("inwards");
+  // const [show, setShow] = useState("inwards");
   const [state, setState] = useState({
     id: 1,
     age: "",
@@ -76,6 +78,10 @@ const Inwards = () => {
   });
   const [anchorEl, setAnchorEl] = useState([]);
   const [details, setDetails] = useState({});
+
+  useEffect(() => {
+    setShow("inwardsTable");
+  }, []);
   const handleClick = (event, index) => {
     setAnchorEl(
       anchorEl.map((a, i) => {
@@ -99,8 +105,7 @@ const Inwards = () => {
     );
   };
 
-  const options = ["item1", "item2", "item3"];
-  const {  requestSort, sortConfig } = useSortableData(rows);
+  const { requestSort, sortConfig } = useSortableData(rows);
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;
@@ -120,7 +125,7 @@ const Inwards = () => {
   const [currArr, setCurrArr] = useState([]);
 
   useEffect(() => {
-    const inRef = ref(db,"inventory/in-orders");
+    const inRef = ref(db, "inventory/in-orders");
     onValue(inRef, (snapshot) => {
       if (snapshot.val()) {
         let orders = [];
@@ -142,7 +147,7 @@ const Inwards = () => {
       }
     });
 
-    const clientsRef = ref(db,"inventory/clients");
+    const clientsRef = ref(db, "inventory/clients");
     onValue(clientsRef, (snapshot) => {
       let clients = [];
       Object.keys(snapshot.val()).forEach((key) => {
@@ -168,11 +173,10 @@ const Inwards = () => {
 
   return (
     <div>
-      <TopBar>
-        {show === "inwards" ? (
-          <>
-            <BoldText>Inwards</BoldText>
-            <SearchContainer>
+      {show === "inwardsTable" && (
+        <TopBar>
+          <BoldText>Inwards</BoldText>
+          {/* <SearchContainer>
               <section className="w-100 d-flex justify-content-start align-items-center">
                 <div className="m-0 p-0 d-flex">
                   <SearchIcon
@@ -195,22 +199,13 @@ const Inwards = () => {
                   </div>
                 </div>
               </section>
-            </SearchContainer>
-          </>
-        ) : (
-          <BoldText>Receive Order</BoldText>
-        )}
-        {show === "inwards" ? (
-          <Button outline onClick={() => setShow("receive_order")}>
-            Receive Order
+            </SearchContainer> */}
+          <Button outline onClick={() => setShow("generateInwards")}>
+            Generate Inwards
           </Button>
-        ) : (
-          <Button outline onClick={() => setShow("inwards")}>
-            Search Orders
-          </Button>
-        )}
-      </TopBar>
-      {show === "inwards" ? (
+        </TopBar>
+      )}
+      {show === "inwardsTable" ? (
         <InwardsTableContainer>
           <TableContainer className="mt-3">
             <Table className={classes.table} aria-label="simple table">
@@ -222,8 +217,14 @@ const Inwards = () => {
               />
               <TableBody>
                 {orders.map((row, index) => {
+                  console.log("🚀 ~ {orders.map ~ row", row);
                   return (
-                    <TableRow key={row.orderNo}>
+                    <TableRow
+                      key={row.orderNo}
+                      style={
+                        index % 2 !== 0 ? { background: "#F4F4F4" } : undefined
+                      }
+                    >
                       <TableCell component="th" scope="row" align="center">
                         {row.orderNo}
                       </TableCell>
@@ -249,20 +250,23 @@ const Inwards = () => {
                       </TableCell>
 
                       <TableCell align="center">
-                        {row.item[currArr[index]].quantity}
+                        {row.item[currArr[index]].good_condition}
                       </TableCell>
                       <TableCell align="center">
-                        {row.item[currArr[index]].received}
+                        {row.item[currArr[index]].not_working}
                       </TableCell>
                       <TableCell align="center">
-                        {parseInt(row.item[currArr[index]].quantity) -
-                          parseInt(row.item[currArr[index]].received)}
+                        {row.item[currArr[index]].damaged
+                          ? row.item[currArr[index]].damaged
+                          : "-"}
+                        {/* {parseInt(row.item[currArr[index]].quantity) -
+                          parseInt(row.item[currArr[index]].received)} */}
                       </TableCell>
                       <TableCell align="center">{row.receivedDate}</TableCell>
                       <TableCell
                         align="center"
                         className={
-                          row.auditStatus === "Completed"
+                          row.auditStatus === "Complete"
                             ? "text-success"
                             : "text-danger"
                         }
@@ -305,15 +309,15 @@ const Inwards = () => {
         </InwardsTableContainer>
       ) : (
         <>
-          {show === "receive_order" || show === "edit_inwards" ? (
-            <ReceiveOrder
+          {show === "generateInwards" || show === "edit_inwards" ? (
+            <GenerateInwards
               details={details}
               setShow={setShow}
               setDetails={setDetails}
             />
           ) : null}
           {show === "more_inwards" && (
-            <MoreInwards details={details} setShow={setShow} />
+            <ViewMoreInwards details={details} setShow={setShow} />
           )}
         </>
       )}
@@ -321,6 +325,10 @@ const Inwards = () => {
   );
 };
 
-export default Inwards;
+const mapStateToProps = (state) => state;
+const mapDispatchToProps = {
+  setShow: setShow,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Inwards);
 
 const InwardsTableContainer = styled.div``;

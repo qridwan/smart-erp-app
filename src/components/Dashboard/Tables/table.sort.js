@@ -51,7 +51,6 @@ export const useSortableData = (items, config = null) => {
     }
     return sortableItems;
   }, [items, sortConfig]);
-  console.log("🚀 ~ sortedItems ~ sortedItems", {sortedItems});
 
   const requestSort = (key) => {
     let direction = "ascending";

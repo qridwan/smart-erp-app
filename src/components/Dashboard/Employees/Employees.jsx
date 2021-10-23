@@ -17,8 +17,11 @@ import styled from "styled-components";
 import ModalEmployee from "./ModalEmployee";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddEmployee from "./AddEmployee";
-import { db, db as firebase } from '../../../firebase';
+import { db, db as firebase } from "../../../firebase";
 import { onValue, ref } from "@firebase/database";
+import { connect } from "react-redux";
+import { setShow } from "../../../Redux/actions/renderActions";
+import EmployeesTable from "./EmployeesTable";
 
 const columns = [
   {
@@ -63,93 +66,62 @@ const columns = [
   },
 ];
 
-
-const Employees = () => {
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [modalIsOpen, setIsOpen] = useState(false);
-
-  const [show, setShow] = useState("employees");
-  const [info, setInfo] = useState({});
+const Employees = ({ show, setShow }) => {
+  const [details, setDetails] = useState({});
   const [employees, setEmployees] = useState([]);
-
-
-  function closeModal() {
-    setIsOpen(false);
-  }
-
-  const handlePopup = () => {
-    if (show === 'employees') {
-      setShow("addEmployee");
-      setInfo({
-        edit: false
-      });
-      setSelectedItems([]);
-    } else {
-      setShow("employees");
-      setInfo({
-        edit: false
-      })
-      setSelectedItems([]);
-    }
-  };
+  useEffect(() => {
+    setShow("employeesTable");
+  }, []);
 
   useEffect(() => {
-    const employeeRef = ref(db,"inventory/employees");
+    const employeeRef = ref(db, "inventory/employees");
     onValue(employeeRef, (snapshot) => {
-      let employees = []
+      let employees = [];
       Object.keys(snapshot.val()).forEach((key) => {
-        employees.push(snapshot.val()[key])
-      })
-      console.log(snapshot.val());
-      console.log(employees);
+        employees.push(snapshot.val()[key]);
+      });
+      // console.log(snapshot.val());
+      // console.log(employees);
       setEmployees(employees);
     });
   }, [show]);
 
-  const options = ["client1", "client2", "client3"];
-
-  const handleEdit = () => {
-    console.log(selectedItems);
-    setInfo({
-      ...selectedItems[0],
-      edit: true
-    });
-    setShow("addEmployee");
-    setSelectedItems([]);
-  }
-
-  const handleDelete = () => {
-
-  }
-
   return (
     <>
-    <TopBar className="">
-      <div className="d-flex flex-wrap">
-        <BoldText> Employees </BoldText>
-        <HiddenButtons
-          className={selectedItems.length ? "visible mx-lg-2" : "invisible"}
-        >
-          <DeleteButton
-            onClick={handleDelete}
-          > Delete </DeleteButton>
-          <EditButton
-            onClick={handleEdit}
-            className={selectedItems.length === 1 ? "visible" : "invisible"}
+      {show === "employeesTable" && (
+        <TopBar className="">
+          <BoldText>Inwards</BoldText>
+          <div className="text-center">
+            <Button onClick={() => setShow("Add Employees")}>
+              Add Employees
+              {/* {show === "employeesTable" ? "Add Employees" : "View Employees"} */}
+            </Button>
+          </div>
+        </TopBar>
+      )}
+      {/* <div className="d-flex flex-wrap">
+          <BoldText> Employees </BoldText>
+          <HiddenButtons
+            className={selectedItems.length ? "visible mx-lg-2" : "invisible"}
           >
-            Edit
-          </EditButton>
-        </HiddenButtons>
-      </div>
-      
-      {show === 'employees' ? (
+            <DeleteButton onClick={handleDelete}> Delete </DeleteButton>
+            <EditButton
+              onClick={handleEdit}
+              className={selectedItems.length === 1 ? "visible" : "invisible"}
+            >
+              Edit
+            </EditButton>
+          </HiddenButtons>
+        </div> */}
+      {/* 
+        {show === "employeesTable" ? (
           <EmployeeSearchContainer>
             <section className="w-100 d-flex justify-content-start align-items-center">
               <div className="m-0 p-0 d-flex">
                 <SearchIcon style={{ marginRight: "0.8rem", width: "20px" }} />
                 <Autocomplete
                   id="custom-input-demo"
-                  options={options}
+                  // options={options}
                   renderInput={(params) => (
                     <div ref={params.InputProps.ref}>
                       <SearchInput
@@ -163,50 +135,45 @@ const Employees = () => {
               </div>
             </section>
           </EmployeeSearchContainer>
-      
-      ) : (
-        <></>
-      )}
-      
-      <div className="text-center">
-        <Button onClick={handlePopup}>
-          {show === 'employees' ?  'Add Employees' : 'View Employees'}
-          
-        </Button>
-      </div>
-    </TopBar>
-    {show === "employees" ? (
-      <div>
-        <Row className="w-100 p-0 m-0">
-          <Col lg={12} md={12} className="pl-4">
-            <TableContainer className="w-100 m-0 overflow-hidden">
-              <DataGrid
-                rows={employees}
-                style={style.table}
-                columns={columns}
-                pageSize={10}
-                rowHeight={65}
-                autoPageSize
-                hideFooterSelectedRowCount
-                disableColumnMenu
-                checkboxSelection
-                scrollbarSize={5}
-                onSelectionModelChange={(e) => {
-                  let selectedItemsIdArray = e;
-                  let selectedItems = [];
-                  selectedItemsIdArray.forEach((id) =>
-                    selectedItems.push(employees.find((row) => row.id === id))
-                  );
-                  setSelectedItems(selectedItems);
-                }}
-                disableSelectionOnClick
-                autoHeight
-                hideFooter
-              />
-              <ModalEmployee modalIsOpen={modalIsOpen} closeModal={closeModal} />
-            </TableContainer>
-          </Col>
-          {/* <Col
+        ) : (
+          <></>
+        )} */}
+      {show === "employeesTable" && (
+        <div>
+          <EmployeesTable setShow={setShow} setDetails={setDetails} />
+          <Row className="w-100 p-0 m-0">
+            {/* <Col lg={12} md={12} className="pl-4">
+              <TableContainer className="w-100 m-0 overflow-hidden">
+                <DataGrid
+                  rows={employees}
+                  style={style.table}
+                  columns={columns}
+                  pageSize={10}
+                  rowHeight={65}
+                  autoPageSize
+                  hideFooterSelectedRowCount
+                  disableColumnMenu
+                  checkboxSelection
+                  scrollbarSize={5}
+                  onSelectionModelChange={(e) => {
+                    let selectedItemsIdArray = e;
+                    let selectedItems = [];
+                    selectedItemsIdArray.forEach((id) =>
+                      selectedItems.push(employees.find((row) => row.id === id))
+                    );
+                    setSelectedItems(selectedItems);
+                  }}
+                  disableSelectionOnClick
+                  autoHeight
+                  hideFooter
+                />
+                <ModalEmployee
+                  modalIsOpen={modalIsOpen}
+                  closeModal={closeModal}
+                />
+              </TableContainer>
+            </Col> */}
+            {/* <Col
             lg={4}
             md={6}
             xs={12}
@@ -244,16 +211,20 @@ const Employees = () => {
               </RecentEmployee>
             </RecentActivityContainer>
           </Col> */}
-        </Row>
-      </div>
-    ) : (
-      <AddEmployee setShow={setShow} info={info} />
-    )}
+          </Row>
+        </div>
+      )}{" "}
+      {(show === "add_employee" || show === "view_employee") && (
+        <AddEmployee setShow={setShow} details={details} />
+      )}
     </>
   );
 };
-
-export default Employees;
+const mapStateToProps = (state) => state;
+const mapDispatchToProps = {
+  setShow: setShow,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Employees);
 
 // const RecentActivityContainer = styled.div`
 //   border: 3px solid rgba(20, 55, 126, 0.1);

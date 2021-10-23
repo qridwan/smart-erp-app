@@ -230,7 +230,12 @@ export const Label = styled.label`
   font-size: 14px;
   line-height: 21px;
   color: #6c6c6c;
-
+  ${(props) =>
+    props.disabled === true &&
+    css`
+      // border: 1px solid rgba(0, 0, 0, 0.08);
+      color: rgba(108, 108, 108, 0.3);
+    `}
   ${(props) =>
     props.details
       ? css`
@@ -286,6 +291,12 @@ export const UploadIcon = styled.span`
   border: 1px solid #6c6c6c;
   border-radius: 50%;
   background: #e5e5e5;
+  ${(props) =>
+    props.disabled === true &&
+    css`
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      color: rgba(108, 108, 108, 0.3);
+    `}
 `;
 export const UploadButton = styled.div`
   // text-align: center;
@@ -296,6 +307,12 @@ export const UploadButton = styled.div`
   line-height: 22px;
   color: #6c6c6c;
   background: #ffffff;
+  ${(props) =>
+    props.disabled === true &&
+    css`
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      color: rgba(108, 108, 108, 0.3);
+    `}
   ${(props) =>
     props.type === "transparent" &&
     css`
@@ -360,6 +377,7 @@ export const ApplyFormInput = styled.input`
   padding: 0 15px;
   font-family: Poppins;
   font-weight: 500;
+  font-size: 18px;
   color: black;
   height: 45px;
   :focus {
@@ -374,6 +392,7 @@ export const ApplyFormInput = styled.input`
           @media only screen and (max-width: 1000px) {
             padding: 0;
             height: 30px;
+            font-size: 15px;
           }
         `
       : css`
@@ -381,6 +400,7 @@ export const ApplyFormInput = styled.input`
           @media only screen and (max-width: 1000px) {
             padding: 0 8px;
             height: 40px;
+            font-size: 15px;
           }
         `};
   }

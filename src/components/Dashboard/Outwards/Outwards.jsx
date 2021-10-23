@@ -22,7 +22,7 @@ import ViewMoreOutwards from "./ViewMoreOutwards";
 
 import { db } from "../../../firebase";
 import { onValue, ref } from "@firebase/database";
-import { setGoto, setShow } from "../../../Redux/actions/renderActions";
+import { setShow } from "../../../Redux/actions/renderActions";
 import { connect } from "react-redux";
 
 function createData(
@@ -132,7 +132,7 @@ const Outwards = ({ show, setShow }) => {
   };
 
   const MoreFunc = async (row, info) => {
-  console.log("🚀 ~ MoreFunc ~ row, info", {row, info})
+    console.log("🚀 ~ MoreFunc ~ row, info", { row, info });
     // console.log({ ...row, info: info });
     setDetails({ ...row, info: info });
     (await info) === "edit"
@@ -226,7 +226,12 @@ const Outwards = ({ show, setShow }) => {
                 {orders.map((row, index) => {
                   console.log(row);
                   return (
-                    <TableRow key={row.order}>
+                    <TableRow
+                      key={row.order}
+                      style={
+                        index % 2 !== 0 ? { background: "#F4F4F4" } : undefined
+                      }
+                    >
                       <TableCell component="th" scope="row" align="center">
                         {row.ewayBill}
                       </TableCell>

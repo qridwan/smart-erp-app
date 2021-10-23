@@ -1,34 +1,32 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import {
   AddItemContainer,
   ApplyFormInput,
-  BoldText,
-  Button,
   Error,
   InputDiv,
   Label,
   SubmitButton,
-  TopBar,
 } from "../../../styles/styles";
 
-
-import { db as firebase} from '../../../firebase';
-
+import { db } from "../../../firebase";
+import TopbarAtom from "../../../atoms/TopbarAtom";
 
 const AddClient = ({ setShow }) => {
   const {
     register,
     formState: { errors },
     handleSubmit,
-    reset
+    reset,
   } = useForm();
-
+  const topbarRef = useRef(null);
+  const SubmitButtonRef = useRef(null);
   const onSubmit = (data) => {
     console.log(data);
-    const clientRef = firebase.ref("inventory/clients");
-    const clientId = data.agency.slice(0, 3).toUpperCase() + "-" + data.number.slice(-3);
+    const clientRef = db.ref("inventory/clients");
+    const clientId =
+      data.agency.slice(0, 3).toUpperCase() + "-" + data.number.slice(-3);
     console.log(clientId);
     clientRef.child(`${clientId}`).update({
       address: data.address,
@@ -42,25 +40,22 @@ const AddClient = ({ setShow }) => {
       remarks: data.remarks,
       state: data.state,
       orders: 0,
-      id: clientId
+      id: clientId,
     });
-    setShow("clients");
+    setShow("clientsTable");
     reset();
   };
   return (
     <div>
-      <TopBar >
-        <div>
-          <BoldText> Add New Agency </BoldText>
-        </div>
-        <div className="text-center">
-          <Button outline onClick={() => setShow("clients")}>
-            View Clients 
-          </Button>
-        </div>
-      </TopBar>
+      <TopbarAtom
+        topRef={topbarRef}
+        buttonRef={SubmitButtonRef}
+        buttonTitle="Add Client"
+        title="Add Client"
+        goBack="clientsTable"
+      />
 
-      <AddItemContainer className="px-3">
+      <AddItemContainer ref={topbarRef} className="px-3">
         <form onSubmit={handleSubmit(onSubmit)}>
           <Row className="w-100 p-0 m-0">
             <Col md={3} xs={12}>
@@ -184,7 +179,7 @@ const AddClient = ({ setShow }) => {
             </Col>
           </Row>
           <div className="text-center my-lg-0 mb-lg-3">
-            <SubmitButton type="submit" value="Save" />
+            <SubmitButton ref={SubmitButtonRef} type="submit" value="Save" />
           </div>
         </form>
       </AddItemContainer>
