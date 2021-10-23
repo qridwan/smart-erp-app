@@ -109,47 +109,49 @@ const Dashboard = ({ setShow, setPath, show, path }) => {
                 />
               </MenuContainer>
             </Head>
-            <NavItems className="d-flex flex-column">
-              {sideData.map((obj, i) => {
-                const Title = obj.title.toLowerCase();
-                // const handleOnCLick = () => {
-                //   if (obj.title.toLowerCase() === "logout") {
-                //     auth
-                //       .signOut()
-                //       .then(() => {
-                //         console.log("sign out success");
-                //       })
-                //       .catch((error) => {
-                //         console.log(error);
-                //       });
-                //   }
-                //   // setShow(obj.title.toLowerCase());
-                // };
-                return (
-                  <Section
-                    key={i}
-                    className={Title === "logout" ? "mt-auto" : ""}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <SidebarContent
-                      className={
-                        path === obj.title.toLowerCase()
-                          ? "active side_nav"
-                          : "side_nav"
-                      }
-                      onClick={() =>
-                        Title === "logout"
-                          ? handleLogout()
-                          : setPath(obj.title.toLowerCase())
-                      }
+            <WebNav>
+              <NavItems className="d-flex flex-column">
+                {sideData.map((obj, i) => {
+                  const Title = obj.title.toLowerCase();
+                  // const handleOnCLick = () => {
+                  //   if (obj.title.toLowerCase() === "logout") {
+                  //     auth
+                  //       .signOut()
+                  //       .then(() => {
+                  //         console.log("sign out success");
+                  //       })
+                  //       .catch((error) => {
+                  //         console.log(error);
+                  //       });
+                  //   }
+                  //   // setShow(obj.title.toLowerCase());
+                  // };
+                  return (
+                    <Section
+                      key={i}
+                      className={Title === "logout" ? "mt-auto" : ""}
+                      style={{ cursor: "pointer" }}
                     >
-                      <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>
-                      <Title className="title">{obj.title}</Title>
-                    </SidebarContent>
-                  </Section>
-                );
-              })}
-            </NavItems>
+                      <SidebarContent
+                        className={
+                          path === obj.title.toLowerCase()
+                            ? "active side_nav"
+                            : "side_nav"
+                        }
+                        onClick={() =>
+                          Title === "logout"
+                            ? handleLogout()
+                            : setPath(obj.title.toLowerCase())
+                        }
+                      >
+                        <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>
+                        <Title className="title">{obj.title}</Title>
+                      </SidebarContent>
+                    </Section>
+                  );
+                })}
+              </NavItems>
+            </WebNav>
           </Sidebar>
         </Col>
         <Col lg={10} md={12} className="offset-lg-1 p-0">
@@ -187,11 +189,13 @@ const MenuContainer = styled.div`
     display: none;
   }
 `;
-const NavItems = styled.div`
-  height: 80vh;
+const WebNav = styled.div`
   @media only screen and (max-width: 1000px) {
     display: none;
   }
+`;
+const NavItems = styled.div`
+  height: 80vh;
 `;
 export const Title = styled.p`
   display: inline-block;

@@ -178,7 +178,7 @@ const AddClient = ({ setShow }) => {
               </InputDiv>
             </Col>
           </Row>
-          <div className="text-center my-lg-0 mb-lg-3">
+          <div className="text-center my-lg-0 mb-lg-3 d-none">
             <SubmitButton ref={SubmitButtonRef} type="submit" value="Save" />
           </div>
         </form>

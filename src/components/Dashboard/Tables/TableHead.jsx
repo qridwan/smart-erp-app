@@ -88,7 +88,7 @@ const TableHeadCell = (props) => {
     if (show === "outwardsTable") {
       return setData(outwardsHeadCells);
     }
-    if (show === "clients") {
+    if (show === "clientsTable") {
       return setData(clientsHeadCells);
     }
     if (show === "inventory") {
