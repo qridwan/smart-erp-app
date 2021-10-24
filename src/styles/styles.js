@@ -162,7 +162,7 @@ export const ImageInputArea = styled.div`
   cursor: pointer;
 `;
 export const ImageInput = styled.img``;
-export const Button = styled.span`
+export const Button = styled.button`
   cursor: pointer;
   height: auto;
   border-radius: 9px;
@@ -186,10 +186,11 @@ export const Button = styled.span`
           color: #ffffff;
         `}
   @media only screen and (max-width:800px) {
-    margin-top: 10px;
+    margin-top: 4px;
     font-size: 14px;
     line-height: 20px;
-    padding: 10px 18px;
+    padding: 4px 8px;
+    margin-bottom: 2px;
     height: 40px;
   }
 `;
@@ -208,7 +209,7 @@ export const DashboardContent = styled.div`
   @media only screen and (max-width: 1000px) {
     width: 100%;
     min-height: auto;
-    margin: 30px 8px 20px 0px;
+    margin: 5px 8px 20px 0px;
   }
 `;
 

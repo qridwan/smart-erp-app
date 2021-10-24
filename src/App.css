@@ -19,7 +19,10 @@
 .MuiDataGrid-root .MuiDataGrid-columnHeaderTitleContainer {
   justify-content: center;
 }
-
+.MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"] {
+  padding: 0 !important;
+  margin: 4px !important;
+}
 /* ============================= */
 
 input::placeholder {

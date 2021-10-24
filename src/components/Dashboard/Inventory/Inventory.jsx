@@ -33,7 +33,7 @@ const Inventory = ({ setShow, show }) => {
             <BoldText> Inventory </BoldText>
           </div>
 
-          <div>
+          <div display="d-flex flex-wrap">
             <Button
               outline
               onClick={() => {

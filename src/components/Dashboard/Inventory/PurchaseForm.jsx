@@ -160,11 +160,11 @@ const PurchaseForm = ({ setShow, show }) => {
           </Container>
 
           <AddItemsContainer>
-            <Container>
-              <div className={classes.table}>
+            <Container className={classes.table}>
+              <div>
                 <MainTitle>Add Items</MainTitle>
               </div>
-              <Table className={classes.table} aria-label="simple table">
+              <Table aria-label="simple table">
                 <TableHead>
                   <TableRow>
                     <TableCell className={classes.thead} align="center">
@@ -251,24 +251,25 @@ const PurchaseForm = ({ setShow, show }) => {
                   })}
                 </TableBody>
               </Table>
+              <div className="text-center my-lg-5">
+                <Button
+                  outline
+                  onClick={(e) => {
+                    // let genCode = Math.floor(Math.random() + Math.random() * 10000);
+                    append({
+                      code: "-",
+                      name: "",
+                      quantity: 0,
+                    });
+                    e.preventDefault();
+                  }}
+                >
+                  + Add Item
+                </Button>
+              </div>
             </Container>
           </AddItemsContainer>
-          <div className="text-center my-lg-5">
-            <Button
-              outline
-              onClick={(e) => {
-                // let genCode = Math.floor(Math.random() + Math.random() * 10000);
-                append({
-                  code: "-",
-                  name: "",
-                  quantity: 0,
-                });
-                e.preventDefault();
-              }}
-            >
-              + Add Item
-            </Button>
-          </div>
+
           <input ref={SubmitButtonRef} type="submit" className="d-none"></input>
         </form>
       </AddItemContainer>

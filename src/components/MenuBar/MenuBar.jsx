@@ -4,7 +4,6 @@ import Menu from "@material-ui/core/Menu";
 import MenuRoundedIcon from "@material-ui/icons/MenuRounded";
 import {
   SidebarContent,
-  sidebarData,
   SidebarIconWrapper,
   // Title,
 } from "../Dashboard/Dashboard";
@@ -33,7 +32,7 @@ const StyledMenu = withStyles({
   />
 ));
 
-const MenuBar = ({ show, setShow, handleLogout }) => {
+const MenuBar = ({ show, setShow, handleLogout, sideData }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -71,7 +70,7 @@ const MenuBar = ({ show, setShow, handleLogout }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {sidebarData.map((obj, i) => {
+        {sideData.map((obj, i) => {
           const Title = obj.title.toLowerCase();
           return (
             <section key={i}>
@@ -81,10 +80,13 @@ const MenuBar = ({ show, setShow, handleLogout }) => {
                     ? "active side_nav"
                     : "side_nav"
                 }
-                onClick={() =>
-                  Title === "logout"
-                    ? handleLogout()
-                    : setShow(obj.title.toLowerCase())
+                onClick={
+                  () => {
+                    Title === "logout"
+                      ? handleLogout()
+                      : setShow(obj.title.toLowerCase());
+                    handleClose();
+                  }
                 }
               >
                 <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>
