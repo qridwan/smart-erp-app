@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Row } from "react-bootstrap";
 import { useFieldArray, useForm } from "react-hook-form";
 import {
@@ -18,18 +18,23 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
-import { onValue, ref } from "@firebase/database";
-import { db } from "../../../firebase";
 import { ReactComponent as DeleteIcon } from "../../../Assets/Icons/delete.svg";
 import { connect } from "react-redux";
 import { setShow } from "../../../Redux/actions/renderActions";
 import TopbarAtom from "../../../atoms/TopbarAtom";
 import InputAtom from "../../../atoms/InputAtom";
 import DocInputAtom from "../../../atoms/DocInputAtom";
+import GetItems from "../../../Api/GetItems";
+import { UserContext } from "../../../context/UserProvider";
+import SetProducts from "../../../Api/SetProducts";
+import GetProducts from "../../../Api/GetProducts";
+import SetPurchased from "../../../Api/SetPurchased";
 
-const PurchaseForm = ({ setShow, show }) => {
+const PurchaseForm = ({ setShow, show, item, setItem }) => {
+  console.log("🚀 ~ PurchaseForm ~ item", item);
   const classes = addTableStyles();
-  const [products, setProducts] = useState([]);
+  const edit = Boolean(item.info === "edit");
+  const view = Boolean(item.info === "view");
   const topbarRef = useRef(null);
   const SubmitButtonRef = useRef(null);
   const [docFile, setDocFile] = useState("");
@@ -41,8 +46,51 @@ const PurchaseForm = ({ setShow, show }) => {
     setValue,
     reset,
   } = useForm();
+
+  const { items } = GetItems();
+  const { products } = GetProducts();
+  const user = useContext(UserContext);
+  useEffect(() => {
+    edit &&
+      item.item.forEach((pd) =>
+        append({
+          code: pd.code,
+          item_name: pd.item_name,
+          quantity: pd.quantity,
+        })
+      );
+    return () => setItem(``);
+  }, []);
   const onSubmit = (data) => {
-    console.log({ data });
+    const inputProducts = [];
+    const purchasedProduct = {
+      ...data,
+      lastEditedBy: user.email,
+    };
+    data.item.forEach((product) => {
+      const prevProduct = products.find(
+        (pd) => pd.item_name === product.item_name
+      );
+      const prevQuantity = prevProduct?.quantity ? prevProduct.quantity : 0;
+      const item = items.find((it) => it.item_name === product.item_name);
+      const prod = {
+        item_name: product?.item_name,
+        code: item?.code,
+        photos: item?.photos,
+        quantity: Number(prevQuantity) + Number(product?.quantity),
+        poNo: data.po_number,
+        purchasedDate: data.purchase_date,
+        remarks: data.remarks,
+        supplier: data.supplier,
+        lastEditedBy: user.email,
+      };
+      inputProducts.push(prod);
+    });
+    SetPurchased(purchasedProduct);
+    SetProducts(inputProducts);
+    alert("product successfully posted");
+    reset();
+    setShow("inventoryTable");
   };
 
   const { fields, append, remove } = useFieldArray({
@@ -50,19 +98,18 @@ const PurchaseForm = ({ setShow, show }) => {
     name: "item",
   });
 
-  useEffect(() => {
-    const productsRef = ref(db, "inventory/products");
-    onValue(productsRef, (snapshot) => {
-      let products = [];
-      Object.keys(snapshot.val()).forEach((key) => {
-        products.push(snapshot.val()[key]);
-      });
-      console.log(snapshot.val());
-      console.log(products);
-      setProducts(products);
-      // setProductObj(snapshot.val());
-    });
-  }, []);
+  // useEffect(() => {
+  //   const productsRef = ref(db, "inventory/products");
+  //   onValue(productsRef, (snapshot) => {
+  //     let products = [];
+  //     Object.keys(snapshot.val()).forEach((key) => {
+  //       products.push(snapshot.val()[key]);
+  //     });
+  //     setProducts(products);
+  //     console.log("🚀 ~ onValue ~ products", { products });
+  //     // setProductObj(snapshot.val());
+  //   });
+  // }, []);
   return (
     <div>
       <TopbarAtom
@@ -82,7 +129,7 @@ const PurchaseForm = ({ setShow, show }) => {
                 label="Order No"
                 required={true}
                 id="order_no"
-                defaultValue=""
+                defaultValue={edit || view ? item.order_no : ""}
                 placeholder=""
                 md={3}
               />
@@ -93,7 +140,7 @@ const PurchaseForm = ({ setShow, show }) => {
                 required={true}
                 id="po_number"
                 placeholder=""
-                defaultValue=""
+                defaultValue={edit || view ? item.po_number : ""}
                 md={3}
               />
               <InputAtom
@@ -103,7 +150,7 @@ const PurchaseForm = ({ setShow, show }) => {
                 required={true}
                 id="supplier"
                 placeholder=""
-                defaultValue=""
+                defaultValue={edit || view ? item.supplier : ""}
                 md={3}
               />
               <InputAtom
@@ -113,7 +160,7 @@ const PurchaseForm = ({ setShow, show }) => {
                 required={true}
                 id="purchase_date"
                 placeholder=""
-                defaultValue=""
+                defaultValue={edit || view ? item.purchase_date : ""}
                 type="date"
                 md={3}
               />
@@ -124,7 +171,7 @@ const PurchaseForm = ({ setShow, show }) => {
                 required={false}
                 id="remarks"
                 placeholder=""
-                defaultValue=""
+                defaultValue={edit || view ? item.remarks : ""}
                 md={6}
               />
               <DocInputAtom
@@ -187,23 +234,22 @@ const PurchaseForm = ({ setShow, show }) => {
                   {fields.map((item, index) => {
                     console.log({ item });
                     return (
-                      <TableRow key={item.id}>
+                      <TableRow key={item.code}>
                         <TableCell align="center">{index + 1}</TableCell>
 
                         <TableCell align="center">
                           <select
-                            name={`item[${index}].name`}
-                            defaultValue={`${item.name}`}
-                            {...register(`item.${index}.name`)}
+                            name={`item[${index}].item_name`}
+                            defaultValue={`${item.item_name}`}
+                            {...register(`item.${index}.item_name`)}
                             onChange={(e) => {
-                              console.log(e.target.value);
                               setValue(`item.${index}.code`, e.target.value);
                             }}
                           >
-                            {products.map((product) => {
+                            {items.map((item) => {
                               return (
-                                <option value={product.id}>
-                                  {product.name}
+                                <option value={item?.item_name}>
+                                  {item.item_name}
                                 </option>
                               );
                             })}
@@ -258,7 +304,7 @@ const PurchaseForm = ({ setShow, show }) => {
                     // let genCode = Math.floor(Math.random() + Math.random() * 10000);
                     append({
                       code: "-",
-                      name: "",
+                      item_name: "",
                       quantity: 0,
                     });
                     e.preventDefault();

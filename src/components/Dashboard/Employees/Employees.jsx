@@ -92,7 +92,7 @@ const Employees = ({ show, setShow }) => {
         <TopBar className="">
           <BoldText>Inwards</BoldText>
           <div className="text-center">
-            <Button onClick={() => setShow("Add Employees")}>
+            <Button onClick={() => setShow("add_employee")}>
               Add Employees
               {/* {show === "employeesTable" ? "Add Employees" : "View Employees"} */}
             </Button>

@@ -10,7 +10,6 @@ import {
 } from "../styles/styles";
 
 const DocInputAtom = ({ docFile, setDocFile, label, disabled }) => {
-  console.log("🚀 ~ DocInputAtom ~ disabled", disabled);
   const hiddenDocInput = useRef(null);
   const handleDocClick = () => {
     hiddenDocInput.current.click();

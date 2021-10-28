@@ -13,28 +13,22 @@ import TableHeadCell from "../Tables/TableHead";
 import { useSortableData } from "../Tables/table.sort";
 import { onValue, ref } from "@firebase/database";
 import { db } from "../../../firebase";
+import { setShow } from "../../../Redux/actions/renderActions";
+import { connect } from "react-redux";
+import GetItems from "../../../Api/GetItems";
+import GetProducts from "../../../Api/GetProducts";
 
-const InventoryTable = () => {
+const InventoryTable = ({ setShow,show, setItem }) => {
   const classes = tableStyles();
   const [anchorEl, setAnchorEl] = useState([]);
-  const [products, setProducts] = useState([]);
-
+  // const [products, setProducts] = useState([]);
+  const { items } = GetItems();
+  const { products } = GetProducts();
+  let anchors = [];
   useEffect(() => {
-    const productsRef = ref(db, "inventory/products");
-    onValue(productsRef, (snapshot) => {
-      const data = snapshot.val();
-      let products = [];
-      let anchors = [];
-      Object.keys(data).forEach((key) => {
-        const product = data[key];
-        products.push(product);
-        anchors.push(null);
-      });
-      setAnchorEl(anchors);
-      setProducts(products);
-      console.log({ products });
-    });
-  }, []);
+    items.forEach((item) => anchors.push(null));
+    setAnchorEl(anchors);
+  }, [items.length]);
   const handleClick = (event, index) => {
     setAnchorEl(
       anchorEl.map((a, i) => {
@@ -58,7 +52,7 @@ const InventoryTable = () => {
       })
     );
   };
-  const { requestSort, sortConfig } = useSortableData(products);
+  const { requestSort, sortConfig } = useSortableData(items);
 
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
@@ -68,9 +62,9 @@ const InventoryTable = () => {
   };
 
   const MoreFunc = (row, info) => {
-    // console.log({ row });
-    // setDetails({ ...row, info: info });
-    // (await info) === "edit" ? setShow("edit_inwards") : setShow("more_inwards");
+    console.log({ row });
+    setItem({ ...row, info: info });
+    info === "edit" && setShow("addItem");
     handleClose();
   };
   return (
@@ -83,39 +77,40 @@ const InventoryTable = () => {
           getClassNamesFor={getClassNamesFor}
         />
         <TableBody>
-          {products.map((product, index) => {
+          {items.map((item, index) => {
+            const product = products.find((pd) => pd.code === item.code);
             return (
               <TableRow
-                key={product.orderNo}
+                key={item.code}
                 style={index % 2 !== 0 ? { background: "#F4F4F4" } : undefined}
               >
                 <TableCell component="th" scope="row" align="center">
                   <img
-                    src={product.photos}
+                    src={item.photos}
                     alt="photos"
                     height="30px"
                     width="30px"
                   />
                 </TableCell>
-                <TableCell align="start">{product.name}</TableCell>
-                <TableCell align="center">{product.id}</TableCell>
-                <TableCell align="center">{product.purchase_count}</TableCell>
-                <TableCell align="center">{product.onHand}</TableCell>
+                <TableCell align="start">{item.item_name}</TableCell>
+                <TableCell align="center">{item.code}</TableCell>
+                <TableCell align="center">{product?.quantity ? product.quantity : 0}</TableCell>
+                <TableCell align="center">{item.onHand}</TableCell>
                 <TableCell align="center" style={{ color: "#1F67F1" }}>
-                  {product.client_count}
+                  {item.clientCount}
                 </TableCell>
                 <TableCell align="center" style={{ color: "#FF0000" }}>
-                  {product.not_working}
+                  {item.not_working}
                 </TableCell>
                 <TableCell align="center" style={{ color: "#FF8A00" }}>
-                  {product.damaged}
+                  {item.damaged}
                 </TableCell>
                 <TableCell align="center" style={{ color: "#85AAF4" }}>
-                  {product.missing}
+                  {item.missing}
                 </TableCell>
 
                 <TableCell align="center">
-                  {product.status !== "Delivered" && (
+                  {item.status !== "Delivered" && (
                     <div>
                       <MoreHorizIcon
                         aria-controls="simple-menu"
@@ -129,19 +124,17 @@ const InventoryTable = () => {
                         open={Boolean(anchorEl[index])}
                         onClose={() => handleClose(index)}
                       >
-                        <MenuItem
-                          onClick={() => MoreFunc(product, "view_more")}
-                        >
+                        <MenuItem onClick={() => MoreFunc(item, "view_more")}>
                           View More
                         </MenuItem>
-                        <MenuItem onClick={() => MoreFunc(product, "edit")}>
+                        <MenuItem onClick={() => MoreFunc(item, "edit")}>
                           Edit
                         </MenuItem>
-                        <MenuItem
-                          onClick={() => MoreFunc(product, "edit")}
+                        {/* <MenuItem
+                          onClick={() => MoreFunc(product, "deactive")}
                         >
                           Deactive
-                        </MenuItem>
+                        </MenuItem> */}
                       </Menu>
                     </div>
                   )}
@@ -155,4 +148,8 @@ const InventoryTable = () => {
   );
 };
 
-export default InventoryTable;
+const mapStateToProps = (state) => state;
+const mapDispatchToProps = {
+  setShow: setShow,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(InventoryTable);

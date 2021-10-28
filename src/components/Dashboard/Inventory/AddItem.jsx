@@ -1,5 +1,5 @@
 import IPcamera from "../../../Assets/Images/ipCamera.png";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import {
@@ -16,12 +16,18 @@ import { connect } from "react-redux";
 import { setShow } from "../../../Redux/actions/renderActions";
 import TopbarAtom from "../../../atoms/TopbarAtom";
 import InputAtom from "../../../atoms/InputAtom";
+import { bucket, db } from "../../../firebase";
+import { child, push, ref, set, update } from "@firebase/database";
+import { ref as reference } from "@firebase/storage";
+import { getDownloadURL, uploadBytesResumable } from "@firebase/storage";
+import { Alert } from "@material-ui/lab";
 
-const AddItem = ({ setShow, show }) => {
-  const [selectedItems, setSelectedItems] = useState([]);
+const AddItem = ({ setShow, show, item }) => {
+  console.log("🚀 ~ AddItem ~ item", { item });
+  const edit = item.info === "edit" ? true : false;
+  const view = item.info === "view" ? true : false;
   const [imgFile, setImgFile] = useState("");
-  const [docFile, setDocFile] = useState("");
-  const [editImage, setEditImage] = useState("");
+  const [img, setImg] = useState("");
   const hiddenImageInput = useRef(null);
   const hiddenDocInput = useRef(null);
   const topbarRef = useRef(null);
@@ -32,78 +38,67 @@ const AddItem = ({ setShow, show }) => {
     handleSubmit,
     reset,
   } = useForm();
+  useEffect(() => {
+    edit && setImg(item.photos);
+  }, []);
 
   // HANDLE ADD PRODUCT SUBMIT
   const onSubmit = (data) => {
-    console.log(data, { imgFile }, { docFile });
-    // const productsRef = ref(db, "inventory/products");
-    // productsRef.child(`${data.productNo}`).update({
-    //   date: data.date,
-    //   name: data.item_name,
-    //   available: data.item_quantity,
-    //   poNo: data.po_number,
-    //   receivedDate: data.received_date,
-    //   remarks: data.remarks,
-    //   supplier: data.supplier,
-    //   id: data.productNo,
-    //   condition: data.condition,
-    //   lastEditedBy: user.email,
-    //   reserved: data.reserved ? data.reserved : 0,
-    //   onHand: data.onHand ? data.onHand : 0,
-    // });
-    // if (imgFile) {
-    //   const uploadTask = bucket.ref(`/pictures/${imgFile.name}`).put(imgFile);
-    //   uploadTask.on(
-    //     "state_changed",
-    //     (snapShot) => {},
-    //     (err) => {
-    //       console.log(err);
-    //     },
-    //     () => {
-    //       bucket
-    //         .ref("pictures")
-    //         .child(imgFile.name)
-    //         .getDownloadURL()
-    //         .then((fireBaseUrl) => {
-    //           console.log(fireBaseUrl);
-    //           productsRef.child(`${data.productNo}`).update({
-    //             photos: fireBaseUrl,
-    //           });
-    //         });
-    //     }
-    //   );
-    // }
-    // if (docFile) {
-    //   const uploadTask = bucket.ref(`/pictures/${docFile.name}`).put(docFile);
-    //   uploadTask.on(
-    //     "state_changed",
-    //     (snapShot) => {},
-    //     (err) => {
-    //       console.log(err);
-    //     },
-    //     () => {
-    //       bucket
-    //         .ref("pictures")
-    //         .child(docFile.name)
-    //         .getDownloadURL()
-    //         .then((fireBaseUrl) => {
-    //           const docsRef = ref(
-    //             db,
-    //             `inventory/products/${data.productNo}/docs`
-    //           );
-    //           docsRef.push({
-    //             name: docFile.name,
-    //             url: fireBaseUrl,
-    //             date: moment().format("DD-MM-YY"),
-    //           });
-    //         });
-    //     }
-    //   );
-    // }
-    // console.log("new product added successfully");
-    // setShow("table");
-    // reset();
+    !imgFile && alert(`Choose An Image`);
+    if (imgFile) {
+      const storageRef = reference(bucket, `/pictures/${imgFile.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, imgFile);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {},
+        (error) => {
+          console.log("~~ error ~~", error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            const updates = {};
+            updates["inventory/items/" + data.code] = {
+              ...data,
+              photos: downloadURL ? downloadURL : img,
+            };
+            update(ref(db), updates);
+            setShow("inventoryTable");
+          });
+        }
+      );
+    }
   };
+  // if (docFile) {
+  //   const uploadTask = bucket.ref(`/pictures/${docFile.name}`).put(docFile);
+  //   uploadTask.on(
+  //     "state_changed",
+  //     (snapShot) => {},
+  //     (err) => {
+  //       console.log(err);
+  //     },
+  //     () => {
+  //       bucket
+  //         .ref("pictures")
+  //         .child(docFile.name)
+  //         .getDownloadURL()
+  //         .then((fireBaseUrl) => {
+  //           const docsRef = ref(
+  //             db,
+  //             `inventory/products/${data.productNo}/docs`
+  //           );
+  //           docsRef.push({
+  //             name: docFile.name,
+  //             url: fireBaseUrl,
+  //             date: moment().format("DD-MM-YY"),
+  //           });
+  //         });
+  //     }
+  //   );
+  // }
+  // console.log("new product added successfully");
+  // setShow("table");
+  // reset();
+
   const user = useContext(UserContext);
 
   const handleClick = (param) => {
@@ -116,6 +111,11 @@ const AddItem = ({ setShow, show }) => {
   const handleImgInputChange = (e) => {
     const imgFileUploaded = e.target.files[0];
     setImgFile(imgFileUploaded);
+    let reader = new FileReader();
+    reader.onload = function (e) {
+      setImg(e.target.result);
+    };
+    reader.readAsDataURL(e.target.files[0]);
     // setImgFileError("");
   };
 
@@ -170,7 +170,7 @@ const AddItem = ({ setShow, show }) => {
                 <ImageInputArea onClick={() => handleClick("image")}>
                   <ImageInput
                     className="img-fluid"
-                    src={editImage === "" ? IPcamera : editImage}
+                    src={img ? img : edit ? item.photos : IPcamera}
                     alt=""
                   />
                 </ImageInputArea>
@@ -182,7 +182,7 @@ const AddItem = ({ setShow, show }) => {
                       handleClick("image");
                     }}
                   >
-                    {imgFile ? imgFile.name : "+ Upload Image"}
+                    {imgFile ? imgFile?.name : "+ Upload Image"}
                   </UploadButton>
                   <input
                     ref={hiddenImageInput}
@@ -202,8 +202,8 @@ const AddItem = ({ setShow, show }) => {
                   required={true}
                   id="item_name"
                   placeholder=""
-                  defaultValue=""
-                  md={6}
+                  defaultValue={edit ? item.item_name : ""}
+                  md={edit ? 4 : 6}
                 />
                 <InputAtom
                   register={register}
@@ -212,10 +212,88 @@ const AddItem = ({ setShow, show }) => {
                   required={true}
                   id="code"
                   placeholder=""
-                  defaultValue=""
+                  defaultValue={edit ? item.code : ""}
                   md={4}
                 />
+                {edit && (
+                  <InputAtom
+                    register={register}
+                    errors={errors}
+                    label="On Hand"
+                    required={true}
+                    id="onHand"
+                    placeholder=""
+                    defaultValue={edit ? item.onHand : ""}
+                    md={4}
+                  />
+                )}
               </Row>
+              {edit && (
+                <>
+                  <Row className="w-100  m-0">
+                    <Label
+                      style={{
+                        width: "70%",
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Item Details
+                    </Label>
+                    <InputAtom
+                      register={register}
+                      errors={errors}
+                      label="Not Working"
+                      required={true}
+                      id="not_working"
+                      placeholder=""
+                      defaultValue={edit ? item.not_working : ""}
+                      md={4}
+                    />
+                    <InputAtom
+                      register={register}
+                      errors={errors}
+                      label="Damaged"
+                      required={true}
+                      id="damaged"
+                      placeholder=""
+                      defaultValue={edit ? item.damaged : ""}
+                      md={4}
+                    />
+                    <InputAtom
+                      register={register}
+                      errors={errors}
+                      label="Missing"
+                      required={true}
+                      id="missing"
+                      placeholder=""
+                      defaultValue={edit ? item.missing : ""}
+                      md={4}
+                    />
+                  </Row>
+                  <Row className="w-100  m-0">
+                    <Label
+                      style={{
+                        width: "70%",
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Client Details
+                    </Label>
+                    <InputAtom
+                      register={register}
+                      errors={errors}
+                      label="Client Count"
+                      required={true}
+                      id="clientCount"
+                      placeholder=""
+                      defaultValue={edit ? item.clientCount : ""}
+                      md={4}
+                    />
+                  </Row>
+                </>
+              )}
             </Col>
           </Row>
           <div className="text-center my-lg-5 d-none">

@@ -72,7 +72,6 @@ export const sidebarData = [
   },
 ];
 const Dashboard = ({ setShow, setPath, show, path }) => {
-  console.log("🚀 ~ Dashboard ~ path", { show, path });
   const userData = useContext(UserContext);
   const user = userData.email.slice(0, userData.email.indexOf("@"));
   const avatarText = user.slice(0, 1);

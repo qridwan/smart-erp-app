@@ -38,7 +38,6 @@ export const useSortableData = (items, config = null) => {
     let sortableItems = [...items];
     if (sortConfig !== null) {
       sortableItems.sort((a, b) => {
-        console.log("🚀 ~ sortableItems.sort ~ a", a, a[sortConfig.key], sortConfig)
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === "ascending" ? -1 : 1;
         }
@@ -47,7 +46,6 @@ export const useSortableData = (items, config = null) => {
         }
         return 0;
       });
-
     }
     return sortableItems;
   }, [items, sortConfig]);

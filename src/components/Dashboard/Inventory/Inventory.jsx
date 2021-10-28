@@ -1,26 +1,19 @@
 import React, { useEffect, useState } from "react";
-// import backArrow from "../../../Assets/Icons/backArrow.svg";
 import {
   BoldText,
   Button,
   TableContainer,
   TopBar,
 } from "../../../styles/styles";
-// import { useForm } from "react-hook-form";
 import { connect } from "react-redux";
-import {
-  // removeFromInventory,
-  setShow,
-} from "../../../Redux/actions/renderActions";
-import ModalInventory from "./ModalInventory";
+import { setShow } from "../../../Redux/actions/renderActions";
 import InventoryTable from "./InventoryTable";
 import PurchaseForm from "./PurchaseForm";
 import AddItem from "./AddItem";
 import PurchaseHistory from "./PurchaseHistory";
 
 const Inventory = ({ setShow, show }) => {
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [item, setItem] = useState({});
   useEffect(() => {
     setShow("inventoryTable");
   }, []);
@@ -38,7 +31,6 @@ const Inventory = ({ setShow, show }) => {
               outline
               onClick={() => {
                 setShow("purchaseHistory");
-                setSelectedItems([]);
               }}
             >
               Purchase History
@@ -48,7 +40,6 @@ const Inventory = ({ setShow, show }) => {
               outline
               onClick={() => {
                 setShow("addItem");
-                setSelectedItems([]);
               }}
               style={{ margin: "0 10px" }}
             >
@@ -58,7 +49,6 @@ const Inventory = ({ setShow, show }) => {
             <Button
               onClick={() => {
                 setShow("addPurchase");
-                setSelectedItems([]);
               }}
             >
               + Add Purchase
@@ -66,38 +56,16 @@ const Inventory = ({ setShow, show }) => {
           </div>
         </TopBar>
       )}
-      <ModalInventory open={open} setOpen={setOpen} />
       {show === "inventoryTable" && (
         <TableContainer className="overflow-hidden">
-          <InventoryTable />
-          {/* <DataGrid
-            rows={products}
-            // rows={inventories}
-            style={style.table}
-            columns={columns}
-            pageSize={10}
-            rowHeight={65}
-            autoPageSize
-            autoHeight
-            hideFooterSelectedRowCount
-            disableColumnMenu
-            checkboxSelection
-            scrollbarSize={5}
-            classes={"MuiDataGrid-columnHeader--alignCenter"}
-            onSelectionModelChange={(e) => {
-              let selectedItemsIdArray = e;
-              let selectedItems = [];
-              selectedItemsIdArray.forEach((id) =>
-                selectedItems.push(products.find((row) => row.id === id))
-              );
-              setSelectedItems(selectedItems);
-            }}
-          /> */}
+          <InventoryTable setItem={setItem} />
         </TableContainer>
       )}
-      {show === "addItem" && <AddItem />}
-      {show === "addPurchase" && <PurchaseForm />}
-      {show === "purchaseHistory" && <PurchaseHistory />}
+      {show === "addItem" && <AddItem item={item} setItem={setItem}/>}
+      {show === "addPurchase" && <PurchaseForm item={item} setItem={setItem} />}
+      {show === "purchaseHistory" && (
+        <PurchaseHistory setShow={setShow} setItem={setItem} />
+      )}
     </section>
   );
 };
