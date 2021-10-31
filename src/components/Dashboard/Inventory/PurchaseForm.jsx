@@ -29,12 +29,14 @@ import { UserContext } from "../../../context/UserProvider";
 import SetProducts from "../../../Api/SetProducts";
 import GetProducts from "../../../Api/GetProducts";
 import SetPurchased from "../../../Api/SetPurchased";
+import UpdatePurchased from "../../../Api/UpdatePurchased";
+import DocumentPreview from "../../../atoms/DocumentPreview";
 
 const PurchaseForm = ({ setShow, show, item, setItem }) => {
-  console.log("🚀 ~ PurchaseForm ~ item", item);
   const classes = addTableStyles();
   const edit = Boolean(item.info === "edit");
   const view = Boolean(item.info === "view");
+  const [deliveryProf, setDeliveryProf] = useState(``);
   const topbarRef = useRef(null);
   const SubmitButtonRef = useRef(null);
   const [docFile, setDocFile] = useState("");
@@ -51,14 +53,16 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
   const { products } = GetProducts();
   const user = useContext(UserContext);
   useEffect(() => {
-    edit &&
-      item.item.forEach((pd) =>
+    if (edit || view) {
+      item.item?.forEach((pd) =>
         append({
           code: pd.code,
           item_name: pd.item_name,
           quantity: pd.quantity,
         })
       );
+      setDeliveryProf(item.deliveryProf);
+    }
     return () => setItem(``);
   }, []);
   const onSubmit = (data) => {
@@ -66,6 +70,8 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
     const purchasedProduct = {
       ...data,
       lastEditedBy: user.email,
+      key: item.key,
+      deliveryProf: deliveryProf,
     };
     data.item.forEach((product) => {
       const prevProduct = products.find(
@@ -74,6 +80,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
       const prevQuantity = prevProduct?.quantity ? prevProduct.quantity : 0;
       const item = items.find((it) => it.item_name === product.item_name);
       const prod = {
+        deliveryProf: deliveryProf,
         item_name: product?.item_name,
         code: item?.code,
         photos: item?.photos,
@@ -86,9 +93,14 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
       };
       inputProducts.push(prod);
     });
-    SetPurchased(purchasedProduct);
-    SetProducts(inputProducts);
-    alert("product successfully posted");
+    if (!edit) {
+      SetPurchased(purchasedProduct);
+      SetProducts(inputProducts);
+      alert("product successfully posted");
+    } else if (edit) {
+      UpdatePurchased(purchasedProduct, item.key);
+      SetProducts(inputProducts);
+    }
     reset();
     setShow("inventoryTable");
   };
@@ -116,7 +128,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
         title="Add Purchase"
         topRef={topbarRef}
         buttonRef={SubmitButtonRef}
-        buttonTitle="Save"
+        buttonTitle={!view && "Save"}
         goBack="inventoryTable"
       />
       <AddItemContainer>
@@ -124,6 +136,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
           <Container>
             <Row className="w-100 p-0 m-0">
               <InputAtom
+                readOnly={view && true}
                 register={register}
                 errors={errors}
                 label="Order No"
@@ -134,6 +147,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 md={3}
               />
               <InputAtom
+                readOnly={view && true}
                 register={register}
                 errors={errors}
                 label="P.O Number"
@@ -144,6 +158,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 md={3}
               />
               <InputAtom
+                readOnly={view && true}
                 register={register}
                 errors={errors}
                 label="Supplier"
@@ -154,6 +169,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 md={3}
               />
               <InputAtom
+                readOnly={view && true}
                 register={register}
                 errors={errors}
                 label="Purchase Date"
@@ -165,6 +181,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 md={3}
               />
               <InputAtom
+                readOnly={view && true}
                 register={register}
                 errors={errors}
                 label="Remarks"
@@ -174,11 +191,20 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 defaultValue={edit || view ? item.remarks : ""}
                 md={6}
               />
-              <DocInputAtom
-                label="Delivery Proof"
-                setDocFile={setDocFile}
-                docFile={docFile}
-              />
+              {view ? (
+                <DocumentPreview
+                  label="Delivery Proof"
+                  docFile={item.deliveryProf}
+                />
+              ) : (
+                <DocInputAtom
+                  readOnly={view && true}
+                  label="Delivery Proof"
+                  setDocFile={setDocFile}
+                  docFile={docFile}
+                  setDocUrl={setDeliveryProf}
+                />
+              )}
               {/* <Col md={3} xs={12}>
                 <InputDiv>
                   <Label>Delivery Proof</Label>
@@ -282,37 +308,41 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                       ) : (
                         <></>
                       )} */}
-                        <TableCell align="center">
-                          <IconButton
-                            type="button"
-                            onClick={() => remove(index)}
-                            Delete
-                            color="secondary"
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
+                        {!view && (
+                          <TableCell align="center">
+                            <IconButton
+                              type="button"
+                              onClick={() => remove(index)}
+                              Delete
+                              color="secondary"
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </TableCell>
+                        )}
                       </TableRow>
                     );
                   })}
                 </TableBody>
               </Table>
-              <div className="text-center my-lg-5">
-                <Button
-                  outline
-                  onClick={(e) => {
-                    // let genCode = Math.floor(Math.random() + Math.random() * 10000);
-                    append({
-                      code: "-",
-                      item_name: "",
-                      quantity: 0,
-                    });
-                    e.preventDefault();
-                  }}
-                >
-                  + Add Item
-                </Button>
-              </div>
+              {!view && (
+                <div className="text-center my-lg-5">
+                  <Button
+                    outline
+                    onClick={(e) => {
+                      // let genCode = Math.floor(Math.random() + Math.random() * 10000);
+                      append({
+                        code: "-",
+                        item_name: "",
+                        quantity: 0,
+                      });
+                      e.preventDefault();
+                    }}
+                  >
+                    + Add Item
+                  </Button>
+                </div>
+              )}
             </Container>
           </AddItemsContainer>
 

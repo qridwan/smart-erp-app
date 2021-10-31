@@ -68,11 +68,9 @@ const EmployeesTable = ({ setShow, setDetails }) => {
     }
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
-  const MoreFunc = async (row, info) => {
+  const MoreFunc = (row, info) => {
     setDetails({ ...row, info: info });
-    (await info) === "edit"
-      ? setShow("add_employee")
-      : setShow("view_employee");
+    setShow(info);
     handleClose();
   };
   return (

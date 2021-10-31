@@ -12,6 +12,7 @@ import {
 
 import { db } from "../../../firebase";
 import TopbarAtom from "../../../atoms/TopbarAtom";
+import AddClients from "../../../Api/AddClient";
 
 const AddClient = ({ setShow }) => {
   const {
@@ -23,12 +24,26 @@ const AddClient = ({ setShow }) => {
   const topbarRef = useRef(null);
   const SubmitButtonRef = useRef(null);
   const onSubmit = (data) => {
-    console.log(data);
-    const clientRef = db.ref("inventory/clients");
+    // console.log(data);
+    // const clientRef = db.ref("inventory/clients");
     const clientId =
       data.agency.slice(0, 3).toUpperCase() + "-" + data.number.slice(-3);
-    console.log(clientId);
-    clientRef.child(`${clientId}`).update({
+    // console.log(clientId);
+    // clientRef.child(`${clientId}`).update({
+    //   address: data.address,
+    //   city: data.city,
+    //   district: data.district,
+    //   email: data.email,
+    //   phone: data.number,
+    //   name: data.agency,
+    //   supervisor: data.customer_name,
+    //   pincode: data.pincode,
+    //   remarks: data.remarks,
+    //   state: data.state,
+    //   orders: 0,
+    //   id: clientId,
+    // });
+    AddClients({
       address: data.address,
       city: data.city,
       district: data.district,
@@ -41,7 +56,7 @@ const AddClient = ({ setShow }) => {
       state: data.state,
       orders: 0,
       id: clientId,
-    });
+    })
     setShow("clientsTable");
     reset();
   };

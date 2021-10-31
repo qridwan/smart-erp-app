@@ -9,17 +9,18 @@ const DocumentPreview = ({ docFile, label }) => {
   };
   return (
     <Col lg={3} md={6} xs={12}>
-      <InputDiv>
+      <InputDiv >
         <Label>{label}</Label>
-        <DocPreview onClick={handlePreview}>Preview Document</DocPreview>
+        <DocPreview onClick={handlePreview} href={docFile}>Preview Document</DocPreview>
       </InputDiv>
     </Col>
   );
 };
 
 export default DocumentPreview;
-const DocPreview = styled.p`
+const DocPreview = styled.a`
   cursor: pointer;
+  text-decoration: none;
   border-radius: 5px;
   width: 100%;
   padding: 0 15px;

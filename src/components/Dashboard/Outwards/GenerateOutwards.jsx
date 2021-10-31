@@ -6,19 +6,15 @@ import {
   AddItemContainer,
   AddItemsContainer,
   addTableStyles,
-  ApplyFormInput,
-  BoldText,
   Button,
-  Error,
   InputDiv,
   Label,
   MainTitle,
   Select,
   SubmitButton,
   TableInput,
-  TopBar,
 } from "../../../styles/styles";
-import { ReactComponent as IndiaIcon } from "../../../Assets/Icons/india.svg";
+// import { ReactComponent as IndiaIcon } from "../../../Assets/Icons/india.svg";
 import { ReactComponent as DeleteIcon } from "../../../Assets/Icons/delete.svg";
 import {
   IconButton,
@@ -30,28 +26,37 @@ import {
   TableRow,
 } from "@material-ui/core";
 import { scrollToRef } from "../../../ScrollTop";
-
-import { db } from "../../../firebase";
 import { UserContext } from "../../../context/UserProvider";
-
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { onValue, ref } from "@firebase/database";
 import TopbarAtom from "../../../atoms/TopbarAtom";
 import InputAtom from "../../../atoms/InputAtom";
 import DocInputAtom from "../../../atoms/DocInputAtom";
+import GetItems from "../../../Api/GetItems";
+import GetClients from "../../../Api/GetClients";
+import GetProducts from "../../../Api/GetProducts";
+import SetOutwards from "../../../Api/SetOutwards";
+import UpdateOutwards from "../../../Api/UpdateOutwards";
+import { ref, update } from "@firebase/database";
 
 const GenerateOutwards = ({ setShow, details, setDetails }) => {
+  console.log("🚀 ~ GenerateOutwards ~ details", { details });
   const classes = addTableStyles();
   const topbarRef = useRef(null);
   const SubmitButtonRef = useRef(null);
-  const [edit, setEdit] = useState(false);
   const [ewayDocFile, setEwayDocFile] = useState("");
   const [dcDocFile, setDcDocFile] = useState("");
   const [courierDocFile, setCourierDocFile] = useState("");
   const [packagingDocFile, setPackagingDocFile] = useState("");
   const user = useContext(UserContext);
+  const [ewayDocURL, setEwayDocURL] = useState(``);
+  const [dcDocURL, setDcDocURL] = useState(``);
+  const [courierDocURL, setCourierDocURL] = useState(``);
+  const [packagingDocURL, setPackagingDocURL] = useState(``);
+  const [agencyName, setAgencyName] = useState("");
+  const [client, setClient] = useState({});
 
+  // const [prodQuantity, setProdQuantity] = useState({});
   const {
     register,
     formState: { errors },
@@ -65,117 +70,74 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
     control,
     name: "item",
   });
-
-  const [clients, setClients] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [productObj, setProductObj] = useState({});
-  const [agencyName, setAgency] = useState("");
-  const [client, setClient] = useState({});
-  // const [items, setItems] = useState([]);
+  const edit = Boolean(details.info === "edit");
+  // const view = Boolean(details.info === "view");
+  // const [clients, setClients] = useState([]);
+  // const [products, setProducts] = useState([]);
   // const [clientId, setClientId] = useState("");
-
-  useEffect(() => {
-    console.log("inside useEffect");
-
-    const clientsRef = ref(db, "inventory/clients");
-    onValue(clientsRef, (snapshot) => {
-      let clients = [];
-      Object.keys(snapshot.val()).forEach((key) => {
-        clients.push(snapshot.val()[key]);
-      });
-      setClients(clients);
-    });
-
-    const productsRef = ref(db, "inventory/products");
-    onValue(productsRef, (snapshot) => {
-      let products = [];
-      Object.keys(snapshot.val()).forEach((key) => {
-        products.push(snapshot.val()[key]);
-      });
-      console.log(snapshot.val());
-      console.log(products);
-      setProducts(products);
-      setProductObj(snapshot.val());
-    });
-  }, []);
+  const { items } = GetItems();
+  const { clients } = GetClients();
+  const { products } = GetProducts();
 
   useEffect(() => {
     scrollToRef(topbarRef);
-    if (details.info) {
-      setEdit(true);
+    if (edit) {
+      setAgencyName(details.agency);
+      setEwayDocURL(details.ewayBill);
+      setDcDocURL(details.dcDocument);
+      setCourierDocURL(details.courierDoc);
+      setPackagingDocURL(details.packagingList);
       append(details.item);
-      console.log(details);
-      let client = clients.map((client) => {
-        if (client.name === details.agency) {
-          return client;
-        }
-      });
-      console.log("🚀 ~ client ~ client", client);
-      let data = details;
-      delete data.info;
-      reset(data);
-      setAgency(data.agency);
-      client = client[0];
-      setClient(client);
+      // console.log({ details });
+      // let client = clients.map((client) => {
+      //   if (client.name === details.agency) {
+      //     return client;
+      //   }
+      // });
+      // let data = details;
+      // delete data.info;
+      // reset(data);
+      // setAgency(data.agency);
+      // client = client[0];
+      // setClient(client);
     }
-  }, [setShow, details.info]);
+    return () => setDetails(``);
+  }, []);
 
   // OUT ORDER SUBMIT FORM
+
   const onSubmit = (data) => {
-    console.log(data);
-    console.log(productObj);
-    let res = data;
-    let codeArr = [];
-    res["agency"] = agencyName;
-
-    clients.forEach((client) => {
-      if (client.name === agencyName) {
-        const cRef = ref(db, `inventory/clients/${client.id}`);
-        onValue(cRef, (snapshot) => {
-          cRef.update({
-            orders: snapshot.val().orders + 1,
-          });
-        });
-      }
-    });
-
-    res.item = res.item.map((item, index) => {
-      let pro = productObj[item.code];
-      if (edit) {
-        pro["available"] = Math.abs(
-          parseInt(pro["available"]) -
-            parseInt(item.sent) +
-            parseInt(details.item[index].sent)
+    data[`ewayBill`] = ewayDocURL;
+    data[`dcDocument`] = dcDocURL;
+    data[`courierDoc`] = courierDocURL;
+    data[`packagingList`] = packagingDocURL;
+    !edit
+      ? SetOutwards({ ...data, agency: agencyName, status: "intransit" })
+      : UpdateOutwards(
+          { ...data, agency: agencyName, key: details.key },
+          details.key
         );
-      } else {
-        pro["available"] = Math.abs(
-          parseInt(pro["available"]) - parseInt(item.sent)
-        );
-      }
 
-      const proRef = ref(db, `inventory/products/${item.code}`);
-      proRef.update({
-        available: pro["available"],
-      });
-
-      item["name"] = productObj[item.code].name;
-      item["pending"] = parseInt(item["quantity"]) - parseInt(item["sent"]);
-      codeArr.push(item.code);
-      return item;
-    });
-
-    res["status"] = "intransit";
-    const outRef = ref(db, "inventory/out-orders");
-    console.log(data);
-    outRef.child(`${data.ewayBill}`).update(data);
+        // clients.map(client => {
+        //   if(client.name == agencyName) {
+        //     const cRef = ref(db, `inventory/clients/${client.key}`);
+        //     onValue(cRef, (snapshot) => {
+        //       const order = snapshot.val().order + 1
+        //       update(cRef, {order})
+        //     })
+           
+        //     // cRef.once('value', snapshot => {
+        //     //   cRef.update({
+        //     //     orders : snapshot.val().orders + 1
+        //     //   });
+        //     // })
+        //   }
+        // }
     console.log("order created in db");
-    setShow("outwards");
+    setShow("outwardsTable");
     reset();
-
-    // newProducts = products.map(product => {
-    //   if(codeArr(product.id))
-    // })
   };
+  console.log({ edit, ewayDocURL });
   return (
     <div>
       <TopbarAtom
@@ -185,21 +147,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
         title="Generate Outwards"
         goBack="outwardsTable"
       />
-      {/* <TopBar ref={topbarRef} className="mb-4">
-        <BoldText>{edit ? "Edit Outwards" : "Generate Outwards"}</BoldText>
-        <div>
-          <Button
-            outline
-            onClick={() => {
-              reset();
-              setShow("outwards");
-              setDetails({});
-            }}
-          >
-            View Outwards
-          </Button>
-        </div>
-      </TopBar> */}
       <AddItemContainer>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Container>
@@ -224,7 +171,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                   onChange={(event, newValue) => {
                     console.log(newValue);
                     if (newValue) {
-                      setAgency(newValue.name);
+                      setAgencyName(newValue.name);
                       setValue("receiver", newValue.supervisor);
                       setValue("email", newValue.email);
                       setValue("generated_by", user.email);
@@ -237,7 +184,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                       setValue("state", newValue.state);
                       setValue("remarks", newValue.remarks);
                     } else {
-                      setAgency("");
+                      setAgencyName("");
                       setValue("receiver", "");
                       setValue("email", "");
                       setValue("generated_by", "");
@@ -427,6 +374,21 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                 defaultValue={edit ? details.remarks : null}
                 md={6}
               />
+              {edit && (
+                <Col md={3} xs={12}>
+                  <InputDiv>
+                    <Label>Update Status</Label>
+                    <Select
+                      defaultValue={edit ? details.transport : null}
+                      {...register("status")}
+                    >
+                      <option value=""> </option>
+                      <option value="intransit">In-Transit</option>
+                      <option value="delivered">Delivered</option>
+                    </Select>
+                  </InputDiv>
+                </Col>
+              )}
             </Row>
 
             <Row className="w-100 p-0 m-0">
@@ -479,21 +441,25 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                 label="Eway Bill"
                 setDocFile={setEwayDocFile}
                 docFile={ewayDocFile}
+                setDocUrl={setEwayDocURL}
               />
               <DocInputAtom
                 label="D.C Document"
                 setDocFile={setDcDocFile}
                 docFile={dcDocFile}
+                setDocUrl={setDcDocURL}
               />
               <DocInputAtom
                 label="Courier Document"
                 setDocFile={setCourierDocFile}
                 docFile={courierDocFile}
+                setDocUrl={setCourierDocURL}
               />
               <DocInputAtom
                 label="Packaging List"
                 setDocFile={setPackagingDocFile}
                 docFile={packagingDocFile}
+                setDocUrl={setPackagingDocURL}
               />
             </Row>
           </Container>
@@ -535,35 +501,42 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                 </TableHead>
                 <TableBody>
                   {fields.map((item, index) => {
-                    console.log(details);
                     return (
                       <TableRow key={item.id}>
                         <TableCell align="center">{index + 1}</TableCell>
                         <TableCell align="center">
                           <select
                             name={`item[${index}].name`}
-                            defaultValue={
-                              edit
-                                ? `${details.item[index].id}`
-                                : `${item.name}`
-                            }
+                            // defaultValue={
+                            //   edit
+                            //     ? `${details.item[index].name}`
+                            //     : `${item.name}`
+                            // }
                             {...register(`item.${index}.name`)}
                             onChange={(e) => {
-                              console.log(e.target.value);
-                              setValue(`item.${index}.code`, e.target.value);
+                              let sItem = products.find(
+                                (pd) => pd.item_name === e.target.value
+                              );
+                              setValue(
+                                `item.${index}.quantity`,
+                                sItem.quantity
+                              );
                             }}
                           >
-                            {products.map((product) => {
-                              if (edit && details.item[index].id == product.id)
+                            {products.map((item, index) => {
+                              if (
+                                edit &&
+                                details?.item[index]?.id == items.code
+                              )
                                 return (
-                                  <option selected value={product.id}>
-                                    {product.name}
+                                  <option selected value={item.item_name}>
+                                    {item.item_name}
                                   </option>
                                 );
                               else
                                 return (
-                                  <option value={product.id}>
-                                    {product.name}
+                                  <option value={item.item_name}>
+                                    {item.item_name}
                                   </option>
                                 );
                             })}
@@ -572,25 +545,21 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                         <TableCell align="center">
                           <TableInput
                             style={{ border: "none" }}
-                            name={`item[${index}].code`}
-                            defaultValue={
-                              edit
-                                ? `${details.item[index].code}`
-                                : `${item.code}`
-                            }
-                            {...register(`item.${index}.code`)}
+                            name={`item[${index}].quantity`}
+                            // defaultValue={
+                            //   edit ? `${details.item[index].quantity}` : ``
+                            // }
+                            {...register(`item.${index}.quantity`)}
                           />
                         </TableCell>
 
                         <TableCell align="center">
                           <TableInput
-                            name={`item[${index}].quantity`}
-                            defaultValue={
-                              edit
-                                ? `${details.item[index].quantity}`
-                                : `${item.quantity}`
-                            }
-                            {...register(`item.${index}.quantity`)}
+                            name={`item[${index}].sent`}
+                            // defaultValue={
+                            //   edit ? `${details?.item[index]?.sent}` : 0
+                            // }
+                            {...register(`item.${index}.sent`)}
                           ></TableInput>
                         </TableCell>
                         <TableCell align="center">
@@ -600,16 +569,16 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                             //   // setValue(`item.${index}.pending`, )
                             //   console.log(formState);
                             // }}
-                            name={`item[${index}].sent`}
+                            name={`item[${index}].box`}
                             defaultValue={
                               edit
-                                ? `${details.item[index].sent}`
-                                : `${item.sent}`
+                                ? `${details?.item[index]?.box}`
+                                : `${item.box}`
                             }
-                            {...register(`item.${index}.sent`)}
+                            {...register(`item.${index}.box`)}
                           ></TableInput>
                         </TableCell>
-                        {edit ? (
+                        {/* {edit ? (
                           <TableCell align="center">
                             <TableInput
                               readOnly
@@ -624,7 +593,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                           </TableCell>
                         ) : (
                           <></>
-                        )}
+                        )} */}
 
                         <TableCell align="center">
                           <IconButton
@@ -650,8 +619,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                     code: "-",
                     name: "",
                     quantity: 0,
-                    sent: 0,
-                    pending: 0,
+                    box: 0,
                   });
                   e.preventDefault();
                 }}

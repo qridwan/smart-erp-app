@@ -24,8 +24,8 @@ import { Alert } from "@material-ui/lab";
 
 const AddItem = ({ setShow, show, item }) => {
   console.log("🚀 ~ AddItem ~ item", { item });
-  const edit = item.info === "edit" ? true : false;
-  const view = item.info === "view" ? true : false;
+  const edit = Boolean(item.info === "edit");
+  const view = Boolean(item.info === "view");
   const [imgFile, setImgFile] = useState("");
   const [img, setImg] = useState("");
   const hiddenImageInput = useRef(null);
@@ -155,7 +155,7 @@ const AddItem = ({ setShow, show, item }) => {
       <TopbarAtom
         topRef={topbarRef}
         buttonRef={SubmitButtonRef}
-        buttonTitle="Save"
+        buttonTitle={!view && "Save"}
         title="Add Item"
         goBack="inventoryTable"
       />
@@ -167,68 +167,73 @@ const AddItem = ({ setShow, show, item }) => {
                 <Label style={{ width: "70%", margin: "0 auto" }}>
                   Item Image
                 </Label>
-                <ImageInputArea onClick={() => handleClick("image")}>
+                <ImageInputArea onClick={() => !view && handleClick("image")}>
                   <ImageInput
                     className="img-fluid"
-                    src={img ? img : edit ? item.photos : IPcamera}
+                    src={img ? img : edit || view ? item.photos : IPcamera}
                     alt=""
                   />
                 </ImageInputArea>
-                <div className="text-center">
-                  <UploadButton
-                    type="transparent"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleClick("image");
-                    }}
-                  >
-                    {imgFile ? imgFile?.name : "+ Upload Image"}
-                  </UploadButton>
-                  <input
-                    ref={hiddenImageInput}
-                    onChange={handleImgInputChange}
-                    style={{ display: "none" }}
-                    type="file"
-                  />
-                </div>
+                {!view && (
+                  <div className="text-center">
+                    <UploadButton
+                      type="transparent"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleClick("image");
+                      }}
+                    >
+                      {imgFile ? imgFile?.name : "+ Upload Image"}
+                    </UploadButton>
+                    <input
+                      ref={hiddenImageInput}
+                      onChange={handleImgInputChange}
+                      style={{ display: "none" }}
+                      type="file"
+                    />
+                  </div>
+                )}
               </InputDiv>
             </Col>
             <Col md={9} xs={12} className="" style={{ paddingRight: "30px" }}>
               <Row className="w-100  m-0">
                 <InputAtom
+                  readOnly={view}
                   register={register}
                   errors={errors}
                   label="Item Name"
                   required={true}
                   id="item_name"
                   placeholder=""
-                  defaultValue={edit ? item.item_name : ""}
+                  defaultValue={edit || view ? item.item_name : ""}
                   md={edit ? 4 : 6}
                 />
                 <InputAtom
+                  readOnly={view}
                   register={register}
                   errors={errors}
                   label="Code"
                   required={true}
                   id="code"
                   placeholder=""
-                  defaultValue={edit ? item.code : ""}
+                  defaultValue={edit || view ? item.code : ""}
                   md={4}
                 />
-                {edit && (
+                {(edit || view) && (
                   <InputAtom
+                    readOnly={view}
                     register={register}
                     errors={errors}
                     label="On Hand"
                     required={true}
                     id="onHand"
                     placeholder=""
-                    defaultValue={edit ? item.onHand : ""}
+                    defaultValue={edit || view ? item.onHand : ""}
                     md={4}
                   />
                 )}
               </Row>
-              {edit && (
+              {(edit || view) && (
                 <>
                   <Row className="w-100  m-0">
                     <Label
@@ -241,33 +246,36 @@ const AddItem = ({ setShow, show, item }) => {
                       Item Details
                     </Label>
                     <InputAtom
+                      readOnly={view}
                       register={register}
                       errors={errors}
                       label="Not Working"
                       required={true}
                       id="not_working"
                       placeholder=""
-                      defaultValue={edit ? item.not_working : ""}
+                      defaultValue={edit || view ? item.not_working : ""}
                       md={4}
                     />
                     <InputAtom
+                      readOnly={view}
                       register={register}
                       errors={errors}
                       label="Damaged"
                       required={true}
                       id="damaged"
                       placeholder=""
-                      defaultValue={edit ? item.damaged : ""}
+                      defaultValue={edit || view ? item.damaged : ""}
                       md={4}
                     />
                     <InputAtom
+                      readOnly={view}
                       register={register}
                       errors={errors}
                       label="Missing"
                       required={true}
                       id="missing"
                       placeholder=""
-                      defaultValue={edit ? item.missing : ""}
+                      defaultValue={edit || view ? item.missing : ""}
                       md={4}
                     />
                   </Row>
@@ -282,13 +290,14 @@ const AddItem = ({ setShow, show, item }) => {
                       Client Details
                     </Label>
                     <InputAtom
+                      readOnly={view}
                       register={register}
                       errors={errors}
                       label="Client Count"
                       required={true}
                       id="clientCount"
                       placeholder=""
-                      defaultValue={edit ? item.clientCount : ""}
+                      defaultValue={edit || view ? item.clientCount : ""}
                       md={4}
                     />
                   </Row>

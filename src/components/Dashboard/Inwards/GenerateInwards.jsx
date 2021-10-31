@@ -6,12 +6,11 @@ import { Col, Row } from "react-bootstrap";
 import { useFieldArray, useForm } from "react-hook-form";
 import styled from "styled-components";
 import { ReactComponent as DeleteIcon } from "../../../Assets/Icons/delete.svg";
-
+import SetInwards from "../../../Api/SetInwards";
+import UpdateInwards from "../../../Api/UpdateInwards";
 import {
   AddItemContainer,
-  ApplyFormInput,
   Button,
-  Error,
   InputDiv,
   Label,
   MainTitle,
@@ -22,16 +21,17 @@ import {
   TableSelect,
 } from "../../../styles/styles";
 
-import { db as firebase, bucket, auth, db } from "../../../firebase";
+import { bucket, auth, db } from "../../../firebase";
 import { UserContext } from "../../../context/UserProvider";
-
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { onValue, ref } from "@firebase/database";
 import TopbarAtom from "../../../atoms/TopbarAtom";
 import InputAtom from "../../../atoms/InputAtom";
 import DocInputAtom from "../../../atoms/DocInputAtom";
-
+import GetClients from "../../../Api/GetClients";
+import GetProducts from "../../../Api/GetProducts";
+import { ref } from "@firebase/database";
+import UpdateOutwards from "../../../Api/UpdateOutwards";
 const useStyles = makeStyles({
   table: {
     width: "100%",
@@ -57,8 +57,8 @@ const useStyles = makeStyles({
 });
 
 const GenerateInwards = ({ setShow, details, setDetails }) => {
-  const [edit, setEdit] = useState(false);
-  const { agency, date, item, order, quantity, audit } = details;
+  // const [edit, setEdit] = useState(false);
+  const { agency, date, item, order, quantity, auditStatus } = details;
   console.log("🚀 ~ GenerateInwards ~ details", details);
 
   const topbarRef = useRef(null);
@@ -67,31 +67,11 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
   const [inwardDocFile, setInwardDocFile] = useState("");
   const [courierDocFile, setCourierDocFile] = useState("");
   const [inwardImageFile, setInwardImageFile] = useState("");
-  const items = [
-    {
-      order,
-      item,
-      quantity,
-      date,
-      received: "22",
-      good_condition: "32",
-      bad_condition: "34",
-      code: "12demo",
-      not_working: "0",
-    },
-    {
-      order,
-      item,
-      quantity,
-      date,
-      received: "22",
-      good_condition: "32",
-      bad_condition: "34",
-      code: "12demo",
-      not_working: "0",
-    },
-  ];
+  const [courierDocURL, setCourierDocURL] = useState("");
+  const [inwardDocURL, setInwardDocURL] = useState("");
+  const [uploadImageFile, setUploadImageFile] = useState("");
   const classes = useStyles();
+  const edit = Boolean(details.info === "edit");
   const {
     register,
     formState: { errors },
@@ -106,51 +86,30 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
     control,
     name: "item",
   });
-
+  console.log(edit);
   useEffect(() => {
-    if (details.info) {
-      setEdit(true);
-      append(items);
-
-      let data = details;
-      delete data.info;
-      reset(data);
-      setAgency(data.agency);
+    if (edit) {
+      append(item);
+      setAgency(agency);
+      setCourierDocURL(details.courierDocument);
+      setInwardDocURL(details.inwardDocument);
+      setUploadImageFile(details.uploadImage);
     }
-  }, [setShow, details.info]);
-
-  const [clients, setClients] = useState([]);
-  const [products, setProducts] = useState([]);
+    return () => setDetails(``);
+  }, []);
+  const { clients } = GetClients();
+  const { products } = GetProducts();
   const [agencyName, setAgency] = useState("");
   const status = watch("auditStatus");
-  console.log("🚀 ~ GenerateInwards ~ status", status);
-  useEffect(() => {
-    const clientsRef = ref(db, "inventory/clients");
-    onValue(clientsRef, (snapshot) => {
-      let clients = [];
-      Object.keys(snapshot.val()).forEach((key) => {
-        clients.push(snapshot.val()[key]);
-      });
-      setClients(clients);
-    });
-    const productsRef = ref(db, "inventory/products");
-    onValue(productsRef, (snapshot) => {
-      let products = [];
-      Object.keys(snapshot.val()).forEach((key) => {
-        products.push(snapshot.val()[key]);
-      });
-      console.log(snapshot.val());
-      console.log(products);
-      setProducts(products);
-    });
-  }, []);
 
   const onSubmit = (data) => {
-    console.log(data);
     data["agency"] = agencyName;
+    data[`inwardDocument`] = inwardDocURL;
+    data[`courierDocument`] = courierDocURL;
+    data[`uploadImage`] = uploadImageFile;
     let total = 0;
     data.item.forEach((item) => {
-      total = total + item.quantity;
+      total = total + parseInt(item.quantity);
     });
     data["total"] = total;
     data["item"] = data.item.map((item) => {
@@ -161,10 +120,11 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
       });
       return item;
     });
-    const inRef = ref(db, "inventory/in-orders");
-    inRef.child(`${data.orderNo}`).update(data);
-    console.log("order created in db");
-    // setShow("inwardsTable");
+    !edit
+      ? SetInwards(data)
+      : UpdateInwards({ ...data, key: details.key }, details.key);
+
+    setShow("inwardsTable");
     reset();
   };
   return (
@@ -188,7 +148,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                   options={clients}
                   openOnFocus
                   getOptionLabel={(option) => option.name}
-                  // defaultValue={edit ? client : null}
+                  defaultValue={edit ? agency : null}
                   renderOption={(option) => (
                     <React.Fragment>
                       <span>{option.name}</span>
@@ -208,7 +168,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      placeholder={edit ? details.agency : ""}
+                      placeholder={edit ? agency : null}
                       variant="outlined"
                     />
                   )}
@@ -285,11 +245,13 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                 label="Inward Document"
                 setDocFile={setInwardDocFile}
                 docFile={inwardDocFile}
+                setDocUrl={setInwardDocURL}
               />
               <DocInputAtom
                 label="Courier Document"
                 setDocFile={setCourierDocFile}
                 docFile={courierDocFile}
+                setDocUrl={setCourierDocURL}
               />
             </Row>
 
@@ -336,8 +298,8 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                 <InputDiv>
                   <Label>Received Location</Label>
                   <Select
-                    defaultValue={edit ? details.transport : null}
-                    {...register("transport")}
+                    defaultValue={edit ? details.recievedLocation : null}
+                    {...register("recievedLocation")}
                   >
                     <option value=""> </option>
                     <option value="sst_godown">SST-Godown</option>
@@ -411,8 +373,8 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                               {...register(`item.${index}.name`)}
                             >
                               {products.map((product) => (
-                                <option value={product.name}>
-                                  {product.name}
+                                <option value={product.item_name}>
+                                  {product.item_name}
                                 </option>
                               ))}
                             </TableSelect>
@@ -471,17 +433,17 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <div className="text-center my-lg-4">
+              <div className="text-center mt-lg-5 mb-lg-5 mb-3">
                 <Button
                   outline
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
                     append({
                       name: "",
                       received: "",
                       good_condition: "",
                       bad_condition: "",
                       not_working: "",
-
                       quantity: "",
                     });
                   }}
@@ -499,13 +461,13 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                     className={
                       status === "pending" ? "text-danger" : "text-success"
                     }
-                    defaultValue={edit ? audit : null}
+                    defaultValue={edit ? auditStatus : null}
                     {...register("auditStatus")}
                   >
-                    <option value="pending" className="text-dark">
+                    <option value="Pending" className="text-dark">
                       Pending
                     </option>
-                    <option value="complete" className="text-dark">
+                    <option value="Complete" className="text-dark">
                       Complete
                     </option>
                   </Select>
@@ -514,8 +476,9 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
               <DocInputAtom
                 label="Upload Image*"
                 setDocFile={setInwardImageFile}
+                setDocUrl={setUploadImageFile}
                 docFile={inwardImageFile}
-                disabled={status === "complete" ? false : true}
+                disabled={status === "Complete" ? false : true}
               />
             </Row>
 

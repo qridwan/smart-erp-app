@@ -51,7 +51,7 @@ const PurchaseHistory = ({ setItem, setShow }) => {
   };
   const MoreFunc = (row, info) => {
     setItem({ ...row, info: info });
-    info === "edit" && setShow("addPurchase");
+    setShow("addPurchase");
     handleClose();
     // console.log({ row });
     // setDetails({ ...row, info: info });
@@ -82,8 +82,8 @@ const PurchaseHistory = ({ setItem, setShow }) => {
             getClassNamesFor={getClassNamesFor}
           />
           <TableBody>
-            {items.map((product, index) => {
-              return product.item.map((pd, i) => {
+            {items?.map((product, index) => {
+              return product?.item?.map((pd, i) => {
                 return (
                   <TableRow
                     key={product.order_no + index}

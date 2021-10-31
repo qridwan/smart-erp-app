@@ -1,5 +1,5 @@
 import { onValue, ref } from "@firebase/database";
-import React, { useEffect, useState } from "react";
+import{ useEffect, useState } from "react";
 import { db } from "../firebase";
 
 const GetPurchaseHistory = () => {
@@ -9,10 +9,11 @@ const GetPurchaseHistory = () => {
     onValue(productsRef, (snapshot) => {
       const data = snapshot.val();
       let alldata = [];
-      Object.keys(data).forEach((key) => {
-        const item = data[key];
-        alldata.push(item);
-      });
+      data &&
+        Object.keys(data).forEach((key) => {
+          const item = data[key];
+          alldata.push(item);
+        });
       setItems(alldata);
     });
   }, []);

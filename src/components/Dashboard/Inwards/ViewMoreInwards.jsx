@@ -42,7 +42,6 @@ const useStyles = makeStyles({
 });
 
 const ViewMoreInwards = ({ details }) => {
-  console.log("🚀 ~ ViewMoreInwards ~ details", details);
   const classes = useStyles();
   const topbarRef = useRef(null);
   return (
@@ -97,7 +96,7 @@ const ViewMoreInwards = ({ details }) => {
                   <ApplyFormInput
                     details
                     readOnly
-                    value={details.agencyAddress}
+                    value={details.agencyAdress}
                     required
                   />
                 </InputDiv>
@@ -135,8 +134,14 @@ const ViewMoreInwards = ({ details }) => {
                   />
                 </InputDiv>
               </Col>
-              <DocumentPreview label="Inward Document" />
-              <DocumentPreview label="Courier Document" />
+              <DocumentPreview
+                label="Inward Document"
+                docFile={details.inwardDocument}
+              />
+              <DocumentPreview
+                label="Courier Document"
+                docFile={details.courierDocument}
+              />
             </Row>
 
             <MainTitle>Received Details</MainTitle>
@@ -159,7 +164,7 @@ const ViewMoreInwards = ({ details }) => {
                     details
                     type="courierName"
                     readOnly
-                    value={details.courierName}
+                    value={details.courier_name}
                   />
                 </InputDiv>
               </Col>
@@ -170,7 +175,7 @@ const ViewMoreInwards = ({ details }) => {
                     details
                     type="text"
                     readOnly
-                    value={details.courierNo}
+                    value={details.courier_no}
                   />
                 </InputDiv>
               </Col>
@@ -214,7 +219,7 @@ const ViewMoreInwards = ({ details }) => {
                   <ApplyFormInput
                     details
                     readOnly
-                    value={details.remarks ? details.remarks: "-"}
+                    value={details.remarks ? details.remarks : "-"}
                     type="text"
                   />
                 </InputDiv>

@@ -3,7 +3,10 @@ import { db } from "../firebase";
 
 const SetPurchased = (Pproduct) => {
   const newPostKey = push(child(ref(db), "inventory/purchased/")).key;
-  set(ref(db, "inventory/purchased/" + newPostKey), Pproduct)
+  set(ref(db, "inventory/purchased/" + newPostKey), {
+    ...Pproduct,
+    key: newPostKey,
+  })
     .then(() => {
       return true;
     })

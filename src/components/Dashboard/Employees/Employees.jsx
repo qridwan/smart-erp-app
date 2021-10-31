@@ -214,8 +214,12 @@ const Employees = ({ show, setShow }) => {
           </Row>
         </div>
       )}{" "}
-      {(show === "add_employee" || show === "view_employee") && (
-        <AddEmployee setShow={setShow} details={details} />
+      {(show === "add_employee" || show === "view" || show === "edit") && (
+        <AddEmployee
+          setShow={setShow}
+          details={details}
+          setDetails={setDetails}
+        />
       )}
     </>
   );

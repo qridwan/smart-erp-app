@@ -1,6 +1,8 @@
+import { getDownloadURL, ref, uploadBytesResumable } from "@firebase/storage";
 import React, { useRef } from "react";
 import { Col } from "react-bootstrap";
 import uploadIcon from "../Assets/Icons/upArrow.svg";
+import { bucket } from "../firebase";
 import {
   UploadIcon,
   UploadInput,
@@ -9,7 +11,7 @@ import {
   UploadButton,
 } from "../styles/styles";
 
-const DocInputAtom = ({ docFile, setDocFile, label, disabled }) => {
+const DocInputAtom = ({ docFile, setDocFile, label, disabled, setDocUrl }) => {
   const hiddenDocInput = useRef(null);
   const handleDocClick = () => {
     hiddenDocInput.current.click();
@@ -17,7 +19,27 @@ const DocInputAtom = ({ docFile, setDocFile, label, disabled }) => {
   const handleDocInputChange = (e) => {
     const docFileUploaded = e.target.files[0];
     setDocFile(docFileUploaded);
+    uploadDocument(e.target.files[0])
   };
+
+  const uploadDocument = (file) => {
+  console.log("🚀 ~ uploadDocument ~ file", {file})
+    const storageRef = ref(bucket, `/inventory-docs/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {},
+      (error) => {
+        console.log("~~ error ~~", error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setDocUrl(downloadURL);
+        });
+      }
+    );
+  };
+
   return (
     <Col md={3} xs={12}>
       <InputDiv>

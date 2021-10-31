@@ -22,6 +22,7 @@ import {
 } from "@material-ui/core";
 import { scrollToRef } from "../../../ScrollTop";
 import TopbarAtom from "../../../atoms/TopbarAtom";
+import DocumentPreview from "../../../atoms/DocumentPreview";
 
 const useStyles = makeStyles({
   table: {
@@ -149,7 +150,20 @@ const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
                   <ApplyFormInput details readOnly value={details.piNumber} />
                 </InputDiv>
               </Col>
-              <Col md={3} xs={12}>
+              <DocumentPreview label="Eway Bill" docFile={details.ewayBill} />
+              <DocumentPreview
+                label="D.C Document"
+                docFile={details.dcDocument}
+              />
+              <DocumentPreview
+                label="Courier Document"
+                docFile={details.courierDoc}
+              />
+              <DocumentPreview
+                label="Packaging List"
+                docFile={details.packagingList}
+              />
+              {/* <Col md={3} xs={12}>
                 <InputDiv>
                   <Label details>Eway Bill</Label>
                   <ApplyFormInput
@@ -159,13 +173,13 @@ const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
                     type="text"
                   />
                 </InputDiv>
-              </Col>
-              <Col md={3} xs={12}>
+              </Col> */}
+              {/* <Col md={3} xs={12}>
                 <InputDiv>
                   <Label details>D.C Number</Label>
                   <ApplyFormInput details readOnly value={details.dcNumber} />
                 </InputDiv>
-              </Col>
+              </Col> */}
             </Row>
             <MainTitle>Delivery Details</MainTitle>
             <Row className="w-100 p-0 m-0">

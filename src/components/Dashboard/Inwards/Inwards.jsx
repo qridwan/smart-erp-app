@@ -2,13 +2,11 @@ import React, { useEffect } from "react";
 import {
   BoldText,
   Button,
-  SearchContainer,
-  SearchInput,
   TableContainer,
   tableStyles,
   TopBar,
 } from "../../../styles/styles";
-import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
+// import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
 import {
   FormControl,
   Menu,
@@ -23,54 +21,17 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { useState } from "react";
 import styled from "styled-components";
 import GenerateInwards from "./GenerateInwards";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import TableHeadCell from "../Tables/TableHead";
 import { useSortableData } from "../Tables/table.sort";
 import ViewMoreInwards from "./ViewMoreInwards";
-import { db, db as firebase } from "../../../firebase";
-import { onValue, ref } from "@firebase/database";
 import { setShow } from "../../../Redux/actions/renderActions";
 import { connect } from "react-redux";
-
-function createData(
-  order,
-  agency,
-  item,
-  quantity,
-  received,
-  pending,
-  date,
-  audit
-) {
-  return { order, agency, item, quantity, received, pending, date, audit };
-}
-
-const rows = [
-  createData(
-    "01",
-    "Start Security",
-    "IP Camera",
-    3000,
-    "-",
-    "-",
-    "16-10-21",
-    "Pending"
-  ),
-  createData(
-    "02",
-    "ABC Service",
-    "Data Dongles",
-    2000,
-    1200,
-    800,
-    "16-12-20",
-    "Completed"
-  ),
-];
+import GetClients from "../../../Api/GetClients";
+import GetInwards from "../../../Api/GetInwards";
 
 const Inwards = ({ show, setShow }) => {
   const classes = tableStyles();
-  // const [show, setShow] = useState("inwards");
+  const { inwards } = GetInwards();
   const [state, setState] = useState({
     id: 1,
     age: "",
@@ -78,10 +39,25 @@ const Inwards = ({ show, setShow }) => {
   });
   const [anchorEl, setAnchorEl] = useState([]);
   const [details, setDetails] = useState({});
-
+  const [currArr, setCurrArr] = useState([]);
   useEffect(() => {
     setShow("inwardsTable");
+    setAnchorEl([]);
   }, []);
+
+  useEffect(() => {
+    if (inwards.length) {
+      let anchors = [];
+      let currArr = [];
+      inwards.forEach((pd) => {
+        anchors.push(null);
+        currArr.push(0);
+      });
+      setCurrArr(currArr);
+      setAnchorEl(anchors);
+    }
+  }, [inwards.length, show]);
+
   const handleClick = (event, index) => {
     setAnchorEl(
       anchorEl.map((a, i) => {
@@ -105,7 +81,7 @@ const Inwards = ({ show, setShow }) => {
     );
   };
 
-  const { requestSort, sortConfig } = useSortableData(rows);
+  const { requestSort, sortConfig } = useSortableData(inwards);
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;
@@ -113,52 +89,14 @@ const Inwards = ({ show, setShow }) => {
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
-  const MoreFunc = async (row, info) => {
+  const MoreFunc = (row, info) => {
     console.log({ row });
     setDetails({ ...row, info: info });
-    (await info) === "edit" ? setShow("edit_inwards") : setShow("more_inwards");
+    setShow(info);
     handleClose();
   };
 
-  const [orders, setOrders] = useState([]);
-  const [clients, setClients] = useState([]);
-  const [currArr, setCurrArr] = useState([]);
-
-  useEffect(() => {
-    const inRef = ref(db, "inventory/in-orders");
-    onValue(inRef, (snapshot) => {
-      if (snapshot.val()) {
-        let orders = [];
-        let anchors = [];
-        Object.keys(snapshot.val()).forEach((key) => {
-          orders.push(snapshot.val()[key]);
-          anchors.push(null);
-        });
-        setAnchorEl(anchors);
-        console.log(snapshot.val());
-        console.log(orders);
-        let currArr = orders.map((order) => {
-          return 0;
-        });
-        setCurrArr(currArr);
-        setOrders(orders);
-      } else {
-        console.log("no out orders");
-      }
-    });
-
-    const clientsRef = ref(db, "inventory/clients");
-    onValue(clientsRef, (snapshot) => {
-      let clients = [];
-      Object.keys(snapshot.val()).forEach((key) => {
-        clients.push(snapshot.val()[key]);
-      });
-      setClients(clients);
-    });
-  }, [show]);
-
   const handleChange = (event, index) => {
-    // console.log(event.target.value);
     setCurrArr(
       currArr.map((i, j) => {
         if (j == index) return parseInt(event.target.value);
@@ -216,17 +154,17 @@ const Inwards = ({ show, setShow }) => {
                 getClassNamesFor={getClassNamesFor}
               />
               <TableBody>
-                {orders.map((row, index) => {
-                  console.log("🚀 ~ {orders.map ~ row", row);
+                {inwards.map((row, index) => {
+                  console.log("🚀 ~ {orders.map ~ row", { row });
                   return (
                     <TableRow
-                      key={row.orderNo}
+                      key={row.key}
                       style={
                         index % 2 !== 0 ? { background: "#F4F4F4" } : undefined
                       }
                     >
                       <TableCell component="th" scope="row" align="center">
-                        {row.orderNo}
+                        {row.key}
                       </TableCell>
                       <TableCell align="center">{row.agency}</TableCell>
                       <TableCell align="center">
@@ -250,17 +188,17 @@ const Inwards = ({ show, setShow }) => {
                       </TableCell>
 
                       <TableCell align="center">
-                        {row.item[currArr[index]].good_condition}
+                        {row.item[currArr[index]]?.good_condition}
                       </TableCell>
                       <TableCell align="center">
-                        {row.item[currArr[index]].not_working}
+                        {row.item[currArr[index]]?.not_working}
                       </TableCell>
                       <TableCell align="center">
-                        {row.item[currArr[index]].damaged
-                          ? row.item[currArr[index]].damaged
+                        {row.item[currArr[index]]?.damaged
+                          ? row.item[currArr[index]]?.damaged
                           : "-"}
-                        {/* {parseInt(row.item[currArr[index]].quantity) -
-                          parseInt(row.item[currArr[index]].received)} */}
+                        {/* {parseInt(row.item[currArr[index]]?.quantity) -
+                          parseInt(row.item[currArr[index]]?.received)} */}
                       </TableCell>
                       <TableCell align="center">{row.receivedDate}</TableCell>
                       <TableCell
@@ -288,9 +226,7 @@ const Inwards = ({ show, setShow }) => {
                               open={Boolean(anchorEl[index])}
                               onClose={() => handleClose(index)}
                             >
-                              <MenuItem
-                                onClick={() => MoreFunc(row, "view_more")}
-                              >
+                              <MenuItem onClick={() => MoreFunc(row, "view")}>
                                 View More
                               </MenuItem>
                               <MenuItem onClick={() => MoreFunc(row, "edit")}>
@@ -309,14 +245,14 @@ const Inwards = ({ show, setShow }) => {
         </InwardsTableContainer>
       ) : (
         <>
-          {show === "generateInwards" || show === "edit_inwards" ? (
+          {show === "generateInwards" || show === "edit" ? (
             <GenerateInwards
               details={details}
               setShow={setShow}
               setDetails={setDetails}
             />
           ) : null}
-          {show === "more_inwards" && (
+          {show === "view" && (
             <ViewMoreInwards details={details} setShow={setShow} />
           )}
         </>
