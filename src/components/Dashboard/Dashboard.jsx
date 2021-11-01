@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
 import { Container } from "../Login";
@@ -15,14 +15,12 @@ import Employees from "./Employees/Employees";
 import Clients from "./Clients/Clients";
 import WareHouse from "./Warehouse/WareHouse";
 import MenuBar from "../MenuBar/MenuBar";
-
 import { UserContext } from "../../context/UserProvider";
-
-import { auth } from "../../firebase";
 import { connect } from "react-redux";
 import { setPath, setShow } from "../../Redux/actions/renderActions";
+import { handleLogout } from "../../Api/auth/logout";
 
-export const sidebarDataAdmin = [
+const sidebarDataAdmin = [
   {
     icon: <InventoryImg className="icons" />,
     title: "Inventory",
@@ -49,7 +47,7 @@ export const sidebarDataAdmin = [
   },
 ];
 
-export const sidebarData = [
+const sidebarData = [
   {
     icon: <InventoryImg className="icons" />,
     title: "Inventory",
@@ -73,22 +71,10 @@ export const sidebarData = [
 ];
 const Dashboard = ({ setShow, setPath, show, path }) => {
   const userData = useContext(UserContext);
-  const user = userData.email.slice(0, userData.email.indexOf("@"));
-  const avatarText = user.slice(0, 1);
-
-  const sideData = user === "admin" ? sidebarDataAdmin : sidebarData;
-
-  const handleLogout = () => {
-    auth
-      .signOut()
-      .then(() => {
-        console.log("Logout success");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-  // setShow(obj.title.toLowerCase());
+  const user = userData?.email?.slice(0, userData.email.indexOf("@"));
+  const avatarText = user?.slice(0, 1);
+  const { role } = userData;
+  const sideData = role === "role-3" ? sidebarDataAdmin : sidebarData;
 
   return (
     <Container>
@@ -113,19 +99,6 @@ const Dashboard = ({ setShow, setPath, show, path }) => {
               <NavItems className="d-flex flex-column">
                 {sideData.map((obj, i) => {
                   const Title = obj.title.toLowerCase();
-                  // const handleOnCLick = () => {
-                  //   if (obj.title.toLowerCase() === "logout") {
-                  //     auth
-                  //       .signOut()
-                  //       .then(() => {
-                  //         console.log("sign out success");
-                  //       })
-                  //       .catch((error) => {
-                  //         console.log(error);
-                  //       });
-                  //   }
-                  //   // setShow(obj.title.toLowerCase());
-                  // };
                   return (
                     <Section
                       key={i}

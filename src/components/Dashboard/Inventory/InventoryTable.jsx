@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { TableContainer, tableStyles } from "../../../styles/styles";
 import {
   Menu,
@@ -15,11 +15,13 @@ import { setShow } from "../../../Redux/actions/renderActions";
 import { connect } from "react-redux";
 import GetItems from "../../../Api/GetItems";
 import GetProducts from "../../../Api/GetProducts";
+import { UserContext } from "../../../context/UserProvider";
 
 const InventoryTable = ({ setShow, show, setItem }) => {
   const classes = tableStyles();
+  const user = useContext(UserContext);
+  const { role } = user;
   const [anchorEl, setAnchorEl] = useState([]);
-  // const [products, setProducts] = useState([]);
   const { items } = GetItems();
   const { products } = GetProducts();
   let anchors = [];
@@ -130,9 +132,11 @@ const InventoryTable = ({ setShow, show, setItem }) => {
                           <MenuItem onClick={() => MoreFunc(item, "view")}>
                             View More
                           </MenuItem>
-                          <MenuItem onClick={() => MoreFunc(item, "edit")}>
-                            Edit
-                          </MenuItem>
+                          {role !== "role-1" && (
+                            <MenuItem onClick={() => MoreFunc(item, "edit")}>
+                              Edit
+                            </MenuItem>
+                          )}
                           {/* <MenuItem
                           onClick={() => MoreFunc(product, "deactive")}
                         >

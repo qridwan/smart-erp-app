@@ -6,15 +6,18 @@ import {
   Menu,
   MenuItem,
 } from "@material-ui/core";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import TopbarAtom from "../../../atoms/TopbarAtom";
 import { TableContainer, tableStyles } from "../../../styles/styles";
 import TableHeadCell from "../Tables/TableHead";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { useSortableData } from "../Tables/table.sort";
 import GetPurchaseHistory from "../../../Api/GetPurchaseHistory";
+import { UserContext } from "../../../context/UserProvider";
 
 const PurchaseHistory = ({ setItem, setShow }) => {
+  const user = useContext(UserContext);
+  const { role } = user;
   const topbarRef = useRef(null);
   const classes = tableStyles();
   const [anchorEl, setAnchorEl] = useState([]);
@@ -53,9 +56,6 @@ const PurchaseHistory = ({ setItem, setShow }) => {
     setItem({ ...row, info: info });
     setShow("addPurchase");
     handleClose();
-    // console.log({ row });
-    // setDetails({ ...row, info: info });
-    // (await info) === "edit" ? setShow("edit_inwards") : setShow("more_inwards");
     handleClose();
   };
   const getClassNamesFor = (name) => {
@@ -69,8 +69,6 @@ const PurchaseHistory = ({ setItem, setShow }) => {
       <TopbarAtom
         title="Purchase History"
         topRef={topbarRef}
-        // buttonRef={SubmitButtonRef}
-        // buttonTitle="Summery"
         goBack="inventoryTable"
       />
       <TableContainer className="mt-3">
@@ -116,9 +114,13 @@ const PurchaseHistory = ({ setItem, setShow }) => {
                             <MenuItem onClick={() => MoreFunc(product, "view")}>
                               View More
                             </MenuItem>
-                            <MenuItem onClick={() => MoreFunc(product, "edit")}>
-                              Edit
-                            </MenuItem>
+                            {role !== `role-1` && (
+                              <MenuItem
+                                onClick={() => MoreFunc(product, "edit")}
+                              >
+                                Edit
+                              </MenuItem>
+                            )}
                           </Menu>
                         </div>
                       )}

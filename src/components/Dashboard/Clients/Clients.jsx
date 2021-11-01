@@ -1,5 +1,5 @@
 import { Table, TableBody, TableCell, TableRow } from "@material-ui/core";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useState } from "react";
 import styled from "styled-components";
 import {
@@ -16,11 +16,14 @@ import { db } from "../../../firebase";
 import { onValue, ref } from "@firebase/database";
 import { setShow } from "../../../Redux/actions/renderActions";
 import { connect } from "react-redux";
+import { UserContext } from "../../../context/UserProvider";
+import GetClients from "../../../Api/GetClients";
 
 const Clients = ({ show, setShow }) => {
+  const user = useContext(UserContext);
+  const { role } = user;
   const classes = tableStyles();
-  const [clients, setClients] = useState([]);
-
+  const { clients } = GetClients();
   const { items, requestSort, sortConfig } = useSortableData(clients);
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
@@ -31,18 +34,6 @@ const Clients = ({ show, setShow }) => {
   useEffect(() => {
     setShow("clientsTable");
   }, []);
-  useEffect(() => {
-    const clientsRef = ref(db, "inventory/clients");
-    onValue(clientsRef, (snapshot) => {
-      let clients = [];
-      Object.keys(snapshot.val()).map((key) => {
-        clients.push(snapshot.val()[key]);
-      });
-      console.log(snapshot.val());
-      console.log(clients);
-      setClients(clients);
-    });
-  }, [show]);
 
   return (
     <main>
@@ -52,11 +43,13 @@ const Clients = ({ show, setShow }) => {
             <div>
               <BoldText> Clients </BoldText>
             </div>
-            <div className="text-center">
-              <Button onClick={() => setShow("add_client")}>
-                + Add Clients
-              </Button>
-            </div>
+            {role !== `role-2` && (
+              <div className="text-center">
+                <Button onClick={() => setShow("add_client")}>
+                  + Add Clients
+                </Button>
+              </div>
+            )}
           </TopBar>
           <TableContainer className="mt-lg-2">
             <Table className={classes.table} aria-label="simple table">

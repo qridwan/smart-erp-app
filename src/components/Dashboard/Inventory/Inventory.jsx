@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   BoldText,
   Button,
@@ -11,8 +11,12 @@ import InventoryTable from "./InventoryTable";
 import PurchaseForm from "./PurchaseForm";
 import AddItem from "./AddItem";
 import PurchaseHistory from "./PurchaseHistory";
+import { UserContext } from "../../../context/UserProvider";
 
 const Inventory = ({ setShow, show }) => {
+  const user = useContext(UserContext);
+  const { role } = user;
+  console.log("🚀 ~ Inventory ~ role", {role})
   const [item, setItem] = useState({});
   useEffect(() => {
     setShow("inventoryTable");
@@ -36,23 +40,26 @@ const Inventory = ({ setShow, show }) => {
               Purchase History
             </Button>
 
-            <Button
-              outline
-              onClick={() => {
-                setShow("addItem");
-              }}
-              style={{ margin: "0 10px" }}
-            >
-              + Add Item
-            </Button>
-
-            <Button
-              onClick={() => {
-                setShow("addPurchase");
-              }}
-            >
-              + Add Purchase
-            </Button>
+            {role !== "role-2" && (
+              <>
+                <Button
+                  outline
+                  onClick={() => {
+                    setShow("addItem");
+                  }}
+                  style={{ margin: "0 10px" }}
+                >
+                  + Add Item
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShow("addPurchase");
+                  }}
+                >
+                  + Add Purchase
+                </Button>
+              </>
+            )}
           </div>
         </TopBar>
       )}
@@ -61,7 +68,7 @@ const Inventory = ({ setShow, show }) => {
           <InventoryTable setItem={setItem} />
         </TableContainer>
       )}
-      {show === "addItem" && <AddItem item={item} setItem={setItem}/>}
+      {show === "addItem" && <AddItem item={item} setItem={setItem} />}
       {show === "addPurchase" && <PurchaseForm item={item} setItem={setItem} />}
       {show === "purchaseHistory" && (
         <PurchaseHistory setShow={setShow} setItem={setItem} />

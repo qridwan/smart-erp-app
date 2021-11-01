@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   BoldText,
   Button,
@@ -26,11 +26,13 @@ import { useSortableData } from "../Tables/table.sort";
 import ViewMoreInwards from "./ViewMoreInwards";
 import { setShow } from "../../../Redux/actions/renderActions";
 import { connect } from "react-redux";
-import GetClients from "../../../Api/GetClients";
 import GetInwards from "../../../Api/GetInwards";
+import { UserContext } from "../../../context/UserProvider";
 
 const Inwards = ({ show, setShow }) => {
   const classes = tableStyles();
+  const user = useContext(UserContext);
+  const { role } = user;
   const { inwards } = GetInwards();
   const [state, setState] = useState({
     id: 1,
@@ -138,9 +140,11 @@ const Inwards = ({ show, setShow }) => {
                 </div>
               </section>
             </SearchContainer> */}
-          <Button outline onClick={() => setShow("generateInwards")}>
-            Generate Inwards
-          </Button>
+          {role !== `role-2` && (
+            <Button outline onClick={() => setShow("generateInwards")}>
+              Generate Inwards
+            </Button>
+          )}
         </TopBar>
       )}
       {show === "inwardsTable" ? (
@@ -155,7 +159,6 @@ const Inwards = ({ show, setShow }) => {
               />
               <TableBody>
                 {inwards.map((row, index) => {
-                  console.log("🚀 ~ {orders.map ~ row", { row });
                   return (
                     <TableRow
                       key={row.key}
@@ -229,9 +232,11 @@ const Inwards = ({ show, setShow }) => {
                               <MenuItem onClick={() => MoreFunc(row, "view")}>
                                 View More
                               </MenuItem>
-                              <MenuItem onClick={() => MoreFunc(row, "edit")}>
-                                Edit
-                              </MenuItem>
+                              {role !== `role-1` && (
+                                <MenuItem onClick={() => MoreFunc(row, "edit")}>
+                                  Edit
+                                </MenuItem>
+                              )}
                             </Menu>
                           </div>
                         )}

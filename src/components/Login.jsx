@@ -15,21 +15,13 @@ const Login = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
-    // auth
-    //   .signInWithEmailAndPassword(data.email, data.password)
-    //   .catch((error) => {
-    //     alert("Error signing in with password and email!");
-    //   });
-
     signInWithEmailAndPassword(auth, data.email, data.password)
       .then((userCredential) => {
-        const user = userCredential.user;
-        // console.log("🚀 ~ .then ~ user", user)
+        console.log("🚀 ~ .then ~ userCredential", userCredential)
+        // const user = userCredential.user;
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        console.log("Sign in error", error);
       });
   };
   return (

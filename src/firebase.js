@@ -1,13 +1,8 @@
 import firebase from "firebase/compat/app";
-// import * as firebase from "firebase";
-
-// import { initializeApp } from "firebase/compat/app";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
-// import "firebase/auth";
-// import "firebase/database";
-// import "firebase/storage";
+import { getFunctions } from "firebase/functions";
 
 const config = {
   apiKey: "AIzaSyDdyCOlVsHwA6QMkZNb1ISRd-e0roA5_d4",
@@ -20,12 +15,10 @@ const config = {
   measurementId: "G-B5JTTC5MLQ",
 };
 console.log(typeof initializeApp);
-// const app = firebase.initializeApp(config);
 const app = firebase.initializeApp(config);
-// const db = app.database();
 const db = getDatabase(app);
-// const bucket = app.storage();
 const bucket = getStorage(app);
+const fbFunctions = getFunctions(app);
 const auth = getAuth();
 // const auth = app.auth();
 
@@ -65,4 +58,4 @@ const auth = getAuth();
 //   }
 // };
 
-export { db, bucket, auth };
+export { db, bucket, auth, fbFunctions };

@@ -1,5 +1,5 @@
 import { NativeSelect, FormControl, Menu, MenuItem } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   BoldText,
@@ -22,9 +22,12 @@ import ViewMoreOutwards from "./ViewMoreOutwards";
 import { setShow } from "../../../Redux/actions/renderActions";
 import { connect } from "react-redux";
 import GetOutwards from "../../../Api/GetOutwards";
+import { UserContext } from "../../../context/UserProvider";
 
 const Outwards = ({ show, setShow }) => {
   const { outwards } = GetOutwards();
+  const user = useContext(UserContext);
+  const { role } = user;
   const [arr, setArr] = useState([0]);
   const classes = tableStyles();
   const [anchorEl, setAnchorEl] = useState([]);
@@ -128,11 +131,13 @@ const Outwards = ({ show, setShow }) => {
                 <FilterIcon className="" />
               </section>
             </SearchContainer> */}
-            <div>
-              <Button onClick={() => setShow("generateOutwards")}>
-                Generate New
-              </Button>
-            </div>
+            {role !== "role-2" && (
+              <div>
+                <Button onClick={() => setShow("generateOutwards")}>
+                  Generate New
+                </Button>
+              </div>
+            )}
           </TopBar>
           <TableContainer className="mt-lg-3">
             <Table className={classes.table} aria-label="simple table">
@@ -210,9 +215,11 @@ const Outwards = ({ show, setShow }) => {
                               <MenuItem onClick={() => MoreFunc(row, "view")}>
                                 View More
                               </MenuItem>
-                              <MenuItem onClick={() => MoreFunc(row, "edit")}>
-                                Edit
-                              </MenuItem>
+                              {role !== `role-1` && (
+                                <MenuItem onClick={() => MoreFunc(row, "edit")}>
+                                  Edit
+                                </MenuItem>
+                              )}
                             </Menu>
                           </div>
                         )}

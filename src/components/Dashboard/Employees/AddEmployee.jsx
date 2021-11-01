@@ -8,14 +8,15 @@ import {
   Select,
   SubmitButton,
 } from "../../../styles/styles";
-// import { db } from "../../../firebase";
-// import { UserContext } from "../../../context/UserProvider";
 import TopbarAtom from "../../../atoms/TopbarAtom";
 import InputAtom from "../../../atoms/InputAtom";
 import RoleItem from "./RoleItem";
+import { httpsCallable } from "@firebase/functions";
+import {fbFunctions } from "../../../firebase";
+import SetEmployee from "../../../Api/SetEmployee";
+import createUser from "../../../Api/auth/createUser";
 
 const AddEmployee = ({ setShow, details, setDetails }) => {
-  console.log("🚀 ~ AddEmployee ~ details", { details });
   const topbarRef = useRef(null);
   const SubmitButtonRef = useRef(null);
   const edit = Boolean(details.info === "edit");
@@ -32,16 +33,28 @@ const AddEmployee = ({ setShow, details, setDetails }) => {
   const status = watch(`status`);
   const isView = details.info === "view" ? true : false;
   const onSubmit = async (data) => {
-    // const res = await auth.createUserWithEmailAndPassword(data.email, data.password);
+    createUser(data.email, data.password);
+    addRole(data.role, data.email);
     // delete data.password;
-    // console.log(data);
-    // const employeeRef = firebase.ref("inventory/employees");
-    // const employeeId = data.name.slice(0, 3).toUpperCase() + "-" + data.phone.slice(-3);
-    // data['id'] = employeeId;
-    // employeeRef.child(`${employeeId}`).update(data);
-    // setShow("employees");
+    const employeeId =
+      data.name.slice(0, 3).toUpperCase() + "-" + data.phone.slice(-3);
+    data["id"] = employeeId;
+    SetEmployee(data, employeeId);
+    setShow("employeesTable");
     reset();
   };
+
+  const addRole = (role, email) => {
+    let roleId;
+    role === "role-1"
+      ? (roleId = `addRole1`)
+      : role === "role-2"
+      ? (roleId = `addRole2`)
+      : (roleId = `addRole3`);
+    const catchRole = httpsCallable(fbFunctions, roleId);
+    catchRole({ email: email }).then((result) => {});
+  };
+
   return (
     <div>
       <TopbarAtom
@@ -66,6 +79,17 @@ const AddEmployee = ({ setShow, details, setDetails }) => {
                 id="name"
                 placeholder=""
                 defaultValue={edit || isView ? details.name : ""}
+                md={12}
+              />
+              <InputAtom
+                readOnly={isView}
+                register={register}
+                errors={errors}
+                label="Email"
+                required={edit ? false : true}
+                id="email"
+                placeholder=""
+                defaultValue={edit || isView ? details.email : ""}
                 md={12}
               />
               <InputAtom
