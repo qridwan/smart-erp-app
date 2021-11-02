@@ -4,7 +4,6 @@ import React, { useRef } from "react";
 import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
 import DocumentPreview from "../../../atoms/DocumentPreview";
-import InputAtom from "../../../atoms/InputAtom";
 import TopbarAtom from "../../../atoms/TopbarAtom";
 
 import {

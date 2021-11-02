@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import {
@@ -12,12 +12,12 @@ import TopbarAtom from "../../../atoms/TopbarAtom";
 import InputAtom from "../../../atoms/InputAtom";
 import RoleItem from "./RoleItem";
 import { httpsCallable } from "@firebase/functions";
-import {fbFunctions } from "../../../firebase";
-import SetEmployee from "../../../Api/SetEmployee";
-import createUser from "../../../Api/auth/createUser";
+import { fbFunctions } from "../../../firebase";
+import { LinearProgress } from "@material-ui/core";
 
 const AddEmployee = ({ setShow, details, setDetails }) => {
   const topbarRef = useRef(null);
+  const [showProgress, setShowProgress] = useState(``);
   const SubmitButtonRef = useRef(null);
   const edit = Boolean(details.info === "edit");
   useEffect(() => {
@@ -32,16 +32,31 @@ const AddEmployee = ({ setShow, details, setDetails }) => {
   } = useForm();
   const status = watch(`status`);
   const isView = details.info === "view" ? true : false;
-  const onSubmit = async (data) => {
-    createUser(data.email, data.password);
+  const onSubmit = (data) => {
+    setShowProgress(`start`);
+    // createUser(data.email, data.password);
+    const employeeId =
+      data.displayName?.slice(0, 3).toUpperCase() +
+      "-" +
+      data?.phoneNumber.slice(-3);
+    data["id"] = employeeId;
+    edit ? handleUser(data, "updateUser") : handleUser(data, "createUser");
     addRole(data.role, data.email);
     // delete data.password;
-    const employeeId =
-      data.name.slice(0, 3).toUpperCase() + "-" + data.phone.slice(-3);
-    data["id"] = employeeId;
-    SetEmployee(data, employeeId);
-    setShow("employeesTable");
-    reset();
+
+    // SetEmployee(data, employeeId);
+  };
+
+  // Calling Cloud Function
+  const handleUser = (data, todo) => {
+    const user = httpsCallable(fbFunctions, todo);
+    user(data)
+      .then((result) => {
+        setShowProgress(`stop`);
+        setShow("employeesTable");
+        reset();
+      })
+      .catch((error) => console.log(error));
   };
 
   const addRole = (role, email) => {
@@ -52,11 +67,14 @@ const AddEmployee = ({ setShow, details, setDetails }) => {
       ? (roleId = `addRole2`)
       : (roleId = `addRole3`);
     const catchRole = httpsCallable(fbFunctions, roleId);
-    catchRole({ email: email }).then((result) => {});
+    catchRole({ email: email }).then((result) => {
+      console.log("🚀 ~ role handle ~ result", { result });
+    });
   };
 
   return (
     <div>
+      
       <TopbarAtom
         topRef={topbarRef}
         buttonRef={SubmitButtonRef}
@@ -66,6 +84,7 @@ const AddEmployee = ({ setShow, details, setDetails }) => {
         }
         goBack="employeesTable"
       />
+      {showProgress === `start` ? <LinearProgress /> :
       <AddItemContainer ref={topbarRef} className="px-3">
         <form onSubmit={handleSubmit(onSubmit)}>
           <Row className="w-100 p-0 m-0">
@@ -76,9 +95,9 @@ const AddEmployee = ({ setShow, details, setDetails }) => {
                 errors={errors}
                 label="Full Name"
                 required={edit || isView ? false : true}
-                id="name"
+                id="displayName"
                 placeholder=""
-                defaultValue={edit || isView ? details.name : ""}
+                defaultValue={edit || isView ? details.displayName : ""}
                 md={12}
               />
               <InputAtom
@@ -98,9 +117,9 @@ const AddEmployee = ({ setShow, details, setDetails }) => {
                 errors={errors}
                 label="Contact Number"
                 required={edit ? false : true}
-                id="phone"
+                id="phoneNumber"
                 placeholder=""
-                defaultValue={edit || isView ? details.phone : ""}
+                defaultValue={edit || isView ? details.phoneNumber : ""}
                 md={12}
               />
               <InputAtom
@@ -189,7 +208,7 @@ const AddEmployee = ({ setShow, details, setDetails }) => {
             <SubmitButton type="submit" value="Save" ref={SubmitButtonRef} />
           </div>
         </form>
-      </AddItemContainer>
+      </AddItemContainer>}
     </div>
   );
 };

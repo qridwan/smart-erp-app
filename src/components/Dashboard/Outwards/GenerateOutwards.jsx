@@ -71,10 +71,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
     name: "item",
   });
   const edit = Boolean(details.info === "edit");
-  // const view = Boolean(details.info === "view");
-  // const [clients, setClients] = useState([]);
-  // const [products, setProducts] = useState([]);
-  // const [clientId, setClientId] = useState("");
   const { items } = GetItems();
   const { clients } = GetClients();
   const { products } = GetProducts();
@@ -88,24 +84,11 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
       setCourierDocURL(details.courierDoc);
       setPackagingDocURL(details.packagingList);
       append(details.item);
-      // console.log({ details });
-      // let client = clients.map((client) => {
-      //   if (client.name === details.agency) {
-      //     return client;
-      //   }
-      // });
-      // let data = details;
-      // delete data.info;
-      // reset(data);
-      // setAgency(data.agency);
-      // client = client[0];
-      // setClient(client);
     }
     return () => setDetails(``);
   }, []);
 
   // OUT ORDER SUBMIT FORM
-
   const onSubmit = (data) => {
     data[`ewayBill`] = ewayDocURL;
     data[`dcDocument`] = dcDocURL;
@@ -117,23 +100,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
           { ...data, agency: agencyName, key: details.key },
           details.key
         );
-
-        // clients.map(client => {
-        //   if(client.name == agencyName) {
-        //     const cRef = ref(db, `inventory/clients/${client.key}`);
-        //     onValue(cRef, (snapshot) => {
-        //       const order = snapshot.val().order + 1
-        //       update(cRef, {order})
-        //     })
-           
-        //     // cRef.once('value', snapshot => {
-        //     //   cRef.update({
-        //     //     orders : snapshot.val().orders + 1
-        //     //   });
-        //     // })
-        //   }
-        // }
-    console.log("order created in db");
     setShow("outwardsTable");
     reset();
   };

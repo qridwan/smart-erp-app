@@ -20,8 +20,6 @@ import {
   TableInput,
   TableSelect,
 } from "../../../styles/styles";
-
-import { bucket, auth, db } from "../../../firebase";
 import { UserContext } from "../../../context/UserProvider";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -30,8 +28,6 @@ import InputAtom from "../../../atoms/InputAtom";
 import DocInputAtom from "../../../atoms/DocInputAtom";
 import GetClients from "../../../Api/GetClients";
 import GetProducts from "../../../Api/GetProducts";
-import { ref } from "@firebase/database";
-import UpdateOutwards from "../../../Api/UpdateOutwards";
 const useStyles = makeStyles({
   table: {
     width: "100%",
@@ -57,10 +53,7 @@ const useStyles = makeStyles({
 });
 
 const GenerateInwards = ({ setShow, details, setDetails }) => {
-  // const [edit, setEdit] = useState(false);
-  const { agency, date, item, order, quantity, auditStatus } = details;
-  console.log("🚀 ~ GenerateInwards ~ details", details);
-
+  const { agency, item, auditStatus } = details;
   const topbarRef = useRef(null);
   const SubmitButtonRef = useRef(null);
   const user = useContext(UserContext);
@@ -104,9 +97,9 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
 
   const onSubmit = (data) => {
     data["agency"] = agencyName;
-    data[`inwardDocument`] = inwardDocURL;
-    data[`courierDocument`] = courierDocURL;
-    data[`uploadImage`] = uploadImageFile;
+    data[`inwardDocument`] = inwardDocURL ? inwardDocURL : "-";
+    data[`courierDocument`] = courierDocURL ? courierDocURL : "-";
+    data[`uploadImage`] = uploadImageFile ? uploadImageFile : "-";
     let total = 0;
     data.item.forEach((item) => {
       total = total + parseInt(item.quantity);

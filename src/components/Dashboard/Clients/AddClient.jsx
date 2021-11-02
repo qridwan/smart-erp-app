@@ -9,8 +9,6 @@ import {
   Label,
   SubmitButton,
 } from "../../../styles/styles";
-
-import { db } from "../../../firebase";
 import TopbarAtom from "../../../atoms/TopbarAtom";
 import AddClients from "../../../Api/AddClient";
 

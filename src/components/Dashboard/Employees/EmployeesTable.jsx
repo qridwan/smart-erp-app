@@ -18,6 +18,7 @@ const EmployeesTable = ({ setShow, setDetails }) => {
   const classes = tableStyles();
   const [anchorEl, setAnchorEl] = useState([]);
   const [employees, setEmployees] = useState([]);
+  console.log("🚀 ~ EmployeesTable ~ employees", employees);
 
   useEffect(() => {
     const employeeRef = ref(db, "inventory/employees");
@@ -84,6 +85,7 @@ const EmployeesTable = ({ setShow, setDetails }) => {
         />
         <TableBody>
           {employees.map((employee, index) => {
+            console.log(Boolean(employee.disabled));
             return (
               <TableRow
                 key={employee.id}
@@ -100,12 +102,12 @@ const EmployeesTable = ({ setShow, setDetails }) => {
                 <TableCell
                   align="center"
                   className={
-                    employee.status === "active"
+                    employee.status === "active" || !employee.disabled
                       ? "text-success"
                       : "text-danger"
                   }
                 >
-                  {employee.status ? employee.status : "-"}
+                  {Boolean(employee.disabled) ? "Inactive" : "Active"}
                 </TableCell>
 
                 <TableCell align="center">

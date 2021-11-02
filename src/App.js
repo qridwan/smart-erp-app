@@ -20,7 +20,7 @@ function App() {
   }, [user]);
 
   if (isLoaded) {
-    return user.email ? <Dashboard /> : <Login />;
+    return user ? <Dashboard /> : <Login />;
   } else {
     return <LinearProgress />;
   }
