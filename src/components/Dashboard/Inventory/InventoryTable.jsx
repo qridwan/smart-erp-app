@@ -62,7 +62,6 @@ const InventoryTable = ({ setShow, show, setItem }) => {
   };
 
   const MoreFunc = (row, info) => {
-    console.log({ row });
     setItem({ ...row, info: info });
     setShow("addItem");
     handleClose();

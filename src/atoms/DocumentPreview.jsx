@@ -4,14 +4,12 @@ import styled from "styled-components";
 import { InputDiv, Label } from "../styles/styles";
 
 const DocumentPreview = ({ docFile, label }) => {
-  const handlePreview = () => {
-    console.log("🚀 ~ DocumentPreview ~ docFile", docFile);
-  };
+
   return (
     <Col lg={3} md={6} xs={12}>
       <InputDiv >
         <Label>{label}</Label>
-        <DocPreview onClick={handlePreview} href={docFile}>Preview Document</DocPreview>
+        <DocPreview href={docFile}>Preview Document</DocPreview>
       </InputDiv>
     </Col>
   );

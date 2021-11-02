@@ -16,7 +16,6 @@ import { UserContext } from "../../../context/UserProvider";
 const Inventory = ({ setShow, show }) => {
   const user = useContext(UserContext);
   const { role } = user;
-  console.log("🚀 ~ Inventory ~ role", {role})
   const [item, setItem] = useState({});
   useEffect(() => {
     setShow("inventoryTable");

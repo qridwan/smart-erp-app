@@ -98,7 +98,6 @@ const Outwards = ({ show, setShow }) => {
     setDetails({ ...row, info: info });
     setShow(info);
   };
-  console.log({ arr });
   return (
     <>
       {show === "outwardsTable" ? (

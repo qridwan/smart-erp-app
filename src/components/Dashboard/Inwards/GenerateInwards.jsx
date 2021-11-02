@@ -79,7 +79,6 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
     control,
     name: "item",
   });
-  console.log(edit);
   useEffect(() => {
     if (edit) {
       append(item);
@@ -149,7 +148,6 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                   )}
                   // PREFILLS DATA BASED ON CLIENT'S INFO
                   onChange={(event, newValue) => {
-                    console.log(newValue);
                     if (newValue) {
                       setAgency(newValue.name);
                       setValue("generatedBy", user.email);
@@ -359,10 +357,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                             <TableSelect
                               name={`item[${index}].name`}
                               defaultValue={`${item.name}`}
-                              onChange={(e, newVal) => {
-                                console.log("inside changed");
-                                console.log(e.target.value);
-                              }}
+                              onChange={(e, newVal) => {}}
                               {...register(`item.${index}.name`)}
                             >
                               {products.map((product) => (

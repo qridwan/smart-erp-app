@@ -16,10 +16,7 @@ const Login = () => {
 
   const onSubmit = (data) => {
     signInWithEmailAndPassword(auth, data.email, data.password)
-      .then((userCredential) => {
-        console.log("🚀 ~ .then ~ userCredential", userCredential)
-        // const user = userCredential.user;
-      })
+      .then((userCredential) => {})
       .catch((error) => {
         console.log("Sign in error", error);
       });

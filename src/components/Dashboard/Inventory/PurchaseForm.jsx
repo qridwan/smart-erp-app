@@ -258,7 +258,6 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 </TableHead>
                 <TableBody>
                   {fields.map((item, index) => {
-                    console.log({ item });
                     return (
                       <TableRow key={item.code}>
                         <TableCell align="center">{index + 1}</TableCell>

@@ -8,12 +8,10 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 
 function App() {
   const user = useContext(UserContext);
-  console.log("🚀 ~ App ~ { user, role }", { user });
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      console.log("hello");
       clearInterval(timer);
       setIsLoaded(true);
     }, 2500);

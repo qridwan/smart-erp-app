@@ -18,7 +18,6 @@ const EmployeesTable = ({ setShow, setDetails }) => {
   const classes = tableStyles();
   const [anchorEl, setAnchorEl] = useState([]);
   const [employees, setEmployees] = useState([]);
-  console.log("🚀 ~ EmployeesTable ~ employees", employees);
 
   useEffect(() => {
     const employeeRef = ref(db, "inventory/employees");
@@ -37,7 +36,6 @@ const EmployeesTable = ({ setShow, setDetails }) => {
   }, []);
 
   const handleClick = (event, index) => {
-    console.log(anchorEl);
     setAnchorEl(
       anchorEl.map((a, i) => {
         if (i === index) {
@@ -85,19 +83,18 @@ const EmployeesTable = ({ setShow, setDetails }) => {
         />
         <TableBody>
           {employees.map((employee, index) => {
-            console.log(Boolean(employee.disabled));
             return (
               <TableRow
                 key={employee.id}
                 style={index % 2 !== 0 ? { background: "#F4F4F4" } : undefined}
               >
                 <TableCell align="center">{employee.id}</TableCell>
-                <TableCell align="center">{employee.name}</TableCell>
+                <TableCell align="center">{employee.displayName}</TableCell>
                 <TableCell align="center">
-                  {employee.designation ? employee.designation : "-"}
+                  {employee.role ? employee.role : "-"}
                 </TableCell>
                 <TableCell align="center">
-                  {employee.phone ? employee.phone : "-"}
+                  {employee.phoneNumber ? employee.phoneNumber : "-"}
                 </TableCell>
                 <TableCell
                   align="center"

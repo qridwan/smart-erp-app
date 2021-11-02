@@ -4,13 +4,11 @@ import styled from "styled-components";
 import {
   AddItemContainer,
   ApplyFormInput,
-  BoldText,
   Button,
   InputDiv,
   Label,
   MainTitle,
   TableInput,
-  TopBar,
 } from "../../../styles/styles";
 import {
   makeStyles,
@@ -52,24 +50,12 @@ const useStyles = makeStyles({
 const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
   const classes = useStyles();
   const topbarRef = useRef(null);
-  const { agency, shipping, item, order, quantity } = details;
-
-  const items = [
-    // { order, item, quantity, code: "12demo" },
-    // { order, item, quantity, code: "33demo" },
-  ];
-
   useEffect(() => {
-    console.log("Inside moreOutwords useEffect");
     scrollToRef(topbarRef);
-    console.log(details);
   }, []);
 
   return (
     <div>
-      {/* <TopBar ref={topbarRef} className="mx-4">
-        <BoldText>Outward Details</BoldText>
-      </TopBar> */}
       <TopbarAtom
         topRef={topbarRef}
         title="Outward Details"

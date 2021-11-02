@@ -10,7 +10,7 @@ const AddClients = (data) => {
     .then(() => {
       return true;
     })
-    .catch((error) => console.log("🚀~error", error));
+    .catch((error) => console.log("~error", error));
 };
 
 export default AddClients;

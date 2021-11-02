@@ -92,7 +92,6 @@ const Inwards = ({ show, setShow }) => {
   };
 
   const MoreFunc = (row, info) => {
-    console.log({ row });
     setDetails({ ...row, info: info });
     setShow(info);
     handleClose();
@@ -106,10 +105,6 @@ const Inwards = ({ show, setShow }) => {
       })
     );
   };
-
-  useEffect(() => {
-    console.log("currArr chnaged");
-  }, [currArr]);
 
   return (
     <div>

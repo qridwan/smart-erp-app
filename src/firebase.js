@@ -14,7 +14,6 @@ const config = {
   appId: "1:254916440704:web:4015433a3b9a47f0162c65",
   measurementId: "G-B5JTTC5MLQ",
 };
-console.log(typeof initializeApp);
 const app = firebase.initializeApp(config);
 const db = getDatabase(app);
 const bucket = getStorage(app);

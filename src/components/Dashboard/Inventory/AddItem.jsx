@@ -1,5 +1,5 @@
 import IPcamera from "../../../Assets/Images/ipCamera.png";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import {
@@ -11,19 +11,17 @@ import {
   SubmitButton,
   UploadButton,
 } from "../../../styles/styles";
-import { UserContext } from "../../../context/UserProvider";
 import { connect } from "react-redux";
 import { setShow } from "../../../Redux/actions/renderActions";
 import TopbarAtom from "../../../atoms/TopbarAtom";
 import InputAtom from "../../../atoms/InputAtom";
 import { bucket, db } from "../../../firebase";
-import { child, push, ref, set, update } from "@firebase/database";
+import { ref, update } from "@firebase/database";
 import { ref as reference } from "@firebase/storage";
 import { getDownloadURL, uploadBytesResumable } from "@firebase/storage";
-import { Alert } from "@material-ui/lab";
+// import { Alert } from "@material-ui/lab";
 
 const AddItem = ({ setShow, show, item }) => {
-  console.log("🚀 ~ AddItem ~ item", { item });
   const edit = Boolean(item.info === "edit");
   const view = Boolean(item.info === "view");
   const [imgFile, setImgFile] = useState("");
@@ -62,6 +60,7 @@ const AddItem = ({ setShow, show, item }) => {
               photos: downloadURL ? downloadURL : img,
             };
             update(ref(db), updates);
+            reset();
             setShow("inventoryTable");
           });
         }
@@ -99,7 +98,7 @@ const AddItem = ({ setShow, show, item }) => {
   // setShow("table");
   // reset();
 
-  const user = useContext(UserContext);
+  // const user = useContext(UserContext);
 
   const handleClick = (param) => {
     if (param === "image") {
@@ -118,8 +117,6 @@ const AddItem = ({ setShow, show, item }) => {
     reader.readAsDataURL(e.target.files[0]);
     // setImgFileError("");
   };
-
-  const [files, setfiles] = useState([]);
 
   // const handleEdit = async () => {
   //   console.log(selectedItems);

@@ -18,7 +18,6 @@ import {
 import { ReactComponent as DeleteIcon } from "../../../Assets/Icons/delete.svg";
 import {
   IconButton,
-  // makeStyles,
   Table,
   TableBody,
   TableCell,
@@ -37,10 +36,8 @@ import GetClients from "../../../Api/GetClients";
 import GetProducts from "../../../Api/GetProducts";
 import SetOutwards from "../../../Api/SetOutwards";
 import UpdateOutwards from "../../../Api/UpdateOutwards";
-import { ref, update } from "@firebase/database";
 
 const GenerateOutwards = ({ setShow, details, setDetails }) => {
-  console.log("🚀 ~ GenerateOutwards ~ details", { details });
   const classes = addTableStyles();
   const topbarRef = useRef(null);
   const SubmitButtonRef = useRef(null);
@@ -54,7 +51,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
   const [courierDocURL, setCourierDocURL] = useState(``);
   const [packagingDocURL, setPackagingDocURL] = useState(``);
   const [agencyName, setAgencyName] = useState("");
-  const [client, setClient] = useState({});
+  const [client] = useState({});
 
   // const [prodQuantity, setProdQuantity] = useState({});
   const {
@@ -103,7 +100,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
     setShow("outwardsTable");
     reset();
   };
-  console.log({ edit, ewayDocURL });
   return (
     <div>
       <TopbarAtom
@@ -135,7 +131,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                   )}
                   // PREFILLS DATA BASED ON CLIENT'S INFO
                   onChange={(event, newValue) => {
-                    console.log(newValue);
                     if (newValue) {
                       setAgencyName(newValue.name);
                       setValue("receiver", newValue.supervisor);

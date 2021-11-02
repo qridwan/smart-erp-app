@@ -23,7 +23,6 @@ const DocInputAtom = ({ docFile, setDocFile, label, disabled, setDocUrl }) => {
   };
 
   const uploadDocument = (file) => {
-  console.log("🚀 ~ uploadDocument ~ file", {file})
     const storageRef = ref(bucket, `/inventory-docs/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
     uploadTask.on(
