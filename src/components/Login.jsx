@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
-import LoginImage from "../Assets/Images/loginPic.png";
+import LoginImage from "../Assets/Images/loginPic-1.png";
+import { auth } from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+
 const Login = () => {
   const [show, setShow] = useState("login");
   const {
@@ -10,7 +13,14 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => console.log(data);
+
+  const onSubmit = (data) => {
+    signInWithEmailAndPassword(auth, data.email, data.password)
+      .then((userCredential) => {})
+      .catch((error) => {
+        console.log("Sign in error", error);
+      });
+  };
   return (
     <Container>
       <Row className="w-100 m-0">
@@ -40,6 +50,20 @@ const Login = () => {
                   {errors.email?.type === "required" && (
                     <Error>Email is required</Error>
                   )}
+
+                  {/* <Label>Phone Number</Label>
+                  <Input
+                    type="text"
+                    {...register("phone", {
+                      // required: true,
+                      pattern:
+                        /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im,
+                    })}
+                  />
+                  {errors.phone?.type === "required" && (
+                    <Error>Phone number is required</Error>
+                  )} */}
+
                   <Label>Password</Label>
                   <Input
                     type="password"
@@ -49,7 +73,7 @@ const Login = () => {
 
                   <div className="d-flex justify-content-between">
                     <span>
-                      <Label style={{cursor: 'pointer'}}>
+                      <Label style={{ cursor: "pointer" }}>
                         <input
                           type="checkbox"
                           {...register("toggle")}

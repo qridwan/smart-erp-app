@@ -1,14 +1,12 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import {
   BoldText,
   Button,
-  SearchContainer,
-  SearchInput,
   TableContainer,
   tableStyles,
   TopBar,
 } from "../../../styles/styles";
-import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
+// import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
 import {
   FormControl,
   Menu,
@@ -22,75 +20,70 @@ import {
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { useState } from "react";
 import styled from "styled-components";
-import ReceiveOrder from "./ReceiveOrder";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import GenerateInwards from "./GenerateInwards";
 import TableHeadCell from "../Tables/TableHead";
 import { useSortableData } from "../Tables/table.sort";
-import MoreInwards from "./MoreInwards";
+import ViewMoreInwards from "./ViewMoreInwards";
+import { setShow } from "../../../Redux/actions/renderActions";
+import { connect } from "react-redux";
+import GetInwards from "../../../Api/GetInwards";
+import { UserContext } from "../../../context/UserProvider";
 
-function createData(
-  order,
-  agency,
-  item,
-  quantity,
-  received,
-  pending,
-  date,
-  audit
-) {
-  return { order, agency, item, quantity, received, pending, date, audit };
-}
-
-const rows = [
-  createData(
-    "01",
-    "Start Security",
-    "IP Camera",
-    3000,
-    "-",
-    "-",
-    "16-10-21",
-    "Pending"
-  ),
-  createData(
-    "02",
-    "ABC Service",
-    "Data Dongles",
-    2000,
-    1200,
-    800,
-    "16-12-20",
-    "Completed"
-  ),
-];
-const Inwards = () => {
+const Inwards = ({ show, setShow }) => {
   const classes = tableStyles();
-  const [show, setShow] = useState("inwards");
+  const user = useContext(UserContext);
+  const { role } = user;
+  const { inwards } = GetInwards();
   const [state, setState] = useState({
     id: 1,
     age: "",
     name: "",
   });
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState([]);
   const [details, setDetails] = useState({});
+  const [currArr, setCurrArr] = useState([]);
+  useEffect(() => {
+    setShow("inwardsTable");
+    setAnchorEl([]);
+  }, []);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  useEffect(() => {
+    if (inwards.length) {
+      let anchors = [];
+      let currArr = [];
+      inwards.forEach((pd) => {
+        anchors.push(null);
+        currArr.push(0);
+      });
+      setCurrArr(currArr);
+      setAnchorEl(anchors);
+    }
+  }, [inwards.length, show]);
+
+  const handleClick = (event, index) => {
+    setAnchorEl(
+      anchorEl.map((a, i) => {
+        if (i == index) {
+          return event.currentTarget;
+        } else {
+          return a;
+        }
+      })
+    );
+  };
+  const handleClose = (index) => {
+    setAnchorEl(
+      anchorEl.map((a, i) => {
+        if (i == index) {
+          return null;
+        } else {
+          return a;
+        }
+      })
+    );
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleChange = (event) => {
-    const name = event.target.name;
-    setState({
-      ...state,
-      [name]: event.target.value,
-    });
-    console.log(state);
-  };
-  const options = ["item1", "item2", "item3"];
-  const { items, requestSort, sortConfig } = useSortableData(rows);
+  const { requestSort, sortConfig } = useSortableData(inwards);
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;
@@ -98,22 +91,27 @@ const Inwards = () => {
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
-  const MoreFunc = async (row, info) => {
-    console.log({ row });
+  const MoreFunc = (row, info) => {
     setDetails({ ...row, info: info });
-    (await info) === "edit"
-      ? setShow("edit_inwards")
-      : setShow("more_inwards");
+    setShow(info);
     handleClose();
+  };
+
+  const handleChange = (event, index) => {
+    setCurrArr(
+      currArr.map((i, j) => {
+        if (j == index) return parseInt(event.target.value);
+        else return j;
+      })
+    );
   };
 
   return (
     <div>
-      <TopBar>
-        {show === "inwards" ? (
-          <>
-            <BoldText>Inwards</BoldText>
-            <SearchContainer>
+      {show === "inwardsTable" && (
+        <TopBar>
+          <BoldText>Inwards</BoldText>
+          {/* <SearchContainer>
               <section className="w-100 d-flex justify-content-start align-items-center">
                 <div className="m-0 p-0 d-flex">
                   <SearchIcon
@@ -136,22 +134,15 @@ const Inwards = () => {
                   </div>
                 </div>
               </section>
-            </SearchContainer>
-          </>
-        ) : (
-          <BoldText>Receive Order</BoldText>
-        )}
-        {show === "inwards" ? (
-          <Button outline onClick={() => setShow("receive_order")}>
-            Receive Order
-          </Button>
-        ) : (
-          <Button outline onClick={() => setShow("inwards")}>
-            Search Orders
-          </Button>
-        )}
-      </TopBar>
-      {show === "inwards" ? (
+            </SearchContainer> */}
+          {role !== `role-2` && (
+            <Button outline onClick={() => setShow("generateInwards")}>
+              Generate Inwards
+            </Button>
+          )}
+        </TopBar>
+      )}
+      {show === "inwardsTable" ? (
         <InwardsTableContainer>
           <TableContainer className="mt-3">
             <Table className={classes.table} aria-label="simple table">
@@ -162,51 +153,61 @@ const Inwards = () => {
                 getClassNamesFor={getClassNamesFor}
               />
               <TableBody>
-                {items.map((row) => {
+                {inwards.map((row, index) => {
                   return (
-                    <TableRow key={row.order}>
+                    <TableRow
+                      key={row.key}
+                      style={
+                        index % 2 !== 0 ? { background: "#F4F4F4" } : undefined
+                      }
+                    >
                       <TableCell component="th" scope="row" align="center">
-                        {row.order}
+                        {row.key}
                       </TableCell>
                       <TableCell align="center">{row.agency}</TableCell>
                       <TableCell align="center">
                         <FormControl className={classes.formControl}>
                           <NativeSelect
                             value={state.key}
-                            onChange={handleChange}
+                            onChange={(e) => handleChange(e, index)}
                             name={row.item}
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "age" }}
                           >
-                            <option title={row.quantity} value={row.item}>
-                              {row.item}
-                            </option>
-                            <option title={row.quantity} value={10}>
-                              External Flash
-                            </option>
-                            <option title={row.quantity} value={20}>
-                              Camera Bag
-                            </option>
-                            <option title={row.quantity} value={30}>
-                              SD Card
-                            </option>
+                            {row.item.map((item, i) => {
+                              return (
+                                <option title={item.name} key={i} value={i}>
+                                  {item.name}
+                                </option>
+                              );
+                            })}
                           </NativeSelect>
                         </FormControl>
                       </TableCell>
 
-                      <TableCell align="center">{row.quantity}</TableCell>
-                      <TableCell align="center">{row.received}</TableCell>
-                      <TableCell align="center">{row.pending}</TableCell>
-                      <TableCell align="center">{row.date}</TableCell>
+                      <TableCell align="center">
+                        {row.item[currArr[index]]?.good_condition}
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.item[currArr[index]]?.not_working}
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.item[currArr[index]]?.damaged
+                          ? row.item[currArr[index]]?.damaged
+                          : "-"}
+                        {/* {parseInt(row.item[currArr[index]]?.quantity) -
+                          parseInt(row.item[currArr[index]]?.received)} */}
+                      </TableCell>
+                      <TableCell align="center">{row.receivedDate}</TableCell>
                       <TableCell
                         align="center"
                         className={
-                          row.audit === "Completed"
+                          row.auditStatus === "Complete"
                             ? "text-success"
                             : "text-danger"
                         }
                       >
-                        {row.audit}
+                        {row.auditStatus}
                       </TableCell>
                       <TableCell align="center">
                         {row.status !== "Delivered" && (
@@ -214,23 +215,23 @@ const Inwards = () => {
                             <MoreHorizIcon
                               aria-controls="simple-menu"
                               aria-haspopup="true"
-                              onClick={handleClick}
+                              onClick={(e) => handleClick(e, index)}
                             />
                             <Menu
                               id="simple-menu"
-                              anchorEl={anchorEl}
+                              anchorEl={anchorEl[index]}
                               keepMounted
-                              open={Boolean(anchorEl)}
-                              onClose={handleClose}
+                              open={Boolean(anchorEl[index])}
+                              onClose={() => handleClose(index)}
                             >
-                              <MenuItem
-                                onClick={() => MoreFunc(row, "view_more")}
-                              >
+                              <MenuItem onClick={() => MoreFunc(row, "view")}>
                                 View More
                               </MenuItem>
-                              <MenuItem onClick={() => MoreFunc(row, "edit")}>
-                                Edit
-                              </MenuItem>
+                              {role !== `role-1` && (
+                                <MenuItem onClick={() => MoreFunc(row, "edit")}>
+                                  Edit
+                                </MenuItem>
+                              )}
                             </Menu>
                           </div>
                         )}
@@ -244,11 +245,15 @@ const Inwards = () => {
         </InwardsTableContainer>
       ) : (
         <>
-          {show === "receive_order" || show === "edit_inwards" ? (
-            <ReceiveOrder details={details} setShow={setShow} />
+          {show === "generateInwards" || show === "edit" ? (
+            <GenerateInwards
+              details={details}
+              setShow={setShow}
+              setDetails={setDetails}
+            />
           ) : null}
-          {show === "more_inwards" && (
-            <MoreInwards details={details} setShow={setShow} />
+          {show === "view" && (
+            <ViewMoreInwards details={details} setShow={setShow} />
           )}
         </>
       )}
@@ -256,6 +261,10 @@ const Inwards = () => {
   );
 };
 
-export default Inwards;
+const mapStateToProps = (state) => state;
+const mapDispatchToProps = {
+  setShow: setShow,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Inwards);
 
 const InwardsTableContainer = styled.div``;

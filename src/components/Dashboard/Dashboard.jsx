@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
 import { Container } from "../Login";
@@ -6,7 +6,7 @@ import { ReactComponent as InventoryImg } from "../../Assets/Icons/inventory.svg
 import { ReactComponent as InOutWardImg } from "../../Assets/Icons/in-outwards.svg";
 import { ReactComponent as EmployeeImg } from "../../Assets/Icons/employee.svg";
 import { ReactComponent as ClientsImg } from "../../Assets/Icons/clients.svg";
-import { ReactComponent as WareHouseImg } from "../../Assets/Icons/warehouse.svg";
+import { ReactComponent as LogOut } from "../../Assets/Icons/SignOut.svg";
 import Inventory from "./Inventory/Inventory";
 import { Avatar, BoldText, DashboardContent } from "../../styles/styles";
 import Outwards from "./Outwards/Outwards";
@@ -15,8 +15,12 @@ import Employees from "./Employees/Employees";
 import Clients from "./Clients/Clients";
 import WareHouse from "./Warehouse/WareHouse";
 import MenuBar from "../MenuBar/MenuBar";
+import { UserContext } from "../../context/UserProvider";
+import { connect } from "react-redux";
+import { setPath, setShow } from "../../Redux/actions/renderActions";
+import { handleLogout } from "../../Api/auth/logout";
 
-export const sidebarData = [
+const sidebarDataAdmin = [
   {
     icon: <InventoryImg className="icons" />,
     title: "Inventory",
@@ -38,14 +42,39 @@ export const sidebarData = [
     title: "Clients",
   },
   {
-    icon: <WareHouseImg className="icons" />,
-    title: "Warehouse",
+    icon: <LogOut className="icons" />,
+    title: "Logout",
   },
 ];
-const Dashboard = () => {
-  const [show, setShow] = useState("inventory");
-  const user = "Arjun.";
-  const avatarText = user.slice(0, 1);
+
+const sidebarData = [
+  {
+    icon: <InventoryImg className="icons" />,
+    title: "Inventory",
+  },
+  {
+    icon: <InOutWardImg className="icons" />,
+    title: "Outwards",
+  },
+  {
+    icon: <InOutWardImg className="icons" />,
+    title: "Inwards",
+  },
+  {
+    icon: <ClientsImg className="icons" />,
+    title: "Clients",
+  },
+  {
+    icon: <LogOut className="icons" />,
+    title: "Logout",
+  },
+];
+const Dashboard = ({ setShow, setPath, show, path }) => {
+  const userData = useContext(UserContext);
+  const user = userData?.email?.slice(0, userData.email.indexOf("@"));
+  const avatarText = user?.slice(0, 1);
+  const { role } = userData;
+  const sideData = role === "role-3" ? sidebarDataAdmin : sidebarData;
 
   return (
     <Container>
@@ -58,42 +87,55 @@ const Dashboard = () => {
                 <BoldText> {user} </BoldText>
               </Content>
               <MenuContainer>
-                <MenuBar show={show} setShow={setShow} />
+                <MenuBar
+                  sideData={sideData}
+                  show={path}
+                  setShow={setPath}
+                  handleLogout={handleLogout}
+                />
               </MenuContainer>
             </Head>
-            <NavItems>
-              {sidebarData.map((obj, i) => {
-                const handleOnCLick = () => {
-                  setShow(obj.title.toLowerCase());
-                };
-                return (
-                  <Section key={i}>
-                    <SidebarContent
-                      className={
-                        show === obj.title.toLowerCase()
-                          ? "active side_nav"
-                          : "side_nav"
-                      }
-                      onClick={(event) => handleOnCLick(event)}
+            <WebNav>
+              <NavItems className="d-flex flex-column">
+                {sideData.map((obj, i) => {
+                  const Title = obj.title.toLowerCase();
+                  return (
+                    <Section
+                      key={i}
+                      className={Title === "logout" ? "mt-auto" : ""}
+                      style={{ cursor: "pointer" }}
                     >
-                      <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>
-                      <Title className="title">{obj.title}</Title>
-                    </SidebarContent>
-                  </Section>
-                );
-              })}
-            </NavItems>
+                      <SidebarContent
+                        className={
+                          path === obj.title.toLowerCase()
+                            ? "active side_nav"
+                            : "side_nav"
+                        }
+                        onClick={() =>
+                          Title === "logout"
+                            ? handleLogout()
+                            : setPath(obj.title.toLowerCase())
+                        }
+                      >
+                        <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>
+                        <Title className="title">{obj.title}</Title>
+                      </SidebarContent>
+                    </Section>
+                  );
+                })}
+              </NavItems>
+            </WebNav>
           </Sidebar>
         </Col>
         <Col lg={10} md={12} className="offset-lg-1 p-0">
           <ContentSection>
             <DashboardContent>
-              {show === "inventory" && <Inventory />}
-              {show === "outwards" && <Outwards />}
-              {show === "inwards" && <Inwards />}
-              {show === "employees" && <Employees />}
-              {show === "clients" && <Clients />}
-              {show === "warehouse" && <WareHouse />}
+              {path === "inventory" && <Inventory />}
+              {path === "outwards" && <Outwards />}
+              {path === "inwards" && <Inwards />}
+              {path === "employees" && <Employees />}
+              {path === "clients" && <Clients />}
+              {path === "warehouse" && <WareHouse />}
             </DashboardContent>
           </ContentSection>
         </Col>
@@ -101,8 +143,12 @@ const Dashboard = () => {
     </Container>
   );
 };
-
-export default Dashboard;
+const mapStateToProps = (state) => state;
+const mapDispatchToProps = {
+  setShow: setShow,
+  setPath: setPath,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
 
 const Sidebar = styled.div`
   padding-left: 30px;
@@ -116,10 +162,13 @@ const MenuContainer = styled.div`
     display: none;
   }
 `;
-const NavItems = styled.div`
+const WebNav = styled.div`
   @media only screen and (max-width: 1000px) {
     display: none;
   }
+`;
+const NavItems = styled.div`
+  height: 80vh;
 `;
 export const Title = styled.p`
   display: inline-block;

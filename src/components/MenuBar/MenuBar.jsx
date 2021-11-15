@@ -4,9 +4,8 @@ import Menu from "@material-ui/core/Menu";
 import MenuRoundedIcon from "@material-ui/icons/MenuRounded";
 import {
   SidebarContent,
-  sidebarData,
   SidebarIconWrapper,
-  Title,
+  // Title,
 } from "../Dashboard/Dashboard";
 import { IconButton } from "@material-ui/core";
 import styled from "styled-components";
@@ -33,7 +32,7 @@ const StyledMenu = withStyles({
   />
 ));
 
-const MenuBar = ({ show, setShow }) => {
+const MenuBar = ({ show, setShow, handleLogout, sideData }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -56,14 +55,13 @@ const MenuBar = ({ show, setShow }) => {
         onClick={handleClick}
       >
         <MenuIconWrapper>
-        <MenuRoundedIcon
-          style={{
-            fontSize: "30px",
-            borderRadius: "5px",
-          }}
-        />
+          <MenuRoundedIcon
+            style={{
+              fontSize: "30px",
+              borderRadius: "5px",
+            }}
+          />
         </MenuIconWrapper>
-        
       </IconButton>
       <StyledMenu
         id="customized-menu"
@@ -72,10 +70,8 @@ const MenuBar = ({ show, setShow }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {sidebarData.map((obj, i) => {
-          const handleOnCLick = () => {
-            setShow(obj.title.toLowerCase());
-          };
+        {sideData.map((obj, i) => {
+          const Title = obj.title.toLowerCase();
           return (
             <section key={i}>
               <SidebarContent
@@ -84,7 +80,14 @@ const MenuBar = ({ show, setShow }) => {
                     ? "active side_nav"
                     : "side_nav"
                 }
-                onClick={(event) => handleOnCLick(event)}
+                onClick={
+                  () => {
+                    Title === "logout"
+                      ? handleLogout()
+                      : setShow(obj.title.toLowerCase());
+                    handleClose();
+                  }
+                }
               >
                 <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>
                 <Title className="title">{obj.title}</Title>
@@ -99,9 +102,8 @@ const MenuBar = ({ show, setShow }) => {
 
 export default MenuBar;
 
-const MenuIconWrapper = styled.span` 
-
-path {
-  fill: #2d3850
- }
-`
+const MenuIconWrapper = styled.span`
+  path {
+    fill: #2d3850;
+  }
+`;

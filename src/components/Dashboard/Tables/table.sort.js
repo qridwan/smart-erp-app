@@ -1,12 +1,6 @@
 import { useMemo, useState } from "react";
 
 function descendingComparator(a, b, orderBy) {
-  console.log(
-    "🚀 ~ file: table.sort.js ~ line 2 ~ descendingComparator ~ a, b, orderBy",
-    a,
-    b,
-    orderBy
-  );
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -34,7 +28,6 @@ export function stableSort(array, comparator) {
 /////////////////////////////////
 export const useSortableData = (items, config = null) => {
   const [sortConfig, setSortConfig] = useState(config);
-
   const sortedItems = useMemo(() => {
     let sortableItems = [...items];
     if (sortConfig !== null) {

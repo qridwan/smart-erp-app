@@ -2,6 +2,56 @@ import { makeStyles } from "@material-ui/core";
 import styled, { css } from "styled-components";
 import Calender from "../Assets/Icons/Calender.png";
 
+export const addTableStyles = makeStyles({
+  table: {
+    width: "80%",
+    paddingTop: "30px",
+    margin: "0 auto",
+  },
+  thead: {
+    borderBottom: "none",
+    fontFamily: "Poppins",
+    fontWeight: "500",
+    fontSize: "14px",
+    lineHeight: "21px",
+    color: "#6D83AE",
+    background: "#F7F9FD",
+  },
+  button: {
+    display: "block",
+    marginTop: "20px",
+  },
+  formControl: {
+    margin: "10px",
+    minWidth: 120,
+  },
+});
+
+export const inventoryStyles = makeStyles({
+  table: {
+    width: "80%",
+    paddingTop: "30px",
+    margin: "0 auto",
+  },
+  thead: {
+    borderBottom: "none",
+    fontFamily: "Poppins",
+    fontWeight: "500",
+    fontSize: "14px",
+    lineHeight: "21px",
+    color: "#6D83AE",
+    background: "#F7F9FD",
+  },
+  button: {
+    display: "block",
+    marginTop: "20px",
+  },
+  formControl: {
+    margin: "10px",
+    minWidth: 120,
+  },
+});
+
 export const style = {
   table: {
     border: "none",
@@ -11,11 +61,16 @@ export const style = {
     lineHeight: "16px",
     width: "auto",
     color: "black",
-    "& .MuiDataGrid-root": {
+    "& .MuiDataGridRoot": {
       "& .MuiDataGrid-Cell:focus": {
         outline: "none",
       },
     },
+    // "& .MuiDataGrid-root": {
+    //   "& .MuiDataGrid-Cell:focus": {
+    //     outline: "none",
+    //   },
+    // },
   },
 };
 
@@ -108,13 +163,14 @@ export const ImageInputArea = styled.div`
 `;
 export const ImageInput = styled.img``;
 export const Button = styled.button`
+  cursor: pointer;
   height: auto;
   border-radius: 9px;
   padding: 8px 15px;
   font-family: Poppins;
   font-style: normal;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 22px;
   box-sizing: border-box;
   ${(props) =>
@@ -130,10 +186,11 @@ export const Button = styled.button`
           color: #ffffff;
         `}
   @media only screen and (max-width:800px) {
-    margin-top: 10px;
+    margin-top: 4px;
     font-size: 14px;
     line-height: 20px;
-    padding: 10px 18px;
+    padding: 4px 8px;
+    margin-bottom: 2px;
     height: 40px;
   }
 `;
@@ -152,7 +209,7 @@ export const DashboardContent = styled.div`
   @media only screen and (max-width: 1000px) {
     width: 100%;
     min-height: auto;
-    margin: 30px 8px 20px 0px;
+    margin: 5px 8px 20px 0px;
   }
 `;
 
@@ -174,7 +231,12 @@ export const Label = styled.label`
   font-size: 14px;
   line-height: 21px;
   color: #6c6c6c;
-
+  ${(props) =>
+    props.disabled === true &&
+    css`
+      // border: 1px solid rgba(0, 0, 0, 0.08);
+      color: rgba(108, 108, 108, 0.3);
+    `}
   ${(props) =>
     props.details
       ? css`
@@ -214,32 +276,63 @@ export const InputDiv = styled.div`
     padding-bottom: 10px;
   }
 `;
-
+export const AddItemsContainer = styled.div`
+  @media only screen and (max-width: 1000px) {
+    overflow-x: scroll;
+  }
+`;
 export const UploadInput = styled(Input)`
   background: #dfdfdf;
   border: 1px solid #b3b3b3;
   box-sizing: border-box;
   border-radius: 5px;
 `;
-
-export const UploadButton = styled.button`
-  text-align: center;
+export const UploadIcon = styled.span`
+  padding: 0 6px;
+  border: 1px solid #6c6c6c;
+  border-radius: 50%;
+  background: #e5e5e5;
+  ${(props) =>
+    props.disabled === true &&
+    css`
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      color: rgba(108, 108, 108, 0.3);
+    `}
+`;
+export const UploadButton = styled.div`
+  // text-align: center;
+  // color: #0075ff;
+  display: flex;
+  justify-content: space-between;
   font-size: 15px;
   line-height: 22px;
-  color: #0075ff;
+  color: #6c6c6c;
   background: #ffffff;
+  ${(props) =>
+    props.disabled === true &&
+    css`
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      color: rgba(108, 108, 108, 0.3);
+    `}
+  ${(props) =>
+    props.type === "transparent" &&
+    css`
+      color: #0075ff;
+      justify-content: center;
+      text-align: center;
+    `};
   ${(props) =>
     props.outline
       ? css`
           border: 1px solid rgba(0, 0, 0, 0.22);
           box-sizing: border-box;
           border-radius: 5px;
-          padding: 10px 0;
+          padding: 10px;
           width: 100%;
         `
       : css`
           border: none;
-          padding: 5px 0;
+          padding: 5px;
         `}
 `;
 
@@ -285,6 +378,7 @@ export const ApplyFormInput = styled.input`
   padding: 0 15px;
   font-family: Poppins;
   font-weight: 500;
+  font-size: 18px;
   color: black;
   height: 45px;
   :focus {
@@ -299,6 +393,7 @@ export const ApplyFormInput = styled.input`
           @media only screen and (max-width: 1000px) {
             padding: 0;
             height: 30px;
+            font-size: 15px;
           }
         `
       : css`
@@ -306,6 +401,7 @@ export const ApplyFormInput = styled.input`
           @media only screen and (max-width: 1000px) {
             padding: 0 8px;
             height: 40px;
+            font-size: 15px;
           }
         `};
   }
@@ -329,7 +425,7 @@ export const TopBar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 40px 100px 15px 100px;
+  padding: 40px 55px 15px 55px;
   flex-wrap: wrap;
   @media only screen and (max-width: 1000px) {
     padding: 30px 20px 20px 20px;
@@ -414,10 +510,10 @@ export const MainTitle = styled.p`
   font-weight: 500;
   font-size: 18px;
   line-height: 27px;
-  padding: 0 12px;
+  padding: 0 5px;
   padding-bottom: 15px;
   padding-top: 25px;
-  margin: 0;
+  margin: 0 8px;
   color: #2d3850;
   @media only screen and (max-width: 1000px) {
     font-size: 16px;

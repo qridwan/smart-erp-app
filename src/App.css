@@ -12,13 +12,17 @@
   outline: none !important;
 }
 
-.MuiDataGrid-columnSeparator, .MuiDataGrid-iconButtonContainer {
+.MuiDataGrid-columnSeparator,
+.MuiDataGrid-iconButtonContainer {
   display: none !important;
 }
 .MuiDataGrid-root .MuiDataGrid-columnHeaderTitleContainer {
   justify-content: center;
 }
-
+.MuiAutocomplete-inputRoot[class*="MuiOutlinedInput-root"] {
+  padding: 0 !important;
+  margin: 4px !important;
+}
 /* ============================= */
 
 input::placeholder {
@@ -31,7 +35,9 @@ input::placeholder {
 #dropdown-basic:focus {
   box-shadow: none;
 }
-
+select {
+  background: transparent;
+}
 /* React Modal dependencies styling */
 .ReactModal__Overlay--after-open {
   background-color: #4e4e4e49 !important;
