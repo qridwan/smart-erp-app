@@ -49,7 +49,7 @@ const ViewMoreInwards = ({ details }) => {
         topRef={topbarRef}
         title="View Inwards"
         goBack="inwardsTable"
-        buttonTitle="Summery"
+        buttonTitle="Summary"
         buttonType="outline"
       />
       <AddItemContainer ref={topbarRef}>
