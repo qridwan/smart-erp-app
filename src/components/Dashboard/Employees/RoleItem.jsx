@@ -7,7 +7,6 @@ import {
 } from "@material-ui/core";
 import React from "react";
 import styled from "styled-components";
-import { tableStyles } from "../../../styles/styles";
 
 const bodyInfos = [
   { id: 1, role: "Role-1", permission: "Only Add actions" },
@@ -15,7 +14,6 @@ const bodyInfos = [
   { id: 3, role: "Role-3", permission: "All actions" },
 ];
 const RoleItem = () => {
-  const classes = tableStyles();
   return (
     <Content className="w-75 m-auto mt-4">
       <Table className="w-75 m-auto my-4" aria-label="simple table">

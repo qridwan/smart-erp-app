@@ -84,7 +84,7 @@ const PurchaseHistory = ({ setItem, setShow }) => {
               return product?.item?.map((pd, i) => {
                 return (
                   <TableRow
-                    key={product.order_no + index}
+                    key={product.order_no + i}
                     style={
                       index % 2 !== 0 ? { background: "#F4F4F4" } : undefined
                     }

@@ -1,5 +1,4 @@
 import { getAuth } from '@firebase/auth';
-import React from 'react';
 
 const AddEmployee = () => {
     getAuth()

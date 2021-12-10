@@ -123,7 +123,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                   options={clients}
                   openOnFocus
                   getOptionLabel={(option) => option.name}
-                  defaultValue={edit ? client : null}
+                  defaultValue={edit ? client : ""}
                   renderOption={(option) => (
                     <React.Fragment>
                       <span>{option.name}</span>
@@ -376,7 +376,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                 defaultValue={edit ? details.reference : null}
                 md={3}
               />
-              <InputAtom
+              {/* <InputAtom
                 readOnly={false}
                 register={register}
                 errors={errors}
@@ -397,7 +397,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                 placeholder=""
                 defaultValue={edit ? details.piNumber : null}
                 md={3}
-              />
+              /> */}
               <DocInputAtom
                 label="Eway Bill"
                 setDocFile={setEwayDocFile}
@@ -411,9 +411,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                 setDocUrl={setDcDocURL}
               />
               <DocInputAtom
-                label="Courier Document"
-                setDocFile={setCourierDocFile}
-                docFile={courierDocFile}
+                map docFile={courierDocFile}
                 setDocUrl={setCourierDocURL}
               />
               <DocInputAtom
@@ -487,10 +485,14 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                             {products.map((item, index) => {
                               if (
                                 edit &&
-                                details?.item[index]?.id == items.code
+                                details?.item[index]?.id === items.code
                               )
                                 return (
-                                  <option selected value={item.item_name}>
+                                  <option
+                                    key={item.item_name}
+                                    selected
+                                    value={item.item_name}
+                                  >
                                     {item.item_name}
                                   </option>
                                 );

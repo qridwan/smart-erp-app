@@ -1,16 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { Col } from "react-bootstrap";
 import styled from "styled-components";
+import PreviewFile from "../components/Shared/PreviewFile";
 import { InputDiv, Label } from "../styles/styles";
 
 const DocumentPreview = ({ docFile, label }) => {
-
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   return (
     <Col lg={3} md={6} xs={12}>
-      <InputDiv >
+      <InputDiv>
         <Label>{label}</Label>
-        <DocPreview href={docFile}>Preview Document</DocPreview>
+        <DocPreview
+          // href={docFile}
+          onClick={() => setModalIsOpen(true)}
+        >
+          Preview Document
+        </DocPreview>
       </InputDiv>
+      <PreviewFile
+        modalIsOpen={modalIsOpen}
+        setIsOpen={setModalIsOpen}
+        file={docFile}
+      />
     </Col>
   );
 };

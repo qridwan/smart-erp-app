@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -68,7 +69,7 @@ const AddEmployee = ({ setShow, details, setDetails }) => {
       : (roleId = `addRole3`);
     const catchRole = httpsCallable(fbFunctions, roleId);
     catchRole({ email: email }).then((result) => {
-      console.log("🚀 ~ role handle ~ result", { result });
+      console.log("🚀 ~Operation Successful", { result });
     });
   };
 

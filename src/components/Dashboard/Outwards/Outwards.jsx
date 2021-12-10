@@ -1,3 +1,4 @@
+
 import { NativeSelect, FormControl, Menu, MenuItem } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
@@ -22,6 +23,7 @@ import ViewMoreOutwards from "./ViewMoreOutwards";
 import { setShow } from "../../../Redux/actions/renderActions";
 import { connect } from "react-redux";
 import GetOutwards from "../../../Api/GetOutwards";
+import dateFormat from "dateformat";
 import { UserContext } from "../../../context/UserProvider";
 
 const Outwards = ({ show, setShow }) => {
@@ -32,7 +34,7 @@ const Outwards = ({ show, setShow }) => {
   const classes = tableStyles();
   const [anchorEl, setAnchorEl] = useState([]);
   const [details, setDetails] = useState({});
-  const [state, setState] = useState({
+  const [state] = useState({
     id: 1,
     age: "",
     name: "",
@@ -40,7 +42,7 @@ const Outwards = ({ show, setShow }) => {
   const handleChange = (event, index) => {
     setArr(
       arr.map((a, j) => {
-        if (j == index) return parseInt(event.target.value);
+        if (j === index) return parseInt(event.target.value);
         else return a;
       })
     );
@@ -159,13 +161,15 @@ const Outwards = ({ show, setShow }) => {
                       <TableCell component="th" scope="row" align="center">
                         {row.key}
                       </TableCell>
-                      <TableCell align="center">{row.deliveryDate}</TableCell>
+                      <TableCell align="center">
+                        {dateFormat(new Date(row.shippingDate), "dd-mm-yyyy")}
+                      </TableCell>
                       <TableCell align="center">
                         <FormControl className={classes.formControl}>
                           <NativeSelect
                             value={state.key}
                             onChange={(e) => handleChange(e, index)}
-                            name={row.item}
+                            // name={row.item}
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "item" }}
                           >
@@ -195,7 +199,7 @@ const Outwards = ({ show, setShow }) => {
                       >
                         {row.status}
                       </TableCell>
-                      <TableCell align="center">{row.deliveryDate}</TableCell>
+                      <TableCell align="center">{dateFormat(new Date(row.deliveryDate), "dd-mm-yyyy")}</TableCell>
                       <TableCell align="center">
                         {row.status !== "delivered" && (
                           <div>

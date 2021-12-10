@@ -94,7 +94,7 @@ const InventoryTable = ({ setShow, show, setItem }) => {
                       width="30px"
                     />
                   </TableCell>
-                  <TableCell align="start">{item.item_name}</TableCell>
+                  <TableCell >{item.item_name}</TableCell>
                   <TableCell align="center">{item.code}</TableCell>
                   <TableCell align="center">
                     {product?.quantity ? product.quantity : 0}

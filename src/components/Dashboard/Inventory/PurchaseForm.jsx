@@ -96,13 +96,14 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
     if (!edit) {
       SetPurchased(purchasedProduct);
       SetProducts(inputProducts);
-      alert("product successfully posted");
+      alert("product successfully added");
     } else if (edit) {
       UpdatePurchased(purchasedProduct, item.key);
+      console.log("🚀 ~ onSubmit ~ purchasedProduct", purchasedProduct)
       SetProducts(inputProducts);
     }
     reset();
-    setShow("inventoryTable");
+    setShow("purchaseHistory");
   };
 
   const { fields, append, remove } = useFieldArray({
@@ -125,18 +126,20 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
   return (
     <div>
       <TopbarAtom
-        title="Add Purchase"
+        title={
+          view ? "Purchase Details" : edit ? "Edit Purchase" : "Add Purchase"
+        }
         topRef={topbarRef}
         buttonRef={SubmitButtonRef}
         buttonTitle={!view && "Save"}
-        goBack="inventoryTable"
+        goBack="purchaseHistory"
       />
-      <AddItemContainer>
+      <AddItemContainer ref={topbarRef}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Container>
             <Row className="w-100 p-0 m-0">
               <InputAtom
-                readOnly={view && true}
+                readOnly={view}
                 register={register}
                 errors={errors}
                 label="Order No"
@@ -147,7 +150,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 md={3}
               />
               <InputAtom
-                readOnly={view && true}
+                readOnly={view}
                 register={register}
                 errors={errors}
                 label="P.O Number"
@@ -158,7 +161,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 md={3}
               />
               <InputAtom
-                readOnly={view && true}
+                readOnly={view}
                 register={register}
                 errors={errors}
                 label="Supplier"
@@ -169,7 +172,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 md={3}
               />
               <InputAtom
-                readOnly={view && true}
+                readOnly={view}
                 register={register}
                 errors={errors}
                 label="Purchase Date"
@@ -181,7 +184,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 md={3}
               />
               <InputAtom
-                readOnly={view && true}
+                readOnly={view}
                 register={register}
                 errors={errors}
                 label="Remarks"
@@ -198,7 +201,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 />
               ) : (
                 <DocInputAtom
-                  readOnly={view && true}
+                  readOnly={view}
                   label="Delivery Proof"
                   setDocFile={setDocFile}
                   docFile={docFile}

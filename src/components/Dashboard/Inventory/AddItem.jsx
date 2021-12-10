@@ -1,3 +1,4 @@
+
 import IPcamera from "../../../Assets/Images/ipCamera.png";
 import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "react-bootstrap";
@@ -42,7 +43,6 @@ const AddItem = ({ setShow, show, item }) => {
 
   // HANDLE ADD PRODUCT SUBMIT
   const onSubmit = (data) => {
-    !imgFile && alert(`Choose An Image`);
     if (imgFile) {
       const storageRef = reference(bucket, `/pictures/${imgFile.name}`);
       const uploadTask = uploadBytesResumable(storageRef, imgFile);
@@ -65,7 +65,16 @@ const AddItem = ({ setShow, show, item }) => {
           });
         }
       );
-    }
+    } else if (img) {
+      const updates = {};
+      updates["inventory/items/" + data.code] = {
+        ...data,
+        photos: img,
+      };
+      update(ref(db), updates);
+      reset();
+      setShow("inventoryTable");
+    } else alert(`Choose An Image`);
   };
   // if (docFile) {
   //   const uploadTask = bucket.ref(`/pictures/${docFile.name}`).put(docFile);

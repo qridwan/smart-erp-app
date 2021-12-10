@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import { makeStyles, TableBody } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import { Table, TableCell, TableHead, TableRow } from "@material-ui/core";
@@ -106,7 +107,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
     data["total"] = total;
     data["item"] = data.item.map((item) => {
       products.map((product) => {
-        if (product.name == item.name) {
+        if (product.name === item.name) {
           item["id"] = product.id;
         }
       });

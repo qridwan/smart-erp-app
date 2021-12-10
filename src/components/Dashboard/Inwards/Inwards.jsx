@@ -6,7 +6,6 @@ import {
   tableStyles,
   TopBar,
 } from "../../../styles/styles";
-// import { ReactComponent as SearchIcon } from "../../../Assets/Icons/search.svg";
 import {
   FormControl,
   Menu,
@@ -34,7 +33,7 @@ const Inwards = ({ show, setShow }) => {
   const user = useContext(UserContext);
   const { role } = user;
   const { inwards } = GetInwards();
-  const [state, setState] = useState({
+  const [state] = useState({
     id: 1,
     age: "",
     name: "",
@@ -63,7 +62,7 @@ const Inwards = ({ show, setShow }) => {
   const handleClick = (event, index) => {
     setAnchorEl(
       anchorEl.map((a, i) => {
-        if (i == index) {
+        if (i === index) {
           return event.currentTarget;
         } else {
           return a;
@@ -74,7 +73,7 @@ const Inwards = ({ show, setShow }) => {
   const handleClose = (index) => {
     setAnchorEl(
       anchorEl.map((a, i) => {
-        if (i == index) {
+        if (i === index) {
           return null;
         } else {
           return a;
@@ -100,7 +99,7 @@ const Inwards = ({ show, setShow }) => {
   const handleChange = (event, index) => {
     setCurrArr(
       currArr.map((i, j) => {
-        if (j == index) return parseInt(event.target.value);
+        if (j === index) return parseInt(event.target.value);
         else return j;
       })
     );
@@ -170,7 +169,7 @@ const Inwards = ({ show, setShow }) => {
                           <NativeSelect
                             value={state.key}
                             onChange={(e) => handleChange(e, index)}
-                            name={row.item}
+                            // name={row.item}
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "age" }}
                           >

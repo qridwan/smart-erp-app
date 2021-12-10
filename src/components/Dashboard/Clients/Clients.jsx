@@ -1,6 +1,5 @@
 import { Table, TableBody, TableCell, TableRow } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
-import { useState } from "react";
 import styled from "styled-components";
 import {
   BoldText,
@@ -12,8 +11,6 @@ import {
 import { useSortableData } from "../Tables/table.sort";
 import TableHeadCell from "../Tables/TableHead";
 import AddClient from "./AddClient";
-import { db } from "../../../firebase";
-import { onValue, ref } from "@firebase/database";
 import { setShow } from "../../../Redux/actions/renderActions";
 import { connect } from "react-redux";
 import { UserContext } from "../../../context/UserProvider";
