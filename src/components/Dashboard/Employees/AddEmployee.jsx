@@ -79,7 +79,7 @@ const AddEmployee = ({ setShow, details, setDetails }) => {
       <TopbarAtom
         topRef={topbarRef}
         buttonRef={SubmitButtonRef}
-        buttonTitle={edit ? "Update " : isView ? "Summery" : "Add Employee"}
+        buttonTitle={edit ? "Update " : isView ? "Summary" : "Add Employee"}
         title={
           edit ? "Edit Employee" : isView ? "View Employee" : "Add new employee"
         }
