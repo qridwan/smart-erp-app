@@ -18,9 +18,6 @@ const Inventory = ({ setShow, show }) => {
   const user = useContext(UserContext);
   const { role } = user;
   const [item, setItem] = useState({});
-  useEffect(() => {
-    setShow("inventoryTable");
-  }, []);
 
   return (
     <section>

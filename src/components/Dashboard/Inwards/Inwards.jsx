@@ -27,6 +27,7 @@ import { setShow } from "../../../Redux/actions/renderActions";
 import { connect } from "react-redux";
 import GetInwards from "../../../Api/GetInwards";
 import { UserContext } from "../../../context/UserProvider";
+import dateFormat from "dateformat";
 
 const Inwards = ({ show, setShow }) => {
   const classes = tableStyles();
@@ -41,10 +42,6 @@ const Inwards = ({ show, setShow }) => {
   const [anchorEl, setAnchorEl] = useState([]);
   const [details, setDetails] = useState({});
   const [currArr, setCurrArr] = useState([]);
-  useEffect(() => {
-    setShow("inwardsTable");
-    setAnchorEl([]);
-  }, []);
 
   useEffect(() => {
     if (inwards.length) {
@@ -100,7 +97,7 @@ const Inwards = ({ show, setShow }) => {
     setCurrArr(
       currArr.map((i, j) => {
         if (j === index) return parseInt(event.target.value);
-        else return j;
+        else return i
       })
     );
   };
@@ -197,7 +194,9 @@ const Inwards = ({ show, setShow }) => {
                         {/* {parseInt(row.item[currArr[index]]?.quantity) -
                           parseInt(row.item[currArr[index]]?.received)} */}
                       </TableCell>
-                      <TableCell align="center">{row.receivedDate}</TableCell>
+                      <TableCell align="center">
+                        {dateFormat(new Date(row.receivedDate), "dd-mm-yyyy")}
+                      </TableCell>
                       <TableCell
                         align="center"
                         className={

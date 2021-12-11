@@ -411,7 +411,9 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                 setDocUrl={setDcDocURL}
               />
               <DocInputAtom
-                map docFile={courierDocFile}
+                label="Courier Document"
+                setDocFile={setCourierDocFile}
+                docFile={courierDocFile}
                 setDocUrl={setCourierDocURL}
               />
               <DocInputAtom
@@ -466,11 +468,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                         <TableCell align="center">
                           <select
                             name={`item[${index}].name`}
-                            // defaultValue={
-                            //   edit
-                            //     ? `${details.item[index].name}`
-                            //     : `${item.name}`
-                            // }
                             {...register(`item.${index}.name`)}
                             onChange={(e) => {
                               let sItem = products.find(
@@ -480,6 +477,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                                 `item.${index}.quantity`,
                                 sItem.quantity
                               );
+                              setValue(`item.${index}.code`, sItem.code);
                             }}
                           >
                             {products.map((item, index) => {

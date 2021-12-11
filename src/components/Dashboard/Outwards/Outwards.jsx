@@ -47,9 +47,7 @@ const Outwards = ({ show, setShow }) => {
       })
     );
   };
-  useEffect(() => {
-    setShow("outwardsTable");
-  }, []);
+
   useEffect(() => {
     if (outwards.length) {
       let anchors = [];

@@ -14,6 +14,7 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { useSortableData } from "../Tables/table.sort";
 import GetPurchaseHistory from "../../../Api/GetPurchaseHistory";
 import { UserContext } from "../../../context/UserProvider";
+import dateFormat from "dateformat";
 
 const PurchaseHistory = ({ setItem, setShow }) => {
   const user = useContext(UserContext);
@@ -94,7 +95,11 @@ const PurchaseHistory = ({ setItem, setShow }) => {
                     <TableCell align="center">{product.supplier}</TableCell>
                     <TableCell align="center">{pd.quantity}</TableCell>
                     <TableCell align="center">
-                      {product.purchase_date}
+                      {dateFormat(
+                        new Date(product.purchase_date),
+                        "dd-mm-yyyy"
+                      )}
+                      {/* {product.purchase_date} */}
                     </TableCell>
                     <TableCell align="center">
                       {product.status !== "Delivered" && (

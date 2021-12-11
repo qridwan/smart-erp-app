@@ -7,7 +7,7 @@ import { ReactComponent as InOutWardImg } from "../../Assets/Icons/in-outwards.s
 import { ReactComponent as EmployeeImg } from "../../Assets/Icons/employee.svg";
 import { ReactComponent as ClientsImg } from "../../Assets/Icons/clients.svg";
 import { ReactComponent as LogOut } from "../../Assets/Icons/SignOut.svg";
-import { ReactComponent as Report } from "../../Assets/Icons/report.svg";
+// import { ReactComponent as Report } from "../../Assets/Icons/report.svg";
 import Inventory from "./Inventory/Inventory";
 import { Avatar, BoldText, DashboardContent } from "../../styles/styles";
 import Outwards from "./Outwards/Outwards";
@@ -42,10 +42,10 @@ const sidebarDataAdmin = [
     icon: <ClientsImg className="icons" />,
     title: "Clients",
   },
-  {
-    icon: <Report className="icons" />,
-    title: "Report",
-  },
+  // {
+  //   icon: <Report className="icons" />,
+  //   title: "Report",
+  // },
   {
     icon: <LogOut className="icons" />,
     title: "Logout",
@@ -119,7 +119,8 @@ const Dashboard = ({ setShow, setPath, show, path }) => {
                         onClick={() =>
                           Title === "logout"
                             ? handleLogout()
-                            : setPath(obj.title.toLowerCase())
+                            : setPath(obj.title.toLowerCase()) &&
+                              setShow(`${Title}Table`)
                         }
                       >
                         <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>

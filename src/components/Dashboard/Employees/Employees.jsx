@@ -11,9 +11,6 @@ import EmployeesTable from "./EmployeesTable";
 const Employees = ({ show, setShow }) => {
   const [details, setDetails] = useState({});
   const [employees, setEmployees] = useState([]);
-  useEffect(() => {
-    setShow("employeesTable");
-  }, []);
 
   useEffect(() => {
     const employeeRef = ref(db, "inventory/employees");
