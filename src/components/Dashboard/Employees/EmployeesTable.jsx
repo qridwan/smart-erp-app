@@ -59,7 +59,7 @@ const EmployeesTable = ({ setShow, setDetails }) => {
     );
   };
 
-  const { requestSort, sortConfig } = useSortableData(employees);
+  const { requestSort, sortConfig, items } = useSortableData(employees);
 
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
@@ -82,7 +82,7 @@ const EmployeesTable = ({ setShow, setDetails }) => {
           getClassNamesFor={getClassNamesFor}
         />
         <TableBody>
-          {employees.map((employee, index) => {
+          {items.map((employee, index) => {
             return (
               <TableRow
                 key={employee.id}

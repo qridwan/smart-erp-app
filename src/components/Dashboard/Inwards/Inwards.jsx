@@ -79,7 +79,7 @@ const Inwards = ({ show, setShow }) => {
     );
   };
 
-  const { requestSort, sortConfig } = useSortableData(inwards);
+  const { requestSort, sortConfig, items } = useSortableData(inwards);
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;
@@ -97,7 +97,7 @@ const Inwards = ({ show, setShow }) => {
     setCurrArr(
       currArr.map((i, j) => {
         if (j === index) return parseInt(event.target.value);
-        else return i
+        else return i;
       })
     );
   };
@@ -149,7 +149,7 @@ const Inwards = ({ show, setShow }) => {
                 getClassNamesFor={getClassNamesFor}
               />
               <TableBody>
-                {inwards.map((row, index) => {
+                {items.map((row, index) => {
                   return (
                     <TableRow
                       key={row.key}

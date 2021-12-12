@@ -1,9 +1,9 @@
 import { onValue, ref } from "@firebase/database";
-import{ useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../firebase";
 
 const GetPurchaseHistory = () => {
-  const [items, setItems] = useState([]);
+  const [purchasedItems, setPurchasedItems] = useState([]);
   const productsRef = ref(db, "inventory/purchased");
   useEffect(() => {
     onValue(productsRef, (snapshot) => {
@@ -14,10 +14,10 @@ const GetPurchaseHistory = () => {
           const item = data[key];
           alldata.push(item);
         });
-      setItems(alldata);
+      setPurchasedItems(alldata);
     });
   }, []);
-  return { items };
+  return { purchasedItems };
 };
 
 export default GetPurchaseHistory;

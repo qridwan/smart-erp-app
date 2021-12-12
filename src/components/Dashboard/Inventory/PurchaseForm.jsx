@@ -24,7 +24,7 @@ import { setShow } from "../../../Redux/actions/renderActions";
 import TopbarAtom from "../../../atoms/TopbarAtom";
 import InputAtom from "../../../atoms/InputAtom";
 import DocInputAtom from "../../../atoms/DocInputAtom";
-import GetItems from "../../../Api/GetItems";
+import GetInventoryItems from "../../../Api/GetInventoryItems";
 import { UserContext } from "../../../context/UserProvider";
 import SetProducts from "../../../Api/SetProducts";
 import GetProducts from "../../../Api/GetProducts";
@@ -49,7 +49,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
     reset,
   } = useForm();
 
-  const { items } = GetItems();
+  const { inventoryItems } = GetInventoryItems();
   const { products } = GetProducts();
   const user = useContext(UserContext);
   useEffect(() => {
@@ -78,7 +78,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
         (pd) => pd.item_name === product.item_name
       );
       const prevQuantity = prevProduct?.quantity ? prevProduct.quantity : 0;
-      const item = items.find((it) => it.item_name === product.item_name);
+      const item = inventoryItems.find((it) => it.item_name === product.item_name);
       const prod = {
         deliveryProf: deliveryProf,
         item_name: product?.item_name,
@@ -99,7 +99,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
       alert("product successfully added");
     } else if (edit) {
       UpdatePurchased(purchasedProduct, item.key);
-      console.log("🚀 ~ onSubmit ~ purchasedProduct", purchasedProduct)
+      console.log("🚀 ~ onSubmit ~ purchasedProduct", purchasedProduct);
       SetProducts(inputProducts);
     }
     reset();
@@ -274,7 +274,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                               setValue(`item.${index}.code`, e.target.value);
                             }}
                           >
-                            {items.map((item) => {
+                            {inventoryItems.map((item) => {
                               return (
                                 <option value={item?.item_name}>
                                   {item.item_name}

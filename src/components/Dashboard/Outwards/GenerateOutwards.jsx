@@ -31,7 +31,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TopbarAtom from "../../../atoms/TopbarAtom";
 import InputAtom from "../../../atoms/InputAtom";
 import DocInputAtom from "../../../atoms/DocInputAtom";
-import GetItems from "../../../Api/GetItems";
+import GetInventoryItems from "../../../Api/GetInventoryItems";
 import GetClients from "../../../Api/GetClients";
 import GetProducts from "../../../Api/GetProducts";
 import SetOutwards from "../../../Api/SetOutwards";
@@ -68,7 +68,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
     name: "item",
   });
   const edit = Boolean(details.info === "edit");
-  const { items } = GetItems();
+  const { inventoryItems } = GetInventoryItems();
   const { clients } = GetClients();
   const { products } = GetProducts();
 
@@ -483,7 +483,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                             {products.map((item, index) => {
                               if (
                                 edit &&
-                                details?.item[index]?.id === items.code
+                                details?.item[index]?.id === inventoryItems.code
                               )
                                 return (
                                   <option

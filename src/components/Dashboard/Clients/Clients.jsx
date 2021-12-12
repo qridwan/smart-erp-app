@@ -22,6 +22,7 @@ const Clients = ({ show, setShow }) => {
   const classes = tableStyles();
   const { clients } = GetClients();
   const { items, requestSort, sortConfig } = useSortableData(clients);
+  
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;

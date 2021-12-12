@@ -13,22 +13,22 @@ import TableHeadCell from "../Tables/TableHead";
 import { useSortableData } from "../Tables/table.sort";
 import { setShow } from "../../../Redux/actions/renderActions";
 import { connect } from "react-redux";
-import GetItems from "../../../Api/GetItems";
 import GetProducts from "../../../Api/GetProducts";
 import { UserContext } from "../../../context/UserProvider";
+import GetInventoryItems from "../../../Api/GetInventoryItems";
 
 const InventoryTable = ({ setShow, show, setItem }) => {
   const classes = tableStyles();
   const user = useContext(UserContext);
   const { role } = user;
   const [anchorEl, setAnchorEl] = useState([]);
-  const { items } = GetItems();
+  const { inventoryItems } = GetInventoryItems();
   const { products } = GetProducts();
   let anchors = [];
   useEffect(() => {
-    items.forEach((item) => anchors.push(null));
+    inventoryItems.forEach((item) => anchors.push(null));
     setAnchorEl(anchors);
-  }, [items.length]);
+  }, [inventoryItems.length]);
   const handleClick = (event, index) => {
     setAnchorEl(
       anchorEl.map((a, i) => {
@@ -52,7 +52,7 @@ const InventoryTable = ({ setShow, show, setItem }) => {
       })
     );
   };
-  const { requestSort, sortConfig } = useSortableData(items);
+  const { requestSort, sortConfig, items } = useSortableData(inventoryItems);
 
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
@@ -94,7 +94,7 @@ const InventoryTable = ({ setShow, show, setItem }) => {
                       width="30px"
                     />
                   </TableCell>
-                  <TableCell >{item.item_name}</TableCell>
+                  <TableCell>{item.item_name}</TableCell>
                   <TableCell align="center">{item.code}</TableCell>
                   <TableCell align="center">
                     {product?.quantity ? product.quantity : 0}

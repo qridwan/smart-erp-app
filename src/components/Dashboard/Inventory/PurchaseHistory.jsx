@@ -22,13 +22,14 @@ const PurchaseHistory = ({ setItem, setShow }) => {
   const topbarRef = useRef(null);
   const classes = tableStyles();
   const [anchorEl, setAnchorEl] = useState([]);
-  const { items } = GetPurchaseHistory();
-  const { requestSort, sortConfig } = useSortableData(items);
+  const { purchasedItems } = GetPurchaseHistory();
+  const { requestSort, sortConfig, items} = useSortableData(purchasedItems);
+  
   const anchors = [];
   useEffect(() => {
-    items.forEach((item) => anchors.push(null));
+    purchasedItems.forEach((item) => anchors.push(null));
     setAnchorEl(anchors);
-  }, [items.length]);
+  }, [purchasedItems.length]);
 
   const handleClick = (event, index) => {
     setAnchorEl(

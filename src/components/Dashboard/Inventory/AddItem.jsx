@@ -1,4 +1,3 @@
-
 import IPcamera from "../../../Assets/Images/ipCamera.png";
 import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "react-bootstrap";
@@ -22,7 +21,8 @@ import { ref as reference } from "@firebase/storage";
 import { getDownloadURL, uploadBytesResumable } from "@firebase/storage";
 // import { Alert } from "@material-ui/lab";
 
-const AddItem = ({ setShow, show, item }) => {
+const AddItem = ({ setShow, show, item, setItem }) => {
+  console.log("🚀 ~ AddItem ~ item", item);
   const edit = Boolean(item.info === "edit");
   const view = Boolean(item.info === "view");
   const [imgFile, setImgFile] = useState("");
@@ -39,6 +39,7 @@ const AddItem = ({ setShow, show, item }) => {
   } = useForm();
   useEffect(() => {
     edit && setImg(item.photos);
+    return () => setItem({});
   }, []);
 
   // HANDLE ADD PRODUCT SUBMIT
@@ -176,7 +177,7 @@ const AddItem = ({ setShow, show, item }) => {
                 <ImageInputArea onClick={() => !view && handleClick("image")}>
                   <ImageInput
                     className="img-fluid"
-                    src={img ? img : edit || view ? item.photos : IPcamera}
+                    src={edit || view ? item.photos : img ? img : IPcamera}
                     alt=""
                   />
                 </ImageInputArea>
@@ -211,7 +212,7 @@ const AddItem = ({ setShow, show, item }) => {
                   required={true}
                   id="item_name"
                   placeholder=""
-                  defaultValue={edit || view ? item.item_name : ""}
+                  defaultValue={edit || view ? item.item_name : 0}
                   md={edit ? 4 : 6}
                 />
                 <InputAtom

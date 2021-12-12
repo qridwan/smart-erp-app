@@ -2,8 +2,8 @@ import { onValue, ref } from "@firebase/database";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
 
-const GetItems = () => {
-  const [items, setItems] = useState([]);
+const GetInventoryItems = () => {
+  const [inventoryItems, setInventoryItems] = useState([]);
   const itemsRef = ref(db, "inventory/items");
   useEffect(() => {
     onValue(itemsRef, (snapshot) => {
@@ -13,10 +13,10 @@ const GetItems = () => {
         const item = data[key];
         alldata.push(item);
       });
-      setItems(alldata);
+      setInventoryItems(alldata);
     });
   }, []);
-  return { items };
+  return { inventoryItems };
 };
 
-export default GetItems;
+export default GetInventoryItems;

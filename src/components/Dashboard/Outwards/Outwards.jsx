@@ -85,7 +85,7 @@ const Outwards = ({ show, setShow }) => {
     );
   };
 
-  const { requestSort, sortConfig } = useSortableData(outwards);
+  const { requestSort, sortConfig, items } = useSortableData(outwards);
 
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
@@ -148,7 +148,7 @@ const Outwards = ({ show, setShow }) => {
               />
 
               <TableBody>
-                {outwards.map((row, index) => {
+                {items.map((row, index) => {
                   return (
                     <TableRow
                       key={row.key}
