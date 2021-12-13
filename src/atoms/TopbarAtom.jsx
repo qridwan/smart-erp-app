@@ -20,7 +20,7 @@ const TopbarAtom = ({
           src={backArrow}
           alt="home inventory"
           height="18px"
-          className="mt-2 mt-lg-0" 
+          className="mt-2 mt-lg-0"
           style={{ marginRight: "10px", cursor: "pointer" }}
           onClick={() => {
             setShow(goBack);
@@ -36,6 +36,7 @@ const TopbarAtom = ({
             outline={Boolean(buttonType)}
             onClick={() => {
               buttonRef && buttonRef.current.click();
+              buttonTitle === "Summary" && setShow(goBack);
               //   reset();
               //   setShow("outwards");
               //   setDetails({});

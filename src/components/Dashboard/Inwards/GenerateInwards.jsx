@@ -29,6 +29,8 @@ import InputAtom from "../../../atoms/InputAtom";
 import DocInputAtom from "../../../atoms/DocInputAtom";
 import GetClients from "../../../Api/GetClients";
 import GetProducts from "../../../Api/GetProducts";
+import GetOutwards from "../../../Api/GetOutwards";
+import GetInwards from "../../../Api/GetInwards";
 const useStyles = makeStyles({
   table: {
     width: "100%",
@@ -92,6 +94,9 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
   }, []);
   const { clients } = GetClients();
   const { products } = GetProducts();
+  const { outwards } = GetOutwards();
+  const { inwards } = GetInwards();
+
   const [agencyName, setAgency] = useState("");
   const status = watch("auditStatus");
 
@@ -119,6 +124,81 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
 
     setShow("inwardsTable");
     reset();
+  };
+  const handleAgencyItems = (agencyName) => {
+    const filteredOutwardsAgency = outwards.filter(
+      (obj) => obj.agency === agencyName
+    );
+
+    const filteredInwardsAgency = inwards.filter(
+      (obj) => obj.agency === agencyName
+    );
+    remove();
+
+    const inwardsFieldsArray = [];
+    filteredInwardsAgency.forEach((obj) => {
+      obj.item.forEach((itm) => {
+        const presentOnFields = inwardsFieldsArray.find(
+          (obj) => obj.name === itm.name
+        );
+        const indexOfDoubleItem = inwardsFieldsArray.findIndex(
+          (obj) => obj.name === itm.name
+        );
+        if (presentOnFields) {
+          // console.log("🚀 ~ obj.item.forEach ~ itm", itm, presentOnFields);
+          inwardsFieldsArray.splice(indexOfDoubleItem, 1);
+          inwardsFieldsArray.push({
+            ...presentOnFields,
+            quantity: Number(itm.received) + Number(presentOnFields.quantity),
+          });
+        } else
+          inwardsFieldsArray.push({
+            name: itm.name,
+            quantity: Number(itm.received),
+          });
+      });
+    });
+
+    const outwardsFieldsArray = [];
+    filteredOutwardsAgency.forEach((obj) => {
+      obj.item.forEach((itm) => {
+        const presentOnFields = outwardsFieldsArray.find(
+          (obj) => obj.name === itm.name
+        );
+        const indexOfDoubleItem = outwardsFieldsArray.findIndex(
+          (obj) => obj.name === itm.name
+        );
+
+        if (presentOnFields) {
+          outwardsFieldsArray.splice(indexOfDoubleItem, 1);
+          outwardsFieldsArray.push({
+            ...presentOnFields,
+            quantity: Number(itm.sent) + Number(presentOnFields.quantity),
+          });
+        } else
+          outwardsFieldsArray.push({
+            name: itm.name,
+            quantity: Number(itm.sent),
+          });
+      });
+    });
+
+    const finalFields = [];
+    outwardsFieldsArray.forEach((out_object, i) => {
+      const inw_object = inwardsFieldsArray.find(
+        (inward) => inward.name === out_object.name
+      );
+      if (inw_object) {
+        const qty = Number(out_object.quantity) - Number(inw_object.quantity);
+        qty > 0 &&
+          finalFields.push({
+            name: inw_object.name,
+            quantity: qty,
+          });
+      } else finalFields.push(out_object);
+    });
+    console.log({ outwardsFieldsArray, inwardsFieldsArray, finalFields });
+    append(finalFields);
   };
   return (
     <div>
@@ -150,6 +230,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                   // PREFILLS DATA BASED ON CLIENT'S INFO
                   onChange={(event, newValue) => {
                     if (newValue) {
+                      handleAgencyItems(newValue.name);
                       setAgency(newValue.name);
                       setValue("generatedBy", user.email);
                     } else {
@@ -373,7 +454,9 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                             <TableInput
                               type="number"
                               name={`item[${index}].received`}
-                              defaultValue={`${item.received}`}
+                              defaultValue={`${
+                                item.received ? item.received : item.quantity
+                              }`}
                               {...register(`item.${index}.received`)}
                             ></TableInput>
                           </TableCell>
@@ -459,6 +542,9 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                     <option value="Complete" className="text-dark">
                       Complete
                     </option>
+                    <option value="Paid" className="text-dark">
+                      Paid
+                    </option>
                   </Select>
                 </InputDiv>
               </Col>
@@ -467,7 +553,13 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                 setDocFile={setInwardImageFile}
                 setDocUrl={setUploadImageFile}
                 docFile={inwardImageFile}
-                disabled={status === "Complete" ? false : true}
+                disabled={
+                  status === "Complete"
+                    ? false
+                    : status === "Paid"
+                    ? false
+                    : true
+                }
               />
             </Row>
 

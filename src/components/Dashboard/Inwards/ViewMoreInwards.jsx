@@ -260,7 +260,7 @@ const ViewMoreInwards = ({ details }) => {
                   <TableBody>
                     {details?.item?.map((item, index) => {
                       return (
-                        <TableRow key={item.id}>
+                        <TableRow key={index}>
                           <TableCell align="center">{index + 1}</TableCell>
                           <TableCell align="center">
                             <TableSelect readOnly value={`${item.name}`}>

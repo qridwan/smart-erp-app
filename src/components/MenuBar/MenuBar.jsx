@@ -32,9 +32,8 @@ const StyledMenu = withStyles({
   />
 ));
 
-const MenuBar = ({ show, setShow, handleLogout, sideData }) => {
+const MenuBar = ({ show, setShow, handleLogout, sideData, setPath }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -80,14 +79,13 @@ const MenuBar = ({ show, setShow, handleLogout, sideData }) => {
                     ? "active side_nav"
                     : "side_nav"
                 }
-                onClick={
-                  () => {
-                    Title === "logout"
-                      ? handleLogout()
-                      : setShow(obj.title.toLowerCase());
-                    handleClose();
-                  }
-                }
+                onClick={() => {
+                  Title === "logout"
+                    ? handleLogout()
+                    : setPath(obj.title.toLowerCase()) &&
+                      setShow(`${Title}Table`);
+                  handleClose();
+                }}
               >
                 <SidebarIconWrapper>{obj.icon}</SidebarIconWrapper>
                 <Title className="title">{obj.title}</Title>

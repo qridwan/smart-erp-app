@@ -80,6 +80,7 @@ const Inwards = ({ show, setShow }) => {
   };
 
   const { requestSort, sortConfig, items } = useSortableData(inwards);
+
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
       return;
@@ -200,7 +201,8 @@ const Inwards = ({ show, setShow }) => {
                       <TableCell
                         align="center"
                         className={
-                          row.auditStatus === "Complete"
+                          row.auditStatus === "Complete" ||
+                          row.auditStatus === "Paid"
                             ? "text-success"
                             : "text-danger"
                         }
@@ -208,31 +210,29 @@ const Inwards = ({ show, setShow }) => {
                         {row.auditStatus}
                       </TableCell>
                       <TableCell align="center">
-                        {row.status !== "Delivered" && (
-                          <div>
-                            <MoreHorizIcon
-                              aria-controls="simple-menu"
-                              aria-haspopup="true"
-                              onClick={(e) => handleClick(e, index)}
-                            />
-                            <Menu
-                              id="simple-menu"
-                              anchorEl={anchorEl[index]}
-                              keepMounted
-                              open={Boolean(anchorEl[index])}
-                              onClose={() => handleClose(index)}
-                            >
-                              <MenuItem onClick={() => MoreFunc(row, "view")}>
-                                View More
+                        <div>
+                          <MoreHorizIcon
+                            aria-controls="simple-menu"
+                            aria-haspopup="true"
+                            onClick={(e) => handleClick(e, index)}
+                          />
+                          <Menu
+                            id="simple-menu"
+                            anchorEl={anchorEl[index]}
+                            keepMounted
+                            open={Boolean(anchorEl[index])}
+                            onClose={() => handleClose(index)}
+                          >
+                            <MenuItem onClick={() => MoreFunc(row, "view")}>
+                              View More
+                            </MenuItem>
+                            {role !== `role-1` && (
+                              <MenuItem onClick={() => MoreFunc(row, "edit")}>
+                                Edit
                               </MenuItem>
-                              {role !== `role-1` && (
-                                <MenuItem onClick={() => MoreFunc(row, "edit")}>
-                                  Edit
-                                </MenuItem>
-                              )}
-                            </Menu>
-                          </div>
-                        )}
+                            )}
+                          </Menu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );

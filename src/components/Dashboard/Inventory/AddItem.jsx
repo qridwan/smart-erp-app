@@ -19,10 +19,8 @@ import { bucket, db } from "../../../firebase";
 import { ref, update } from "@firebase/database";
 import { ref as reference } from "@firebase/storage";
 import { getDownloadURL, uploadBytesResumable } from "@firebase/storage";
-// import { Alert } from "@material-ui/lab";
 
 const AddItem = ({ setShow, show, item, setItem }) => {
-  console.log("🚀 ~ AddItem ~ item", item);
   const edit = Boolean(item.info === "edit");
   const view = Boolean(item.info === "view");
   const [imgFile, setImgFile] = useState("");

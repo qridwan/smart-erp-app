@@ -36,6 +36,7 @@ import GetClients from "../../../Api/GetClients";
 import GetProducts from "../../../Api/GetProducts";
 import SetOutwards from "../../../Api/SetOutwards";
 import UpdateOutwards from "../../../Api/UpdateOutwards";
+import GetInwards from "../../../Api/GetInwards";
 
 const GenerateOutwards = ({ setShow, details, setDetails }) => {
   const classes = addTableStyles();
@@ -71,7 +72,9 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
   const { inventoryItems } = GetInventoryItems();
   const { clients } = GetClients();
   const { products } = GetProducts();
+  const { inwards } = GetInwards();
 
+ 
   useEffect(() => {
     scrollToRef(topbarRef);
     if (edit) {

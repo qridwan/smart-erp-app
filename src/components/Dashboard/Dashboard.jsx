@@ -93,9 +93,10 @@ const Dashboard = ({ setShow, setPath, show, path }) => {
               </Content>
               <MenuContainer>
                 <MenuBar
+                  setPath={setPath}
                   sideData={sideData}
                   show={path}
-                  setShow={setPath}
+                  setShow={setShow}
                   handleLogout={handleLogout}
                 />
               </MenuContainer>

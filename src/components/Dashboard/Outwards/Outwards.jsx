@@ -1,4 +1,3 @@
-
 import { NativeSelect, FormControl, Menu, MenuItem } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
@@ -183,7 +182,7 @@ const Outwards = ({ show, setShow }) => {
                       </TableCell>
                       <TableCell align="center">{row.agency}</TableCell>
                       <TableCell align="center">
-                        {row.item[arr[index]]?.quantity}
+                        {row.item[arr[index]]?.sent}
                       </TableCell>
                       <TableCell align="center">{row.pincode}</TableCell>
                       <TableCell align="center">{row.generated_by}</TableCell>
@@ -197,33 +196,33 @@ const Outwards = ({ show, setShow }) => {
                       >
                         {row.status}
                       </TableCell>
-                      <TableCell align="center">{dateFormat(new Date(row.deliveryDate), "dd-mm-yyyy")}</TableCell>
                       <TableCell align="center">
-                        {row.status !== "delivered" && (
-                          <div>
-                            <MoreHorizIcon
-                              aria-controls="simple-menu"
-                              aria-haspopup="true"
-                              onClick={(e) => handleClick(e, index)}
-                            />
-                            <Menu
-                              id="simple-menu"
-                              anchorEl={anchorEl[index]}
-                              keepMounted
-                              open={Boolean(anchorEl[index])}
-                              onClose={() => handleClose(index)}
-                            >
-                              <MenuItem onClick={() => MoreFunc(row, "view")}>
-                                View More
+                        {dateFormat(new Date(row.deliveryDate), "dd-mm-yyyy")}
+                      </TableCell>
+                      <TableCell align="center">
+                        <div>
+                          <MoreHorizIcon
+                            aria-controls="simple-menu"
+                            aria-haspopup="true"
+                            onClick={(e) => handleClick(e, index)}
+                          />
+                          <Menu
+                            id="simple-menu"
+                            anchorEl={anchorEl[index]}
+                            keepMounted
+                            open={Boolean(anchorEl[index])}
+                            onClose={() => handleClose(index)}
+                          >
+                            <MenuItem onClick={() => MoreFunc(row, "view")}>
+                              View More
+                            </MenuItem>
+                            {role !== `role-1` && (
+                              <MenuItem onClick={() => MoreFunc(row, "edit")}>
+                                Edit
                               </MenuItem>
-                              {role !== `role-1` && (
-                                <MenuItem onClick={() => MoreFunc(row, "edit")}>
-                                  Edit
-                                </MenuItem>
-                              )}
-                            </Menu>
-                          </div>
-                        )}
+                            )}
+                          </Menu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
