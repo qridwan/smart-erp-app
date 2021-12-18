@@ -9,6 +9,8 @@ import {
   Label,
   MainTitle,
   TableInput,
+  TableSelect,
+  TextAreaInput,
 } from "../../../styles/styles";
 import {
   makeStyles,
@@ -48,6 +50,7 @@ const useStyles = makeStyles({
 });
 
 const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
+console.log("🚀 ~ ViewMoreOutwards ~ details", details)
   const classes = useStyles();
   const topbarRef = useRef(null);
   useEffect(() => {
@@ -120,7 +123,7 @@ const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
                   <ApplyFormInput details readOnly value={details.reference} />
                 </InputDiv>
               </Col>
-              <Col md={3} xs={12}>
+              {/* <Col md={3} xs={12}>
                 <InputDiv>
                   <Label details>P.O Number</Label>
                   <ApplyFormInput
@@ -133,9 +136,9 @@ const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
               <Col md={3} xs={12}>
                 <InputDiv>
                   <Label details>P.I Number</Label>
-                  <ApplyFormInput details readOnly value={details.piNumber} />
+                  <ApplyFormInput details readOnly value={details.piNumber ? details.piNumber : "-"} />
                 </InputDiv>
-              </Col>
+              </Col> */}
               <DocumentPreview label="Eway Bill" docFile={details.ewayBill} />
               <DocumentPreview
                 label="D.C Document"
@@ -172,11 +175,12 @@ const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
               <Col md={6} xs={12}>
                 <InputDiv>
                   <Label details>Address</Label>
-                  <ApplyFormInput
+                  <TextAreaInput
                     details
                     readOnly
                     value={details.address}
                     type="text"
+                    rows="5"
                   />
                 </InputDiv>
               </Col>
@@ -265,7 +269,7 @@ const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
                       Item
                     </TableCell>
                     <TableCell className={classes.thead} align="center">
-                      Total Qty.
+                      Sent Qty.
                     </TableCell>
                     <TableCell
                       className={classes.thead}
@@ -286,22 +290,22 @@ const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
                           />
                         </TableCell>
                         <TableCell align="center">
-                          <select
+                          <TableSelect
                             name={`item[${index}].name`}
                             readOnly
                             value={`${item.item}`}
                           >
-                            <option readOnly value="IP Camera">
+                            <option readOnly value={item.name}>
                               {item.name}
                             </option>
-                          </select>
+                          </TableSelect>
                         </TableCell>
                         <TableCell align="center">
                           <TableInput
                             type="number"
                             name={`item[${index}].quantity`}
                             readOnly
-                            value={`${item.quantity}`}
+                            value={`${item.sent}`}
                           ></TableInput>
                         </TableCell>
                       </TableRow>

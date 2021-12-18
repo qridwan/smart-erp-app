@@ -9,6 +9,7 @@ import {
   Container,
   MainTitle,
   TableInput,
+  TableSelect,
 } from "../../../styles/styles";
 import {
   IconButton,
@@ -27,12 +28,15 @@ import DocInputAtom from "../../../atoms/DocInputAtom";
 import GetInventoryItems from "../../../Api/GetInventoryItems";
 import { UserContext } from "../../../context/UserProvider";
 import SetProducts from "../../../Api/SetProducts";
-import GetProducts from "../../../Api/GetProducts";
 import SetPurchased from "../../../Api/SetPurchased";
 import UpdatePurchased from "../../../Api/UpdatePurchased";
 import DocumentPreview from "../../../atoms/DocumentPreview";
+import { ref, update } from "firebase/database";
+import { db } from "../../../firebase";
+import UpdateProduct from "../../../Api/UpdateProduct";
 
 const PurchaseForm = ({ setShow, show, item, setItem }) => {
+  console.log("🚀 ~ PurchaseForm ~ item", item);
   const classes = addTableStyles();
   const edit = Boolean(item.info === "edit");
   const view = Boolean(item.info === "view");
@@ -48,15 +52,13 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
     setValue,
     reset,
   } = useForm();
-
   const { inventoryItems } = GetInventoryItems();
-  const { products } = GetProducts();
   const user = useContext(UserContext);
   useEffect(() => {
     if (edit || view) {
       item.item?.forEach((pd) =>
         append({
-          code: pd.code,
+          code: pd.item_name,
           item_name: pd.item_name,
           quantity: pd.quantity,
         })
@@ -67,21 +69,28 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
   }, []);
   const onSubmit = (data) => {
     const inputProducts = [];
+    data["item"] = data.item.map((item) => {
+      inventoryItems.forEach((product) => {
+        if (product.code === item.code) {
+          item["item_name"] = product.item_name;
+        }
+      });
+      return item;
+    });
     const purchasedProduct = {
       ...data,
       lastEditedBy: user.email,
       key: item.key,
       deliveryProf: deliveryProf,
     };
+
     data.item.forEach((product) => {
-      const prevProduct = products.find(
-        (pd) => pd.item_name === product.item_name
-      );
-      const prevQuantity = prevProduct?.quantity ? prevProduct.quantity : 0;
-      const item = inventoryItems.find((it) => it.item_name === product.item_name);
+      const prevProduct = inventoryItems.find((pd) => pd.code === product.code);
+      const prevQuantity = prevProduct?.onHand ? prevProduct.onHand : 0;
+      const item = inventoryItems.find((it) => it.code === product.code);
       const prod = {
         deliveryProf: deliveryProf,
-        item_name: product?.item_name,
+        item_name: item?.item_name,
         code: item?.code,
         photos: item?.photos,
         quantity: Number(prevQuantity) + Number(product?.quantity),
@@ -92,15 +101,20 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
         lastEditedBy: user.email,
       };
       inputProducts.push(prod);
+      const updates = {};
+      updates["inventory/items/" + item.code] = {
+        ...prevProduct,
+        onHand: parseInt(prevQuantity) + parseInt(product?.quantity),
+      };
+      update(ref(db), updates);
     });
+
     if (!edit) {
       SetPurchased(purchasedProduct);
       SetProducts(inputProducts);
-      alert("product successfully added");
     } else if (edit) {
       UpdatePurchased(purchasedProduct, item.key);
-      console.log("🚀 ~ onSubmit ~ purchasedProduct", purchasedProduct);
-      SetProducts(inputProducts);
+      UpdateProduct(inputProducts, inputProducts.item_name);
     }
     reset();
     setShow("purchaseHistory");
@@ -111,18 +125,6 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
     name: "item",
   });
 
-  // useEffect(() => {
-  //   const productsRef = ref(db, "inventory/products");
-  //   onValue(productsRef, (snapshot) => {
-  //     let products = [];
-  //     Object.keys(snapshot.val()).forEach((key) => {
-  //       products.push(snapshot.val()[key]);
-  //     });
-  //     setProducts(products);
-  //     console.log("🚀 ~ onValue ~ products", { products });
-  //     // setProductObj(snapshot.val());
-  //   });
-  // }, []);
   return (
     <div>
       <TopbarAtom
@@ -262,26 +264,24 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                 <TableBody>
                   {fields.map((item, index) => {
                     return (
-                      <TableRow key={item.code}>
+                      <TableRow key={item.id}>
                         <TableCell align="center">{index + 1}</TableCell>
-
                         <TableCell align="center">
-                          <select
+                          <TableSelect
                             name={`item[${index}].item_name`}
-                            defaultValue={`${item.item_name}`}
                             {...register(`item.${index}.item_name`)}
                             onChange={(e) => {
                               setValue(`item.${index}.code`, e.target.value);
                             }}
                           >
-                            {inventoryItems.map((item) => {
+                            {inventoryItems.map((itm) => {
                               return (
-                                <option value={item?.item_name}>
-                                  {item.item_name}
+                                <option value={itm?.code}>
+                                  {itm.item_name}
                                 </option>
                               );
                             })}
-                          </select>
+                          </TableSelect>
                         </TableCell>
                         <TableCell align="center">
                           <TableInput
@@ -292,7 +292,9 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                             //       : `${item.quantity}`
                             //   }
                             {...register(`item.${index}.quantity`)}
-                          ></TableInput>
+                          >
+                            {/* {itm.quantity} */}
+                          </TableInput>
                         </TableCell>
                         {/* {edit ? (
                         <TableCell align="center">
@@ -332,7 +334,6 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
                   <Button
                     outline
                     onClick={(e) => {
-                      // let genCode = Math.floor(Math.random() + Math.random() * 10000);
                       append({
                         code: "-",
                         item_name: "",

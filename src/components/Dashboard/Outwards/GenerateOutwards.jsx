@@ -13,6 +13,7 @@ import {
   Select,
   SubmitButton,
   TableInput,
+  TableSelect,
 } from "../../../styles/styles";
 // import { ReactComponent as IndiaIcon } from "../../../Assets/Icons/india.svg";
 import { ReactComponent as DeleteIcon } from "../../../Assets/Icons/delete.svg";
@@ -37,6 +38,8 @@ import GetProducts from "../../../Api/GetProducts";
 import SetOutwards from "../../../Api/SetOutwards";
 import UpdateOutwards from "../../../Api/UpdateOutwards";
 import GetInwards from "../../../Api/GetInwards";
+import { ref, update } from "firebase/database";
+import { db } from "../../../firebase";
 
 const GenerateOutwards = ({ setShow, details, setDetails }) => {
   const classes = addTableStyles();
@@ -54,7 +57,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
   const [agencyName, setAgencyName] = useState("");
   const [client] = useState({});
 
-  // const [prodQuantity, setProdQuantity] = useState({});
   const {
     register,
     formState: { errors },
@@ -71,10 +73,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
   const edit = Boolean(details.info === "edit");
   const { inventoryItems } = GetInventoryItems();
   const { clients } = GetClients();
-  const { products } = GetProducts();
-  const { inwards } = GetInwards();
 
- 
   useEffect(() => {
     scrollToRef(topbarRef);
     if (edit) {
@@ -94,6 +93,28 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
     data[`dcDocument`] = dcDocURL;
     data[`courierDoc`] = courierDocURL;
     data[`packagingList`] = packagingDocURL;
+    data["item"] = data.item.map((item) => {
+      inventoryItems.forEach((product) => {
+        if (product.code === item.code) {
+          item["name"] = product.item_name;
+        }
+      });
+      return item;
+    });
+    data.item.forEach((item) => {
+      const prevItem = inventoryItems.find((prod) => {
+        if (prod.code === item.code) {
+          return prod?.onHand;
+        }
+        return undefined;
+      });
+      const updates = {};
+      updates["inventory/items/" + item.code] = {
+        ...prevItem,
+        onHand: parseInt(prevItem.onHand) - parseInt(item.sent),
+      };
+      update(ref(db), updates);
+    });
     !edit
       ? SetOutwards({ ...data, agency: agencyName, status: "intransit" })
       : UpdateOutwards(
@@ -469,50 +490,48 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                       <TableRow key={item.id}>
                         <TableCell align="center">{index + 1}</TableCell>
                         <TableCell align="center">
-                          <select
+                          <TableSelect
                             name={`item[${index}].name`}
                             {...register(`item.${index}.name`)}
                             onChange={(e) => {
-                              let sItem = products.find(
-                                (pd) => pd.item_name === e.target.value
+                              let sItem = inventoryItems.find(
+                                (pd) => pd.code === e.target.value
                               );
+                              console.log("🚀 ~ {fields.map ~ sItem", sItem)
                               setValue(
                                 `item.${index}.quantity`,
-                                sItem.quantity
+                                sItem?.onHand ? sItem?.onHand : 0
                               );
-                              setValue(`item.${index}.code`, sItem.code);
+                              setValue(`item.${index}.code`, sItem?.code);
+                              // setValue(`item.${index}.name`, sItem?.item_name);
                             }}
                           >
-                            {products.map((item, index) => {
+                            {inventoryItems.map((item, index) => {
                               if (
                                 edit &&
                                 details?.item[index]?.id === inventoryItems.code
                               )
                                 return (
                                   <option
-                                    key={item.item_name}
-                                    selected
-                                    value={item.item_name}
+                                    key={item.code}
+                                    value={item.code}
                                   >
                                     {item.item_name}
                                   </option>
                                 );
                               else
                                 return (
-                                  <option value={item.item_name}>
+                                  <option key={item.code} value={item.code}>
                                     {item.item_name}
                                   </option>
                                 );
                             })}
-                          </select>
+                          </TableSelect>
                         </TableCell>
                         <TableCell align="center">
                           <TableInput
                             style={{ border: "none" }}
                             name={`item[${index}].quantity`}
-                            // defaultValue={
-                            //   edit ? `${details.item[index].quantity}` : ``
-                            // }
                             {...register(`item.${index}.quantity`)}
                           />
                         </TableCell>
@@ -520,9 +539,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                         <TableCell align="center">
                           <TableInput
                             name={`item[${index}].sent`}
-                            // defaultValue={
-                            //   edit ? `${details?.item[index]?.sent}` : 0
-                            // }
                             {...register(`item.${index}.sent`)}
                           ></TableInput>
                         </TableCell>

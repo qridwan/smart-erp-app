@@ -371,6 +371,20 @@ export const Error = styled.span`
   font-size: 12px;
   color: red;
 `;
+export const TextAreaInput = styled.textarea`
+  border-radius: 5px;
+  width: 100%;
+  margin: 8px 0;
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 18px;
+  color: black;
+  max-height: 155px;
+  border: none;
+  resize: none;
+  :focus {
+    outline: none;
+  }`
 
 export const ApplyFormInput = styled.input`
   border-radius: 5px;
@@ -537,8 +551,26 @@ export const Select = styled.select`
 `;
 
 export const TableInput = styled.input`
-  width: 100px;
   height: 34px;
+  width: 100px;
+  border: 0.5px solid #2d3850;
+  box-sizing: border-box;
+  border-radius: 5px;
+  text-align: center;
+  color: #000000;
+  :focus {
+    outline: none;
+  }
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+`;
+
+export const DemoItemInput = styled.input`
+  height: 34px;
+  width: -moz-min-content;    /* Firefox */
+  width: -webkit-min-content; /* Chrome */
+  width: min-content;
   border: 0.5px solid #2d3850;
   box-sizing: border-box;
   border-radius: 5px;

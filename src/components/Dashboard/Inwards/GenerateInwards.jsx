@@ -11,7 +11,6 @@ import SetInwards from "../../../Api/SetInwards";
 import UpdateInwards from "../../../Api/UpdateInwards";
 import {
   AddItemContainer,
-  Button,
   InputDiv,
   Label,
   MainTitle,
@@ -19,7 +18,7 @@ import {
   SubmitButton,
   TableContainer,
   TableInput,
-  TableSelect,
+  DemoItemInput,
 } from "../../../styles/styles";
 import { UserContext } from "../../../context/UserProvider";
 import TextField from "@material-ui/core/TextField";
@@ -28,9 +27,11 @@ import TopbarAtom from "../../../atoms/TopbarAtom";
 import InputAtom from "../../../atoms/InputAtom";
 import DocInputAtom from "../../../atoms/DocInputAtom";
 import GetClients from "../../../Api/GetClients";
-import GetProducts from "../../../Api/GetProducts";
 import GetOutwards from "../../../Api/GetOutwards";
 import GetInwards from "../../../Api/GetInwards";
+import GetInventoryItems from "../../../Api/GetInventoryItems";
+import { ref, update } from "firebase/database";
+import { db } from "../../../firebase";
 const useStyles = makeStyles({
   table: {
     width: "100%",
@@ -93,10 +94,9 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
     return () => setDetails(``);
   }, []);
   const { clients } = GetClients();
-  const { products } = GetProducts();
   const { outwards } = GetOutwards();
   const { inwards } = GetInwards();
-
+  const { inventoryItems } = GetInventoryItems();
   const [agencyName, setAgency] = useState("");
   const status = watch("auditStatus");
 
@@ -111,13 +111,29 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
     });
     data["total"] = total;
     data["item"] = data.item.map((item) => {
-      products.map((product) => {
+      inventoryItems.map((product) => {
         if (product.name === item.name) {
           item["id"] = product.id;
         }
       });
       return item;
     });
+
+    data.item.forEach((item) => {
+      const prevItem = inventoryItems.find((prod) => {
+        if (prod.code === item.item_code) {
+          return prod?.onHand;
+        }
+        return undefined;
+      });
+      const updates = {};
+      updates["inventory/items/" + item.code] = {
+        ...prevItem,
+        onHand: parseInt(prevItem.onHand) + parseInt(item.received),
+      };
+      update(ref(db), updates);
+    });
+
     !edit
       ? SetInwards(data)
       : UpdateInwards({ ...data, key: details.key }, details.key);
@@ -125,6 +141,8 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
     setShow("inwardsTable");
     reset();
   };
+
+  //FOR AUTO GENERATING AGENCY ITEMS
   const handleAgencyItems = (agencyName) => {
     const filteredOutwardsAgency = outwards.filter(
       (obj) => obj.agency === agencyName
@@ -134,7 +152,6 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
       (obj) => obj.agency === agencyName
     );
     remove();
-
     const inwardsFieldsArray = [];
     filteredInwardsAgency.forEach((obj) => {
       obj.item.forEach((itm) => {
@@ -145,7 +162,6 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
           (obj) => obj.name === itm.name
         );
         if (presentOnFields) {
-          // console.log("🚀 ~ obj.item.forEach ~ itm", itm, presentOnFields);
           inwardsFieldsArray.splice(indexOfDoubleItem, 1);
           inwardsFieldsArray.push({
             ...presentOnFields,
@@ -161,6 +177,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
 
     const outwardsFieldsArray = [];
     filteredOutwardsAgency.forEach((obj) => {
+      console.log("🚀 ~ filteredOutwardsAgency.forEach ~ obj", obj);
       obj.item.forEach((itm) => {
         const presentOnFields = outwardsFieldsArray.find(
           (obj) => obj.name === itm.name
@@ -174,11 +191,13 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
           outwardsFieldsArray.push({
             ...presentOnFields,
             quantity: Number(itm.sent) + Number(presentOnFields.quantity),
+            item_code: itm.code,
           });
         } else
           outwardsFieldsArray.push({
             name: itm.name,
             quantity: Number(itm.sent),
+            item_code: itm.code,
           });
       });
     });
@@ -194,12 +213,14 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
           finalFields.push({
             name: inw_object.name,
             quantity: qty,
+            item_code: out_object.item_code,
           });
       } else finalFields.push(out_object);
     });
-    console.log({ outwardsFieldsArray, inwardsFieldsArray, finalFields });
     append(finalFields);
+    console.log("🚀 ~ handleAgencyItems ~ finalFields", finalFields);
   };
+
   return (
     <div>
       <TopbarAtom
@@ -233,6 +254,16 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                       handleAgencyItems(newValue.name);
                       setAgency(newValue.name);
                       setValue("generatedBy", user.email);
+                      setValue("receiver", newValue.supervisor);
+                      setValue("email", newValue.email);
+                      setValue("generated_by", user.email);
+                      setValue("phone_number", newValue.phone);
+                      setValue("agencyAdress", newValue.address);
+                      setValue("city", newValue.city);
+                      setValue("district", newValue.district);
+                      setValue("state", newValue.state);
+                      setValue("pincode", newValue.pincode);
+                      setValue("state", newValue.state);
                     } else {
                       setAgency("");
                       setValue("generatedBy", "");
@@ -422,7 +453,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                         Not Working
                       </TableCell>
                       <TableCell className={classes.thead} align="center">
-                        Total Qty.
+                        Sent Qty.
                       </TableCell>
                       <TableCell
                         className={classes.thead}
@@ -436,18 +467,22 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                         <TableRow key={item.id}>
                           <TableCell align="center">{index + 1}</TableCell>
                           <TableCell align="center">
-                            <TableSelect
+                            {/* <TableSelect
                               name={`item[${index}].name`}
-                              defaultValue={`${item.name}`}
+                              value={`${item.name}`}
                               onChange={(e, newVal) => {}}
                               {...register(`item.${index}.name`)}
                             >
-                              {products.map((product) => (
-                                <option value={product.item_name}>
+                              {inventoryItems.map((product) => (
+                                <option key={product.code} value={product.item_name}>
                                   {product.item_name}
                                 </option>
                               ))}
-                            </TableSelect>
+                            </TableSelect> */}
+                            <DemoItemInput
+                              value={item.name}
+                              readOnly
+                            ></DemoItemInput>
                           </TableCell>
 
                           <TableCell align="center">
@@ -465,7 +500,9 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                               type="number"
                               name={`item[${index}].good_condition`}
                               defaultValue={`${item.good_condition}`}
-                              {...register(`item.${index}.good_condition`)}
+                              {...register(`item.${index}.good_condition`, {
+                                required: true,
+                              })}
                             ></TableInput>
                           </TableCell>
                           <TableCell align="center">
@@ -473,7 +510,9 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                               type="number"
                               name={`item[${index}].bad_condition`}
                               defaultValue={`${item.bad_condition}`}
-                              {...register(`item.${index}.bad_condition`)}
+                              {...register(`item.${index}.bad_condition`, {
+                                required: true,
+                              })}
                             ></TableInput>
                           </TableCell>
                           <TableCell align="center">
@@ -481,13 +520,16 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                               type="number"
                               name={`item[${index}].not_working`}
                               defaultValue={`${item.not_working}`}
-                              {...register(`item.${index}.not_working`)}
+                              {...register(`item.${index}.not_working`, {
+                                required: true,
+                              })}
                             ></TableInput>
                           </TableCell>
                           <TableCell align="center">
                             <TableInput
                               name={`item[${index}].quantity`}
                               defaultValue={`${item.quantity}`}
+                              readOnly
                               {...register(`item.${index}.quantity`)}
                             />
                           </TableCell>
@@ -505,7 +547,9 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <div className="text-center mt-lg-5 mb-lg-5 mb-3">
+
+              {/* INWARD ADD ITEM BTN */}
+              {/* <div className="text-center mt-lg-5 mb-lg-5 mb-3">
                 <Button
                   outline
                   onClick={(e) => {
@@ -517,12 +561,13 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                       bad_condition: "",
                       not_working: "",
                       quantity: "",
+                      code: "",
                     });
                   }}
                 >
                   + Add Item
                 </Button>
-              </div>
+              </div> */}
             </section>
 
             <Row>
