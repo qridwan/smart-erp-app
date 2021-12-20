@@ -136,10 +136,18 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
 
     !edit
       ? SetInwards(data)
-      : UpdateInwards({ ...data, key: details.key }, details.key);
+      : UpdateInwards(
+          {
+            ...data,
+            key: details.key,
+            receivedDate: data.receivedDate.toString(),
+          },
+          details.key
+        );
 
     setShow("inwardsTable");
     reset();
+    // console.log({data});
   };
 
   //FOR AUTO GENERATING AGENCY ITEMS
@@ -177,7 +185,6 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
 
     const outwardsFieldsArray = [];
     filteredOutwardsAgency.forEach((obj) => {
-      console.log("🚀 ~ filteredOutwardsAgency.forEach ~ obj", obj);
       obj.item.forEach((itm) => {
         const presentOnFields = outwardsFieldsArray.find(
           (obj) => obj.name === itm.name
@@ -218,7 +225,6 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
       } else finalFields.push(out_object);
     });
     append(finalFields);
-    console.log("🚀 ~ handleAgencyItems ~ finalFields", finalFields);
   };
 
   return (
@@ -292,6 +298,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
               <InputAtom
                 readOnly={false}
                 register={register}
+                control={control}
                 errors={errors}
                 type="date"
                 label="Date Received"

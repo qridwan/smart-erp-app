@@ -29,6 +29,9 @@ input::placeholder {
   color: rgb(107, 106, 106);
   font-family: Poppins;
 }
+input:invalid {
+  border-color: 1px solid rgb(192, 14, 14);
+}
 #dropdown-basic::after {
   display: none;
 }

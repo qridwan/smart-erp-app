@@ -70,7 +70,7 @@ const Clients = ({ show, setShow }) => {
                         {row.name}
                       </TableCell>
                       <TableCell align="center">{row.id}</TableCell>
-                      <TableCell align="center">{row.date}</TableCell>
+                      {/* <TableCell align="center">{row.date}</TableCell> */}
                       <TableCell align="center">{row.supervisor}</TableCell>
                       <TableCell align="center">{row.email}</TableCell>
                       <TableCell align="center">{row.city}</TableCell>

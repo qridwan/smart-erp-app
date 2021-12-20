@@ -7,6 +7,7 @@ import {
   AddItemsContainer,
   addTableStyles,
   Button,
+  CustomOption,
   InputDiv,
   Label,
   MainTitle,
@@ -34,10 +35,8 @@ import InputAtom from "../../../atoms/InputAtom";
 import DocInputAtom from "../../../atoms/DocInputAtom";
 import GetInventoryItems from "../../../Api/GetInventoryItems";
 import GetClients from "../../../Api/GetClients";
-import GetProducts from "../../../Api/GetProducts";
 import SetOutwards from "../../../Api/SetOutwards";
 import UpdateOutwards from "../../../Api/UpdateOutwards";
-import GetInwards from "../../../Api/GetInwards";
 import { ref, update } from "firebase/database";
 import { db } from "../../../firebase";
 
@@ -56,7 +55,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
   const [packagingDocURL, setPackagingDocURL] = useState(``);
   const [agencyName, setAgencyName] = useState("");
   const [client] = useState({});
-
+  const edit = Boolean(details.info === "edit");
   const {
     register,
     formState: { errors },
@@ -64,15 +63,24 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
     control,
     setValue,
     reset,
+    watch,
   } = useForm();
-
+  const { inventoryItems } = GetInventoryItems();
+  const { clients } = GetClients();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "item",
+    code: "",
+    quantity: 0,
+    box: 0,
   });
-  const edit = Boolean(details.info === "edit");
-  const { inventoryItems } = GetInventoryItems();
-  const { clients } = GetClients();
+  const watchFieldArray = watch("item");
+  const controledFields = fields.map((field, index) => {
+    return {
+      ...field,
+      ...watchFieldArray[index],
+    };
+  });
 
   useEffect(() => {
     scrollToRef(topbarRef);
@@ -123,6 +131,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
         );
     setShow("outwardsTable");
     reset();
+    // console.log("🚀 ~ onSubmit ~ data", data);
   };
   return (
     <div>
@@ -293,6 +302,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
               <InputAtom
                 readOnly={false}
                 register={register}
+                control={control}
                 errors={errors}
                 type="date"
                 label="Shipping Date"
@@ -329,16 +339,17 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                 readOnly={false}
                 register={register}
                 errors={errors}
-                label="Package Name"
+                label="Weight"
                 required={edit ? false : true}
-                id="package_name"
+                id="weight"
                 placeholder=""
-                defaultValue={edit ? details.package_name : null}
+                defaultValue={edit ? details.weight : null}
                 md={3}
               />
               <InputAtom
                 readOnly={false}
                 register={register}
+                control={control}
                 errors={errors}
                 type="date"
                 label="Delivery Date"
@@ -364,7 +375,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                   <InputDiv>
                     <Label>Update Status</Label>
                     <Select
-                      defaultValue={edit ? details.transport : null}
+                      defaultValue={edit ? details.status : null}
                       {...register("status")}
                     >
                       <option value=""> </option>
@@ -485,51 +496,63 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {fields.map((item, index) => {
+                  {controledFields.map((item, index) => {
                     return (
                       <TableRow key={item.id}>
                         <TableCell align="center">{index + 1}</TableCell>
                         <TableCell align="center">
                           <TableSelect
+                            defaultValue={
+                              edit ? details.item[index]?.name : null
+                            }
                             name={`item[${index}].name`}
                             {...register(`item.${index}.name`)}
                             onChange={(e) => {
                               let sItem = inventoryItems.find(
                                 (pd) => pd.code === e.target.value
                               );
-                              console.log("🚀 ~ {fields.map ~ sItem", sItem)
                               setValue(
                                 `item.${index}.quantity`,
                                 sItem?.onHand ? sItem?.onHand : 0
                               );
                               setValue(`item.${index}.code`, sItem?.code);
-                              // setValue(`item.${index}.name`, sItem?.item_name);
                             }}
                           >
+                            <CustomOption value=""></CustomOption>
                             {inventoryItems.map((item, index) => {
                               if (
                                 edit &&
                                 details?.item[index]?.id === inventoryItems.code
-                              )
+                              ) {
                                 return (
-                                  <option
+                                  <CustomOption
                                     key={item.code}
                                     value={item.code}
                                   >
                                     {item.item_name}
-                                  </option>
+                                  </CustomOption>
                                 );
-                              else
+                              } else {
                                 return (
-                                  <option key={item.code} value={item.code}>
+                                  <CustomOption
+                                    key={item.code}
+                                    value={item.code}
+                                  >
                                     {item.item_name}
-                                  </option>
+                                  </CustomOption>
                                 );
+                              }
                             })}
                           </TableSelect>
+                          {edit && (
+                            <span style={{ fontSize: "10px" }}>
+                              Item: {details.item[index]?.name}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell align="center">
                           <TableInput
+                            readOnly
                             style={{ border: "none" }}
                             name={`item[${index}].quantity`}
                             {...register(`item.${index}.quantity`)}
@@ -540,15 +563,14 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                           <TableInput
                             name={`item[${index}].sent`}
                             {...register(`item.${index}.sent`)}
+                            type="number"
+                            max={parseInt(item.quantity)}
+                            min={1}
                           ></TableInput>
+                          <span></span>
                         </TableCell>
                         <TableCell align="center">
                           <TableInput
-                            // onInputCapture={(e) => {
-                            //   console.log(e.target.value);
-                            //   // setValue(`item.${index}.pending`, )
-                            //   console.log(formState);
-                            // }}
                             name={`item[${index}].box`}
                             defaultValue={
                               edit
@@ -596,7 +618,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                 outline
                 onClick={(e) => {
                   append({
-                    code: "-",
+                    code: "",
                     name: "",
                     quantity: 0,
                     box: 0,

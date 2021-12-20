@@ -159,7 +159,7 @@ const Outwards = ({ show, setShow }) => {
                         {row.key}
                       </TableCell>
                       <TableCell align="center">
-                        {dateFormat(new Date(row.shippingDate), "dd-mm-yyyy")}
+                        {row?.shippingDate && dateFormat(new Date(row?.shippingDate), "dd-mm-yyyy")}
                       </TableCell>
                       <TableCell align="center">
                         <FormControl className={classes.formControl}>
@@ -184,8 +184,8 @@ const Outwards = ({ show, setShow }) => {
                       <TableCell align="center">
                         {row.item[arr[index]]?.sent}
                       </TableCell>
-                      <TableCell align="center">{row.pincode}</TableCell>
-                      <TableCell align="center">{row.generated_by}</TableCell>
+                      {/* <TableCell align="center">{row.pincode}</TableCell>
+                      <TableCell align="center">{row.generated_by}</TableCell> */}
                       <TableCell
                         align="center"
                         className={
@@ -197,7 +197,8 @@ const Outwards = ({ show, setShow }) => {
                         {row.status}
                       </TableCell>
                       <TableCell align="center">
-                        {dateFormat(new Date(row.deliveryDate), "dd-mm-yyyy")}
+                      {/* {row.deliveryDate} */}
+                        {row.deliveryDate && dateFormat(new Date(row?.deliveryDate), "dd-mm-yyyy")}
                       </TableCell>
                       <TableCell align="center">
                         <div>

@@ -34,9 +34,9 @@ import DocumentPreview from "../../../atoms/DocumentPreview";
 import { ref, update } from "firebase/database";
 import { db } from "../../../firebase";
 import UpdateProduct from "../../../Api/UpdateProduct";
+import dateFormat from "dateformat";
 
 const PurchaseForm = ({ setShow, show, item, setItem }) => {
-  console.log("🚀 ~ PurchaseForm ~ item", item);
   const classes = addTableStyles();
   const edit = Boolean(item.info === "edit");
   const view = Boolean(item.info === "view");
@@ -79,6 +79,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
     });
     const purchasedProduct = {
       ...data,
+      purchase_date: dateFormat(new Date(data.purchase_date), "yyyy-mm-dd"),
       lastEditedBy: user.email,
       key: item.key,
       deliveryProf: deliveryProf,
@@ -95,20 +96,21 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
         photos: item?.photos,
         quantity: Number(prevQuantity) + Number(product?.quantity),
         poNo: data.po_number,
-        purchasedDate: data.purchase_date,
+        purchasedDate: dateFormat(new Date(data.purchase_date), "yyyy-mm-dd"),
         remarks: data.remarks,
         supplier: data.supplier,
         lastEditedBy: user.email,
       };
-      inputProducts.push(prod);
-      const updates = {};
-      updates["inventory/items/" + item.code] = {
-        ...prevProduct,
-        onHand: parseInt(prevQuantity) + parseInt(product?.quantity),
-      };
-      update(ref(db), updates);
+      if (!edit) {
+        inputProducts.push(prod);
+        const updates = {};
+        updates["inventory/items/" + item.code] = {
+          ...prevProduct,
+          onHand: parseInt(prevQuantity) + parseInt(product?.quantity),
+        };
+        update(ref(db), updates);
+      }
     });
-
     if (!edit) {
       SetPurchased(purchasedProduct);
       SetProducts(inputProducts);
@@ -176,6 +178,7 @@ const PurchaseForm = ({ setShow, show, item, setItem }) => {
               <InputAtom
                 readOnly={view}
                 register={register}
+                control={control}
                 errors={errors}
                 label="Purchase Date"
                 required={true}

@@ -9,12 +9,12 @@ import TopbarAtom from "../../../atoms/TopbarAtom";
 import {
   AddItemContainer,
   ApplyFormInput,
+  DemoItemInput,
   InputDiv,
   Label,
   MainTitle,
   TableContainer,
   TableInput,
-  TableSelect,
 } from "../../../styles/styles";
 const useStyles = makeStyles({
   table: {
@@ -185,7 +185,7 @@ const ViewMoreInwards = ({ details }) => {
                     details
                     type="text"
                     readOnly
-                    value={details.receivedLocation}
+                    value={details.recievedLocation}
                   />
                 </InputDiv>
               </Col>
@@ -263,9 +263,7 @@ const ViewMoreInwards = ({ details }) => {
                         <TableRow key={index}>
                           <TableCell align="center">{index + 1}</TableCell>
                           <TableCell align="center">
-                            <TableSelect readOnly value={`${item.name}`}>
-                              <option value="IP Camera">{item.name}</option>
-                            </TableSelect>
+                            <DemoItemInput readOnly value={`${item.name}`} />
                           </TableCell>
                           <TableCell align="center">
                             <TableInput readOnly value={`${item.quantity}`} />

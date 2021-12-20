@@ -13,9 +13,9 @@ import {
 
 const DocInputAtom = ({ docFile, setDocFile, label, disabled, setDocUrl }) => {
   const hiddenDocInput = useRef(null);
-  const handleDocClick = () => {
+  const handleDocClick = (e) => {
     hiddenDocInput.current.click();
-  };
+   };
   const handleDocInputChange = (e) => {
     const docFileUploaded = e.target.files[0];
     setDocFile(docFileUploaded);

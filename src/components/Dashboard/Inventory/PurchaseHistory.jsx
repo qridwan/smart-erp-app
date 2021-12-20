@@ -96,7 +96,7 @@ const PurchaseHistory = ({ setItem, setShow }) => {
                     <TableCell align="center">{product.supplier}</TableCell>
                     <TableCell align="center">{pd.quantity}</TableCell>
                     <TableCell align="center">
-                      {dateFormat(
+                      {product.purchase_date && dateFormat(
                         new Date(product.purchase_date),
                         "dd-mm-yyyy"
                       )}

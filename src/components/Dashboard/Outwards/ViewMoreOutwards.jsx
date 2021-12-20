@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
+import dateFormat from "dateformat";
 import {
   AddItemContainer,
   ApplyFormInput,
   Button,
+  DemoItemInput,
   InputDiv,
   Label,
   MainTitle,
@@ -50,7 +52,7 @@ const useStyles = makeStyles({
 });
 
 const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
-console.log("🚀 ~ ViewMoreOutwards ~ details", details)
+  // console.log("🚀 ~ ViewMoreOutwards ~ details", details)
   const classes = useStyles();
   const topbarRef = useRef(null);
   useEffect(() => {
@@ -225,7 +227,7 @@ console.log("🚀 ~ ViewMoreOutwards ~ details", details)
                   <ApplyFormInput
                     details
                     readOnly
-                    value={details.transport}
+                    value={details.transport ? details.transport : "N/A"}
                     type="text"
                   />
                 </InputDiv>
@@ -236,7 +238,10 @@ console.log("🚀 ~ ViewMoreOutwards ~ details", details)
                   <ApplyFormInput
                     details
                     readOnly
-                    value={details.deliveryDate}
+                    value={
+                      details.deliveryDate &&
+                      dateFormat(new Date(details?.deliveryDate), "dd-mm-yyyy")
+                    }
                   />
                 </InputDiv>
               </Col>
@@ -290,7 +295,9 @@ console.log("🚀 ~ ViewMoreOutwards ~ details", details)
                           />
                         </TableCell>
                         <TableCell align="center">
-                          <TableSelect
+                          <DemoItemInput readOnly value={`${item.name}`} />
+
+                          {/* <TableSelect
                             name={`item[${index}].name`}
                             readOnly
                             value={`${item.item}`}
@@ -298,7 +305,7 @@ console.log("🚀 ~ ViewMoreOutwards ~ details", details)
                             <option readOnly value={item.name}>
                               {item.name}
                             </option>
-                          </TableSelect>
+                          </TableSelect> */}
                         </TableCell>
                         <TableCell align="center">
                           <TableInput

@@ -549,6 +549,11 @@ export const Select = styled.select`
     outline: none;
   }
 `;
+export const CustomOption = styled.option`
+  width: 100%;
+  padding: 5px 0;
+  color: black;
+`;
 
 export const TableInput = styled.input`
   height: 34px;
@@ -563,6 +568,16 @@ export const TableInput = styled.input`
   }
   ::-webkit-inner-spin-button {
     -webkit-appearance: none;
+  }
+  :invalid {
+    border: 0.5px solid red;
+  }
+  :invalid + span::before {
+    display: block;
+    margin-top: 2px;
+    content: '* invalid item';
+    color: red;
+    font-size: 10px;
   }
 `;
 
