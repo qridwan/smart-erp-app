@@ -276,11 +276,11 @@ const AddItem = ({ setShow, show, item, setItem }) => {
                       readOnly={view}
                       register={register}
                       errors={errors}
-                      label="Missing"
+                      label="Yet to receive"
                       required={true}
-                      id="missing"
+                      id="yetReceive"
                       placeholder=""
-                      defaultValue={edit || view ? item.missing : ""}
+                      defaultValue={edit || view ? item.yetReceive : ""}
                       md={4}
                     />
                   </Row>

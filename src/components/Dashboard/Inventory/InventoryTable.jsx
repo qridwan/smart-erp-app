@@ -101,16 +101,16 @@ const InventoryTable = ({ setShow, show, setItem }) => {
                   </TableCell>
                   <TableCell align="center">{item.onHand}</TableCell>
                   <TableCell align="center" style={{ color: "#1F67F1" }}>
-                    {item.clientCount}
+                    {item?.clientCount}
                   </TableCell>
                   <TableCell align="center" style={{ color: "#FF0000" }}>
-                    {item.not_working}
+                    {item?.not_working}
                   </TableCell>
                   <TableCell align="center" style={{ color: "#FF8A00" }}>
-                    {item.damaged}
+                    {item?.damaged}
                   </TableCell>
                   <TableCell align="center" style={{ color: "#85AAF4" }}>
-                    {item.missing}
+                    {item?.yetReceive ? item.yetReceive : "-"}
                   </TableCell>
 
                   <TableCell align="center">

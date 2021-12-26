@@ -41,6 +41,7 @@ import { ref, update } from "firebase/database";
 import { db } from "../../../firebase";
 
 const GenerateOutwards = ({ setShow, details, setDetails }) => {
+  console.log("🚀 ~ GenerateOutwards ~ details", details);
   const classes = addTableStyles();
   const topbarRef = useRef(null);
   const SubmitButtonRef = useRef(null);
@@ -54,6 +55,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
   const [courierDocURL, setCourierDocURL] = useState(``);
   const [packagingDocURL, setPackagingDocURL] = useState(``);
   const [agencyName, setAgencyName] = useState("");
+  const [detailItems, setDetailItems] = useState([]);
   const [client] = useState({});
   const edit = Boolean(details.info === "edit");
   const {
@@ -91,6 +93,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
       setCourierDocURL(details.courierDoc);
       setPackagingDocURL(details.packagingList);
       append(details.item);
+      setDetailItems(details.item);
     }
     return () => setDetails(``);
   }, []);
@@ -109,20 +112,81 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
       });
       return item;
     });
-    data.item.forEach((item) => {
-      const prevItem = inventoryItems.find((prod) => {
+    data.item.forEach(async (item) => {
+      const prevItem = await inventoryItems.find((prod) => {
         if (prod.code === item.code) {
-          return prod?.onHand;
+          return prod;
         }
         return undefined;
       });
       const updates = {};
-      updates["inventory/items/" + item.code] = {
-        ...prevItem,
-        onHand: parseInt(prevItem.onHand) - parseInt(item.sent),
-      };
-      update(ref(db), updates);
+      let updatedData = {};
+      if (edit) {
+        const existingItem = await detailItems.find(
+          (item) => item.code === prevItem.code
+        );
+        if (existingItem) {
+          // detailItems.forEach((dItem) => {
+          // const matchedItem = data.item.find(
+          //   (obj) => obj.code === dItem.code
+          // );
+          console.log("🚀 ~ detailItems.forEach ~ matchedItem", {
+            existingItem,
+            prevItem,
+            item,
+          });
+          if (+existingItem.sent > +item.sent) {
+            const diffQty = +existingItem.sent - +item.sent;
+            updatedData = {
+              ...prevItem,
+              onHand: +prevItem?.onHand + diffQty,
+              yetReceive:
+                prevItem?.yetReceive && +prevItem.yetReceive - diffQty,
+            };
+          } else if (+existingItem.sent < +item.sent) {
+            // console.log("🚀 ~ detailItems.forEach ~ +dItem.sent < +matchedItem.sent", +dItem.sent < +matchedItem.sent)
+            const diffQty = +item.sent - +existingItem.sent;
+            console.log("🚀 ~ detailItems.forEach ~ diffQty", diffQty);
+            updatedData = {
+              ...prevItem,
+              onHand: +prevItem?.onHand - diffQty,
+              yetReceive:
+                prevItem?.yetReceive && +prevItem.yetReceive + diffQty,
+            };
+          } else if (+existingItem.sent === +item.sent) {
+            updatedData = {
+              ...prevItem,
+              onHand: +prevItem?.onHand,
+              yetReceive: +prevItem?.yetReceive,
+            };
+          }
+          // });
+        } else {
+          updatedData = {
+            ...prevItem,
+            onHand: +prevItem?.onHand - +item.sent,
+            yetReceive: prevItem?.yetReceive
+              ? +prevItem.yetReceive + +item.sent
+              : +item.sent,
+          };
+        }
+        updates["inventory/items/" + item.code] = {
+          ...updatedData,
+        };
+        update(ref(db), updates);
+        console.log("🚀 ~ data.item.forEach ~ updates", updates);
+      } else if (!edit) {
+        updates["inventory/items/" + item.code] = {
+          ...prevItem,
+          yetReceive: prevItem?.yetReceive
+            ? +prevItem.yetReceive + +item.sent
+            : +item.sent,
+          onHand: +prevItem?.onHand - +item.sent,
+        };
+        update(ref(db), updates);
+      }
     });
+
     !edit
       ? SetOutwards({ ...data, agency: agencyName, status: "intransit" })
       : UpdateOutwards(
@@ -519,34 +583,28 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                             }}
                           >
                             <CustomOption value=""></CustomOption>
-                            {inventoryItems.map((item, index) => {
+                            {inventoryItems.map((itm, index) => {
                               if (
                                 edit &&
                                 details?.item[index]?.id === inventoryItems.code
                               ) {
                                 return (
-                                  <CustomOption
-                                    key={item.code}
-                                    value={item.code}
-                                  >
-                                    {item.item_name}
+                                  <CustomOption key={itm.code} value={itm.code}>
+                                    {itm.item_name}
                                   </CustomOption>
                                 );
                               } else {
                                 return (
-                                  <CustomOption
-                                    key={item.code}
-                                    value={item.code}
-                                  >
-                                    {item.item_name}
+                                  <CustomOption key={itm.code} value={itm.code}>
+                                    {itm.item_name}
                                   </CustomOption>
                                 );
                               }
                             })}
                           </TableSelect>
                           {edit && (
-                            <span style={{ fontSize: "10px" }}>
-                              Item: {details.item[index]?.name}
+                            <span style={{ fontSize: "10px", display: "block" }}>
+                            Previous Item: {details.item[index]?.name}
                             </span>
                           )}
                         </TableCell>

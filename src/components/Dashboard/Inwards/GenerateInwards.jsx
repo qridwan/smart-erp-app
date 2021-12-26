@@ -122,16 +122,30 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
     data.item.forEach((item) => {
       const prevItem = inventoryItems.find((prod) => {
         if (prod.code === item.item_code) {
-          return prod?.onHand;
+          return prod;
         }
         return undefined;
       });
       const updates = {};
-      updates["inventory/items/" + item.code] = {
+      const updatedData = {
         ...prevItem,
-        onHand: parseInt(prevItem.onHand) + parseInt(item.received),
+        yetReceive: prevItem?.yetReceive
+          ? +prevItem.yetReceive - +(item.recieved)
+          : 0,
+        bad_condition:
+          prevItem?.bad_condition && prevItem?.bad_condition !== "-"
+            ? parseInt(prevItem?.bad_condition) + parseInt(item?.bad_condition)
+            : parseInt(item?.bad_condition),
+        not_working:
+          prevItem?.not_working && prevItem?.not_working !== "-"
+            ? +prevItem.not_working + +item.not_working
+            : +item?.not_working,
+        onHand: parseInt(prevItem?.onHand) + parseInt(item.received),
       };
+      updates["inventory/items/" + item.code] = { ...updatedData };
       update(ref(db), updates);
+
+      // console.log("🚀 ~ data.item.forEach ~ item", item, prevItem);
     });
 
     !edit
@@ -147,7 +161,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
 
     setShow("inwardsTable");
     reset();
-    // console.log({data});
+    // console.log(data);
   };
 
   //FOR AUTO GENERATING AGENCY ITEMS
