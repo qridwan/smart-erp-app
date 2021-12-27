@@ -285,7 +285,7 @@ const ViewMoreOutwards = ({ setShow, details, setDetails }) => {
                 <TableBody>
                   {details?.item?.map((item, index) => {
                     return (
-                      <TableRow key={item.id}>
+                      <TableRow key={item.code}>
                         <TableCell align="center">{index + 1}</TableCell>
                         <TableCell align="center">
                           <TableInput

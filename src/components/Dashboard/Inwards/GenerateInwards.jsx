@@ -127,24 +127,71 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
         return undefined;
       });
       const updates = {};
-      const updatedData = {
-        ...prevItem,
-        yetReceive: prevItem?.yetReceive
-          ? +prevItem.yetReceive - +(item.recieved)
-          : 0,
-        bad_condition:
-          prevItem?.bad_condition && prevItem?.bad_condition !== "-"
-            ? parseInt(prevItem?.bad_condition) + parseInt(item?.bad_condition)
-            : parseInt(item?.bad_condition),
-        not_working:
-          prevItem?.not_working && prevItem?.not_working !== "-"
-            ? +prevItem.not_working + +item.not_working
-            : +item?.not_working,
-        onHand: parseInt(prevItem?.onHand) + parseInt(item.received),
-      };
-      updates["inventory/items/" + item.code] = { ...updatedData };
+      let updatedData = {};
+      if (edit) {
+        const existingItem = details.item.find(
+          (item) => item.item_code === prevItem.code
+        );
+        console.log("🚀 ~ data.item.forEach ~ existingItem", {
+          existingItem,
+          dItem: details.item,
+        });
+        if (existingItem) {
+          if (+existingItem.received > +item.received) {
+            const diffQty = +existingItem.received - +item.received;
+            updatedData = {
+              ...prevItem,
+              onHand: +prevItem?.onHand + diffQty,
+              yetReceive:
+                prevItem?.yetReceive && +prevItem.yetReceive - diffQty,
+            };
+          } else if (+existingItem.received < +item.received) {
+            const diffQty = +item.received - +existingItem.received;
+            updatedData = {
+              ...prevItem,
+              onHand: +prevItem?.onHand - diffQty,
+              yetReceive:
+                prevItem?.yetReceive && +prevItem.yetReceive + diffQty,
+            };
+          } else if (+existingItem.received === +item.received) {
+            updatedData = {
+              ...prevItem,
+              onHand: +prevItem?.onHand,
+              yetReceive: +prevItem?.yetReceive,
+            };
+          }
+        } else {
+          updatedData = {
+            ...prevItem,
+            onHand: +prevItem?.onHand - +item.received,
+            yetReceive: prevItem?.yetReceive
+              ? +prevItem.yetReceive + +item.received
+              : +item.received,
+          };
+        }
+      } else {
+        updatedData = {
+          ...prevItem,
+          yetReceive:
+            prevItem?.yetReceive && prevItem?.yetReceive !== "-"
+              ? +prevItem.yetReceive - +item.received
+              : 0,
+          damaged:
+            prevItem?.damaged && prevItem?.damaged !== "-"
+              ? parseInt(prevItem?.damaged) +
+                parseInt(item?.damaged)
+              : parseInt(item?.damaged),
+          // not_working:
+          //   prevItem?.not_working && prevItem?.not_working !== "-"
+          //     ? +prevItem.not_working + +item.not_working
+          //     : +item?.not_working,
+          onHand: parseInt(prevItem?.onHand) + parseInt(item.received),
+        };
+      }
+      updates["inventory/items/" + item.item_code] = { ...updatedData };
       update(ref(db), updates);
 
+      // console.log("🚀 ~ data.item.forEach ~ item", { prevItem, item, updates });
       // console.log("🚀 ~ data.item.forEach ~ item", item, prevItem);
     });
 
@@ -213,12 +260,14 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
             ...presentOnFields,
             quantity: Number(itm.sent) + Number(presentOnFields.quantity),
             item_code: itm.code,
+            sent: itm.sent,
           });
         } else
           outwardsFieldsArray.push({
             name: itm.name,
             quantity: Number(itm.sent),
             item_code: itm.code,
+            sent: itm.sent,
           });
       });
     });
@@ -235,6 +284,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
             name: inw_object.name,
             quantity: qty,
             item_code: out_object.item_code,
+            sent: out_object.sent,
           });
       } else finalFields.push(out_object);
     });
@@ -457,10 +507,9 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                       <TableCell className={classes.thead} align="center">
                         Item Name
                       </TableCell>
-                      {/* <TableCell className={classes.thead} align="center">
-                      SKU
-                    </TableCell> */}
-
+                      <TableCell className={classes.thead} align="center">
+                        Sent
+                      </TableCell>
                       <TableCell className={classes.thead} align="center">
                         Received
                       </TableCell>
@@ -468,14 +517,12 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                         Good Condition
                       </TableCell>
                       <TableCell className={classes.thead} align="center">
-                        Bad Condition
+                        Damaged
                       </TableCell>
                       <TableCell className={classes.thead} align="center">
-                        Not Working
+                        Yet to receive
                       </TableCell>
-                      <TableCell className={classes.thead} align="center">
-                        Sent Qty.
-                      </TableCell>
+
                       <TableCell
                         className={classes.thead}
                         align="center"
@@ -505,7 +552,17 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                               readOnly
                             ></DemoItemInput>
                           </TableCell>
-
+                          <TableCell align="center">
+                            <TableInput
+                              type="number"
+                              name={`item[${index}].sent`}
+                              readOnly
+                              defaultValue={`${
+                                item.sent ? item.sent : item.sent
+                              }`}
+                              {...register(`item.${index}.sent`)}
+                            ></TableInput>
+                          </TableCell>
                           <TableCell align="center">
                             <TableInput
                               type="number"
@@ -529,14 +586,14 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                           <TableCell align="center">
                             <TableInput
                               type="number"
-                              name={`item[${index}].bad_condition`}
-                              defaultValue={`${item.bad_condition}`}
-                              {...register(`item.${index}.bad_condition`, {
+                              name={`item[${index}].damaged`}
+                              defaultValue={`${item?.damaged}`}
+                              {...register(`item.${index}.damaged`, {
                                 required: true,
                               })}
                             ></TableInput>
                           </TableCell>
-                          <TableCell align="center">
+                          {/* <TableCell align="center">
                             <TableInput
                               type="number"
                               name={`item[${index}].not_working`}
@@ -545,7 +602,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
                                 required: true,
                               })}
                             ></TableInput>
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell align="center">
                             <TableInput
                               name={`item[${index}].quantity`}
@@ -630,12 +687,7 @@ const GenerateInwards = ({ setShow, details, setDetails }) => {
             </Row>
 
             <div className="d-none text-center my-md-5">
-              <SubmitButton
-                type="submit"
-                ref={SubmitButtonRef}
-                value="Save"
-                // disabled={fields.length ? "" : "disabled"}
-              />
+              <SubmitButton type="submit" ref={SubmitButtonRef} value="Save" />
             </div>
           </Container>
         </form>

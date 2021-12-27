@@ -181,13 +181,15 @@ const Inwards = ({ show, setShow }) => {
                           </NativeSelect>
                         </FormControl>
                       </TableCell>
-
+                      <TableCell align="center">
+                        {row.item[currArr[index]]?.received}
+                      </TableCell>
                       <TableCell align="center">
                         {row.item[currArr[index]]?.good_condition}
                       </TableCell>
-                      <TableCell align="center">
+                      {/* <TableCell align="center">
                         {row.item[currArr[index]]?.not_working}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell align="center">
                         {row.item[currArr[index]]?.damaged
                           ? row.item[currArr[index]]?.damaged

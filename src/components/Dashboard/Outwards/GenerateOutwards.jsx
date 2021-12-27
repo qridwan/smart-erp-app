@@ -126,15 +126,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
           (item) => item.code === prevItem.code
         );
         if (existingItem) {
-          // detailItems.forEach((dItem) => {
-          // const matchedItem = data.item.find(
-          //   (obj) => obj.code === dItem.code
-          // );
-          console.log("🚀 ~ detailItems.forEach ~ matchedItem", {
-            existingItem,
-            prevItem,
-            item,
-          });
           if (+existingItem.sent > +item.sent) {
             const diffQty = +existingItem.sent - +item.sent;
             updatedData = {
@@ -144,9 +135,7 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
                 prevItem?.yetReceive && +prevItem.yetReceive - diffQty,
             };
           } else if (+existingItem.sent < +item.sent) {
-            // console.log("🚀 ~ detailItems.forEach ~ +dItem.sent < +matchedItem.sent", +dItem.sent < +matchedItem.sent)
             const diffQty = +item.sent - +existingItem.sent;
-            console.log("🚀 ~ detailItems.forEach ~ diffQty", diffQty);
             updatedData = {
               ...prevItem,
               onHand: +prevItem?.onHand - diffQty,
@@ -160,7 +149,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
               yetReceive: +prevItem?.yetReceive,
             };
           }
-          // });
         } else {
           updatedData = {
             ...prevItem,
@@ -174,7 +162,6 @@ const GenerateOutwards = ({ setShow, details, setDetails }) => {
           ...updatedData,
         };
         update(ref(db), updates);
-        console.log("🚀 ~ data.item.forEach ~ updates", updates);
       } else if (!edit) {
         updates["inventory/items/" + item.code] = {
           ...prevItem,

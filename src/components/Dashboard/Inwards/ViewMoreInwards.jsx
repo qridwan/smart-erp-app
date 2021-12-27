@@ -41,6 +41,7 @@ const useStyles = makeStyles({
 });
 
 const ViewMoreInwards = ({ details }) => {
+console.log("🚀 ~ ViewMoreInwards ~ details", details)
   const classes = useStyles();
   const topbarRef = useRef(null);
   return (
@@ -284,13 +285,13 @@ const ViewMoreInwards = ({ details }) => {
                           <TableCell align="center">
                             <TableInput
                               readOnly
-                              value={`${item.bad_condition}`}
+                              value={`${item.damaged}`}
                             ></TableInput>
                           </TableCell>
                           <TableCell align="center">
                             <TableInput
                               readOnly
-                              value={`${item.not_working}`}
+                              value={`${item.yetReceive}`}
                             ></TableInput>
                           </TableCell>
                         </TableRow>

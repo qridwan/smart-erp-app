@@ -9,10 +9,11 @@ const GetOutwards = () => {
     onValue(productsRef, (snapshot) => {
       const data = snapshot.val();
       let alldata = [];
-      Object.keys(data).forEach((key) => {
-        const item = data[key];
-        alldata.push(item);
-      });
+      data &&
+        Object?.keys(data)?.forEach((key) => {
+          const item = data[key];
+          alldata.push(item);
+        });
       setOutwards(alldata);
     });
   }, []);
