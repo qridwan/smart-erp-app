@@ -1,4 +1,3 @@
-
 import { onValue, ref } from "@firebase/database";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
@@ -8,12 +7,13 @@ const GetClients = () => {
   const clientsRef = ref(db, "inventory/clients");
   useEffect(() => {
     onValue(clientsRef, (snapshot) => {
-      const data = snapshot.val();
+     const data = snapshot?.val();
       let alldata = [];
-      Object.keys(data).forEach((key) => {
-        const item = data[key];
-        alldata.push(item);
-      });
+      data &&
+        Object.keys(data)?.forEach((key) => {
+          const item = data[key];
+          item !== 0 && alldata.push(item);
+        });
       setClients(alldata);
     });
   }, []);

@@ -150,7 +150,7 @@ const Inwards = ({ show, setShow }) => {
                 getClassNamesFor={getClassNamesFor}
               />
               <TableBody>
-                {items.map((row, index) => {
+                {items?.map((row, index) => {
                   return (
                     <TableRow
                       key={row.key}
@@ -171,7 +171,7 @@ const Inwards = ({ show, setShow }) => {
                             className={classes.selectEmpty}
                             inputProps={{ "aria-label": "age" }}
                           >
-                            {row.item.map((item, i) => {
+                            {row?.item?.map((item, i) => {
                               return (
                                 <option title={item.name} key={i} value={i}>
                                   {item.name}
@@ -182,17 +182,17 @@ const Inwards = ({ show, setShow }) => {
                         </FormControl>
                       </TableCell>
                       <TableCell align="center">
-                        {row.item[currArr[index]]?.received}
+                        {row?.item[currArr[index]]?.received}
                       </TableCell>
                       <TableCell align="center">
-                        {row.item[currArr[index]]?.good_condition}
+                        {row?.item[currArr[index]]?.good_condition}
                       </TableCell>
                       {/* <TableCell align="center">
                         {row.item[currArr[index]]?.not_working}
                       </TableCell> */}
                       <TableCell align="center">
-                        {row.item[currArr[index]]?.damaged
-                          ? row.item[currArr[index]]?.damaged
+                        {row?.item[currArr[index]]?.damaged
+                          ? row?.item[currArr[index]]?.damaged
                           : "-"}
                         {/* {parseInt(row.item[currArr[index]]?.quantity) -
                           parseInt(row.item[currArr[index]]?.received)} */}

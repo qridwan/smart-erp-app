@@ -9,10 +9,11 @@ const GetInventoryItems = () => {
     onValue(itemsRef, (snapshot) => {
       const data = snapshot.val();
       let alldata = [];
-      Object.keys(data).forEach((key) => {
-        const item = data[key];
-        alldata.push(item);
-      });
+      data &&
+        Object.keys(data).forEach((key) => {
+          const item = data[key];
+          item !== 0 && alldata.push(item);
+        });
       setInventoryItems(alldata);
     });
   }, []);

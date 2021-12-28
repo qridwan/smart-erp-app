@@ -16,8 +16,9 @@ const Employees = ({ show, setShow }) => {
     const employeeRef = ref(db, "inventory/employees");
     onValue(employeeRef, (snapshot) => {
       let employees = [];
-      Object.keys(snapshot.val()).forEach((key) => {
-        employees.push(snapshot.val()[key]);
+      const data = snapshot.val()
+      Object.keys(data).forEach((key) => {
+        data[key] !== 0 && employees.push(data[key]);
       });
       setEmployees(employees);
     });

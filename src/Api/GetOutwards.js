@@ -12,7 +12,7 @@ const GetOutwards = () => {
       data &&
         Object?.keys(data)?.forEach((key) => {
           const item = data[key];
-          alldata.push(item);
+          item !== 0 && alldata.push(item);
         });
       setOutwards(alldata);
     });

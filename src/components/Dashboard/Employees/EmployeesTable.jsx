@@ -25,11 +25,9 @@ const EmployeesTable = ({ setShow, setDetails }) => {
       let employees = [];
       let anchors = [];
       Object.keys(snapshot.val()).forEach((key) => {
-        employees.push(snapshot.val()[key]);
+        snapshot.val()[key] !== 0 && employees.push(snapshot.val()[key]);
         anchors.push(null);
       });
-      // console.log(snapshot.val());
-      // console.log(employees);
       setEmployees(employees);
       setAnchorEl(anchors);
     });
