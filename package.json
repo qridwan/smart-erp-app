@@ -17,6 +17,7 @@
     "react-bootstrap": "^1.6.1",
     "react-copy-to-clipboard": "^5.0.3",
     "react-datepicker": "^4.5.0",
+    "react-documents": "^1.1.1",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.11.1",
     "react-modal": "^3.14.3",

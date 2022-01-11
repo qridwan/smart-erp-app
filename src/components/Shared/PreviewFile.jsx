@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "react-modal";
 import CheckValideFile from "../../Helper/CheckValidFile";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
+import { DocumentViewer } from "react-documents";
 
 const customStyles = {
   content: {
@@ -20,7 +21,6 @@ const PreviewFile = ({ modalIsOpen, setIsOpen, file }) => {
   function closeModal() {
     setIsOpen(false);
   }
-
   return (
     <div>
       <Modal
@@ -43,6 +43,26 @@ const PreviewFile = ({ modalIsOpen, setIsOpen, file }) => {
                   minWidth: "400px",
                 }}
               />
+            </div>
+          ) : file ? (
+            <div
+            className="w-md-75 w-100"
+              style={{
+                minHeight: "500px",
+                minWidth: "700px",
+              }}
+            >
+              <DocumentViewer
+                className="w-100"
+                style={{
+                  minHeight: "500px",
+                }}
+                viewerUrl={
+                  "https://docs.google.com/gview?url=%URL%&embedded=true"
+                }
+                url={file}
+                viewer="url"
+              ></DocumentViewer>
             </div>
           ) : (
             <div className="text-center">

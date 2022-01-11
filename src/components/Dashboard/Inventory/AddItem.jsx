@@ -210,7 +210,7 @@ const AddItem = ({ setShow, show, item, setItem }) => {
                   required={true}
                   id="item_name"
                   placeholder=""
-                  defaultValue={edit || view ? item.item_name : 0}
+                  defaultValue={edit || view ? item.item_name : ""}
                   md={edit ? 4 : 6}
                 />
                 <InputAtom
